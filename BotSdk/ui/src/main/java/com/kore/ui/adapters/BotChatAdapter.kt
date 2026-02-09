@@ -163,7 +163,7 @@ class BotChatAdapter(private val context: Context, types: List<SimpleListRow.Sim
 
                         is PayloadOuter -> {
                             var newRows = createCustomTemplate(body.type, baseBotMsg, isLastItem, rows)
-                            if (newRows.size != rows.size) {
+                            if (newRows.size != rows.size+1) {
                                 LogUtils.e("SLIDER_VIEW", (body.payload?.get(SLIDER_VIEW) as Boolean?).toString())
                                 if (body.payload != null && (body.payload?.get(SLIDER_VIEW) as Boolean? == false || bottomSheetDialog != null))
                                     rows = newRows

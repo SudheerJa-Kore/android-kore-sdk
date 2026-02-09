@@ -11,6 +11,7 @@ import com.kore.event.BotChatEvent
 import com.kore.model.BotResponse
 import com.kore.model.PayloadOuter
 import com.kore.model.constants.BotResponseConstants.FILE_NAME
+import com.kore.model.constants.BotResponseConstants.NAME
 import com.kore.model.constants.BotResponseConstants.PROGRESS
 import com.kore.model.constants.BotResponseConstants.URL
 
@@ -36,12 +37,21 @@ class DownloadLinkTemplateRow(
     override fun getChangePayload(otherRow: SimpleListRow): Any = true
 
     override fun <Binding : ViewBinding> bind(binding: Binding) {
-        showOrHideIcon(binding, binding.root.context, "", true, true)
+        showOrHideIcon(binding, binding.root.context, botResponse.icon, true, true)
         val childBinding = RowDownloadLinkTemplateBinding.bind((binding.root as ViewGroup).getChildAt(1))
         childBinding.apply {
             if (payload == null) return
             val fileName = payload?.get(FILE_NAME) as String?
-            tvPdfItemTitle.text = fileName
+
+            if(fileName?.isNotEmpty() == true)
+                tvPdfItemTitle.text = fileName
+            else {
+                payload?.get(NAME).let {
+                    tvPdfItemTitle.text = it as String
+                }
+            }
+
+
             commonBind()
         }
     }
