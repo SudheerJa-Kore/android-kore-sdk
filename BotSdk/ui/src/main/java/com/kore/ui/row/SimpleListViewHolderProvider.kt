@@ -12,11 +12,11 @@ abstract class SimpleListViewHolderProvider<Binding : ViewBinding> {
         val binding = BaseRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         binding.root.addView(view)
         val viewHolder = SimpleListViewHolder(binding)
-        initialize(viewHolder as SimpleListViewHolder<Binding>)
+        initialize(viewHolder as SimpleListViewHolder<*>)
         return viewHolder
     }
 
     abstract fun inflateBinding(parent: ViewGroup, viewType: Int): Binding
 
-    open fun initialize(viewHolder: SimpleListViewHolder<Binding>) {}
+    open fun initialize(viewHolder: SimpleListViewHolder<*>) {}
 }

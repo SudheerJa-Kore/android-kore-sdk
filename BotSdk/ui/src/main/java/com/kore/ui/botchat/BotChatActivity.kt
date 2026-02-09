@@ -238,10 +238,6 @@ class BotChatActivity : BaseActivity<ActivityBotChatBinding, BotChatView, BotCha
 
     override fun onBrandingDetails(header: BotActiveThemeModel?) {
         if (header?.botMessage == null && header?.brandingModel != null) {
-            header.brandingModel?.header?.bgColor?.let {
-                changeStatusBarColor(if(SDKConfig.isUpdateStatusBarColor()) it else "")
-                prefRepository.putStringValue(this,
-                THEME_NAME, BundleConstants.STATUS_BAR_COLOR, it)  }
             Handler(Looper.getMainLooper()).postDelayed({
                 if (!isMinimized() && !isWelcomeScreenShown && header.brandingModel?.welcomeScreen?.show == true) {
                     isWelcomeScreenShown = true
@@ -282,6 +278,11 @@ class BotChatActivity : BaseActivity<ActivityBotChatBinding, BotChatView, BotCha
             val customHeaderFragment = SDKConfig.getCustomHeaderFragment(HEADER_SIZE_COMPACT)
             addHeaderFragmentToActivity(customHeaderFragment ?: ChatV2HeaderFragment(), header?.brandingModel)
         }
+
+        header?.brandingModel?.header?.bgColor?.let {
+            changeStatusBarColor(if(SDKConfig.isUpdateStatusBarColor()) it else "")
+            prefRepository.putStringValue(this,
+                THEME_NAME, BundleConstants.STATUS_BAR_COLOR, it)  }
         footerFragment.setBrandingDetails(header?.brandingModel)
     }
 
