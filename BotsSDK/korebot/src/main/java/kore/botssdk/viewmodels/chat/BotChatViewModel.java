@@ -19,8 +19,6 @@ import android.os.Bundle;
 import androidx.core.app.NotificationCompat;
 import androidx.lifecycle.ViewModel;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
@@ -80,6 +78,7 @@ public class BotChatViewModel extends ViewModel {
     BotMetaModel botMetaModel;
     String lastMsgId = "";
     boolean isAgentTransfer = false;
+    boolean isStreamMessage = false;
     ArrayList<String> arrMessageList = new ArrayList<>();
     private static String uniqueID = null;
     private static final String PREF_UNIQUE_ID = "PREF_UNIQUE_ID";
@@ -156,7 +155,10 @@ public class BotChatViewModel extends ViewModel {
         public void onMessage(SocketDataTransferModel data) {
             if (data == null) return;
             if (data.getEvent_type().equals(BaseSocketConnectionManager.EVENT_TYPE.TYPE_TEXT_MESSAGE)) {
-                processPayload(data.getPayLoad(), null);
+
+                if(!isStreamMessage)
+                    processPayload(data.getPayLoad(), null);
+                else processStreamMessage(data.getPayLoad());
 
             } else if (data.getEvent_type().equals(BaseSocketConnectionManager.EVENT_TYPE.TYPE_MESSAGE_UPDATE)) {
                 chatView.updateContentListOnSend(data.getBotRequest());
@@ -170,24 +172,50 @@ public class BotChatViewModel extends ViewModel {
 
     };
 
+    private void processStreamMessage(String payload)
+    {
+        try {
+            final BotResponse botResponse = gson.fromJson(payload, BotResponse.class);
+            if (botResponse == null || botResponse.getMessage() == null || botResponse.getMessage().isEmpty()) {
+                return;
+            }
+            isStreamMessage = botResponse.issM();
+
+            if(botResponse.isEndChunk())
+                isStreamMessage = false;
+
+            if (!StringUtils.isNullOrEmpty(botResponse.getIcon()))
+                SDKConfiguration.BubbleColors.setIcon_url(botResponse.getIcon());
+
+            PayloadOuter payOuter = null;
+            if (!botResponse.getMessage().isEmpty()) {
+                ComponentModel compModel = botResponse.getMessage().get(0).getComponent();
+                if (compModel != null) {
+                    payOuter = compModel.getPayload();
+                    if (payOuter != null) {
+                        if (payOuter.getText() != null && payOuter.getText().contains("&quot")) {
+                            gson = new Gson();
+                            payOuter = gson.fromJson(payOuter.getText().replace("&quot;", "\""), PayloadOuter.class);
+                        }
+                    }
+                }
+            }
+
+            if(payOuter != null && payOuter.getText() != null)
+            {
+                chatView.addStreamingMessage(payOuter.getText(), botResponse.isEndChunk());
+            }
+        } catch (Exception e)
+        {
+            LogUtils.e("Error", String.valueOf(e));
+        }
+    }
+
     public void sendReadReceipts() {
         //Added newly for send receipts
         if (botClient != null && !arrMessageList.isEmpty() && isAgentTransfer) {
             botClient.sendReceipts(BundleConstants.MESSAGE_READ, arrMessageList.get((arrMessageList.size() - 1)));
             arrMessageList = new ArrayList<>();
-        }
-    }
-
-
-    private boolean isJson(String text) {
-        if (text == null || text.trim().isEmpty()) {
-            return false;
-        }
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.readTree(text) != null;
-        } catch (Exception e) {
-            return false;
         }
     }
 
@@ -203,7 +231,10 @@ public class BotChatViewModel extends ViewModel {
                 return;
             }
             if (botResponse.getMessageId() != null) lastMsgId = botResponse.getMessageId();
+            isStreamMessage = botResponse.issM();
 
+            if(botResponse.isEndChunk())
+                isStreamMessage = false;
             try {
                 long timeMillis = botResponse.getTimestamp() == 0L ? botResponse.getTimeInMillis(botResponse.getCreatedOn(), true) : botResponse.getTimestamp();
                 botResponse.setCreatedInMillis(timeMillis);

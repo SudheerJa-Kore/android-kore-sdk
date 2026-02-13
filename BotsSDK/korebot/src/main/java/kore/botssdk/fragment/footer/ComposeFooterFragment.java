@@ -105,6 +105,7 @@ public class ComposeFooterFragment extends BaseFooterFragment {
     @Override
     public void setDisabled(boolean disabled) {
         isDisabled = disabled;
+        updateUI();
     }
 
     private void findViews(View view) {

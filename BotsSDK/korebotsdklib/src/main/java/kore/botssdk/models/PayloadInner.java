@@ -82,6 +82,7 @@ public class PayloadInner {
     private ArrayList<FeedbackListModel> feedbackList;
     private String text_message;
     private String fileName;
+    private String name;
     private boolean url_present;
     private boolean isSortEnabled;
     private boolean isSearchEnabled;
@@ -122,6 +123,10 @@ public class PayloadInner {
 
     public void setUrl_present(boolean url_present) {
         this.url_present = url_present;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getFileName() {

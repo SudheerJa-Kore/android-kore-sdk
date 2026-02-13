@@ -223,8 +223,6 @@ public class NewBotChatActivity extends BotAppCompactActivity implements BotChat
 
         setupTextToSpeech();
         KoreEventCenter.register(this);
-
-        changeStatusBarColor(SDKConfig.isUpdateStatusBarColor() ? sharedPreferences.getString(BundleConstants.STATUS_BAR_COLOR, "#FF3F51B5") : "");
     }
 
     private void setupTextToSpeech() {
@@ -271,6 +269,7 @@ public class NewBotChatActivity extends BotAppCompactActivity implements BotChat
             }
 
             sharedPreferences.edit().putString(BundleConstants.STATUS_BAR_COLOR, brandingModel.getWidgetHeaderColor()).apply();
+            changeStatusBarColor(SDKConfig.isUpdateStatusBarColor() ? brandingModel.getWidgetHeaderColor() : "");
         }
     }
 
@@ -372,6 +371,12 @@ public class NewBotChatActivity extends BotAppCompactActivity implements BotChat
 
     @Override
     public void uploadBulkFile(String fileName, String filePath, String extension, String filePathThumbnail, String orientation) {
+    }
+
+    @Override
+    public void addStreamingMessage(String message, boolean endFlag) {
+        botContentFragment.addStreamingMessage(message);
+        baseFooterFragment.setDisabled(!endFlag);
     }
 
     @Override
@@ -557,8 +562,8 @@ public class NewBotChatActivity extends BotAppCompactActivity implements BotChat
                 String topClassName = Objects.requireNonNull(taskList.get(0).getTaskInfo().topActivity).toString();
                 if (!topClassName.contains(getApplicationContext().getPackageName())) {
 
-                    if (botClient != null) {
-                        botClient.sendAgentCloseMessage("", SDKConfiguration.Client.bot_name, SDKConfiguration.Client.bot_id);
+//                    if (botClient != null) {
+//                        botClient.sendAgentCloseMessage("", SDKConfiguration.Client.bot_name, SDKConfiguration.Client.bot_id);
 
                         LogUtils.e("onStop", "onStop called");
 
@@ -568,7 +573,7 @@ public class NewBotChatActivity extends BotAppCompactActivity implements BotChat
                         prefsEditor.putBoolean(BundleConstants.IS_RECONNECT, false);
                         prefsEditor.putInt(BotResponse.HISTORY_COUNT, 0);
                         prefsEditor.apply();
-                    }
+//                    }
                 }
             }
         }

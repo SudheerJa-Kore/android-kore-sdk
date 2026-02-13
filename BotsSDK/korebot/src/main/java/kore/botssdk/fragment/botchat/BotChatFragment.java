@@ -324,6 +324,15 @@ public class BotChatFragment extends Fragment implements BotChatViewListener, Co
     }
 
     @Override
+    public void addStreamingMessage(String message, boolean endFlag) {
+        if(!message.isBlank())
+        {
+            botContentFragment.addStreamingMessage(message);
+            baseFooterFragment.enableOrDisableSendButton(endFlag);
+        }
+    }
+
+    @Override
     public void onSendClick(String message, boolean isFromUtterance) {
         if (!StringUtils.isNullOrEmpty(message)) {
             if (!SDKConfiguration.Client.isWebHook)
@@ -490,8 +499,8 @@ public class BotChatFragment extends Fragment implements BotChatViewListener, Co
                 String topClassName = Objects.requireNonNull(taskList.get(0).getTaskInfo().topActivity).toString();
                 if (!topClassName.contains(requireContext().getPackageName())) {
 
-                    if (botClient != null) {
-                        botClient.sendAgentCloseMessage("", SDKConfiguration.Client.bot_name, SDKConfiguration.Client.bot_id);
+//                    if (botClient != null) {
+//                        botClient.sendAgentCloseMessage("", SDKConfiguration.Client.bot_name, SDKConfiguration.Client.bot_id);
 
                         LogUtils.e("onStop", "onStop called");
 
@@ -501,7 +510,7 @@ public class BotChatFragment extends Fragment implements BotChatViewListener, Co
                         prefsEditor.putBoolean(BundleConstants.IS_RECONNECT, false);
                         prefsEditor.putInt(BotResponse.HISTORY_COUNT, 0);
                         prefsEditor.apply();
-                    }
+//                    }
                 }
             }
         }

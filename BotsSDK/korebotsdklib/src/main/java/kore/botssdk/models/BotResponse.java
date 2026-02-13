@@ -121,6 +121,20 @@ public class BotResponse extends BaseBotMessage {
     private String icon;
     private long timestamp;
     private String key;
+    private boolean sM;
+    private boolean endChunk;
+
+    public void setsM(boolean sM) {
+        this.sM = sM;
+    }
+
+    public boolean issM() {
+        return sM;
+    }
+
+    public boolean isEndChunk() {
+        return endChunk;
+    }
 
     private boolean fromAgent = false;
 
