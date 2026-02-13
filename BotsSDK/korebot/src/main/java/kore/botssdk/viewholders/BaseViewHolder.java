@@ -260,7 +260,7 @@ public abstract class BaseViewHolder extends RecyclerView.ViewHolder {
             bubbleText.setBackground(leftDrawable);
             bubbleText.setTextColor(Color.parseColor(leftTextColor));
             bubbleText.setAutoLinkMask(Linkify.WEB_URLS);
-            bubbleText.setLinkTextColor(Color.parseColor(SDKConfiguration.BubbleColors.leftLinkColor));
+            bubbleText.setLinkTextColor(Color.parseColor(leftTextColor));
         } else {
             layoutBubble.setGravity(Gravity.END);
 
@@ -283,7 +283,7 @@ public abstract class BaseViewHolder extends RecyclerView.ViewHolder {
             LinearLayoutCompat.LayoutParams params = (LinearLayoutCompat.LayoutParams) bubbleText.getLayoutParams();
             params.rightMargin = (int) (5 * dp1);
 
-            bubbleText.setLinkTextColor(Color.parseColor(SDKConfiguration.BubbleColors.rightLinkColor));
+            bubbleText.setLinkTextColor(Color.parseColor(rightTextColor));
             bubbleText.setTypeface(medium);
             bubbleText.setBackground(rightDrawable);
             bubbleText.setTextColor(Color.parseColor(rightTextColor));

@@ -81,6 +81,8 @@ public abstract class BaseContentFragment extends Fragment implements BotContent
 
     public abstract void addMessageToBotChatAdapter(BotResponse botResponse);
 
+    public abstract void addStreamingMessage(String message);
+
     public abstract void addMessagesToBotChatAdapter(ArrayList<BaseBotMessage> list, boolean scrollToBottom);
 
     public abstract void addMessagesToBotChatAdapter(@NonNull ArrayList<BaseBotMessage> list, boolean scrollToBottom, boolean isFirst);
@@ -276,10 +278,6 @@ public abstract class BaseContentFragment extends Fragment implements BotContent
             mContentViewModel.loadReconnectionChatHistory(_offset, limit, SocketWrapper.getInstance(requireActivity().getApplicationContext()).getAccessToken(), botsChatAdapter.getBaseBotMessageArrayList());
         else
             mContentViewModel.loadReconnectionChatHistory(_offset, limit, jwt, botsChatAdapter.getBaseBotMessageArrayList());
-    }
-
-    public boolean getmChannelIconURL() {
-        return getmChannelIconURL();
     }
 
     @Override

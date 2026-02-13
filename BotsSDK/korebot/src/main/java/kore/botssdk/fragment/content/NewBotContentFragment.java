@@ -2,6 +2,8 @@ package kore.botssdk.fragment.content;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +18,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Objects;
+import java.util.Queue;
 
 import kore.botssdk.R;
 import kore.botssdk.adapter.ChatAdapter;
@@ -46,6 +50,12 @@ public class NewBotContentFragment extends BaseContentFragment {
     private String mBotNameInitials;
     private int mBotIconId;
     private LinearLayoutManager layoutManager;
+    private final Queue<String> wordQueue = new LinkedList<>();
+    private final Handler streamingHandler =
+            new Handler(Looper.getMainLooper());
+    private boolean isStreamingRunning = false;
+    private boolean userAtBottom = true;
+    private int appendedWordCount = 0;
 
     @Nullable
     @Override
@@ -107,6 +117,7 @@ public class NewBotContentFragment extends BaseContentFragment {
     private void setupAdapter() {
         botsBubblesListView.addItemDecoration(new ChatAdapterItemDecoration());
         layoutManager = new LinearLayoutManager(requireContext());
+//        layoutManager.setStackFromEnd(true);
         botsBubblesListView.setLayoutManager(layoutManager);
         botsBubblesListView.setAdapter(botsChatAdapter);
         quickReplyView.setComposeFooterInterface(composeFooterInterface);
@@ -176,6 +187,81 @@ public class NewBotContentFragment extends BaseContentFragment {
         botsChatAdapter.addBaseBotMessage(botResponse);
         botTypingStatusRl.setVisibility(View.GONE);
         botsBubblesListView.smoothScrollToPosition(botsChatAdapter.getItemCount());
+    }
+
+//    @Override
+//    public void addStreamingMessage(String message) {
+//        if(!message.isBlank())
+//        {
+//            botsChatAdapter.addStreamingMessage(message);
+//            botsBubblesListView.post(() -> {
+//                botsBubblesListView.scrollBy(0, 2500);
+//            });
+//        }
+//    }
+
+    @Override
+    public void addStreamingMessage(String message) {
+
+        if (message == null || message.isBlank()) return;
+
+        wordQueue.add(message);
+
+        if (!isStreamingRunning) {
+            processNextBatch();
+        }
+    }
+
+    private void processNextBatch() {
+
+        if (wordQueue.isEmpty()) {
+            isStreamingRunning = false;
+            return;
+        }
+
+        isStreamingRunning = true;
+
+        int batchSize = getBatchSize();
+
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < batchSize; i++) {
+            String word = wordQueue.poll();
+            if (word == null) break;
+
+            builder.append(word).append(" ");
+            appendedWordCount++;
+        }
+
+        botsChatAdapter.addStreamingMessage(builder.toString());
+
+        if (userAtBottom && appendedWordCount % 3 == 0) {
+            botsBubblesListView.post(() ->
+                    botsBubblesListView.scrollBy(0, 1500));
+        }
+
+        streamingHandler.postDelayed(
+                this::processNextBatch,
+                getAdaptiveDelay()
+        );
+    }
+
+    private int getBatchSize() {
+        int size = wordQueue.size();
+        if (size > 80) return 8;
+        if (size > 40) return 5;
+        if (size > 15) return 3;
+
+        return 1;
+    }
+
+    private int getAdaptiveDelay() {
+        int size = wordQueue.size();
+        if (size > 80) return 25;
+        if (size > 40) return 30;
+        if (size > 15) return 40;
+
+        return 35;
     }
 
     protected void initializeBotTypingStatus(View view, String mChannelIconURL) {
