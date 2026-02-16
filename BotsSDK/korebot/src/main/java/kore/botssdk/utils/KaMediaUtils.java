@@ -72,7 +72,7 @@ public class KaMediaUtils {
     /**
      * Create a File for saving an image or video
      */
-    public static File getOutputMediaFile(String type, String fileName) throws NoExternalStorageException, NoWriteAccessException {
+    public static File getOutputMediaFile(String type, String fileName, String fileExtn) throws NoExternalStorageException, NoWriteAccessException {
         // Create a media file name
         if (fileName != null && fileName.indexOf(".") > 0)
             fileName = fileName.substring(0, fileName.lastIndexOf("."));
@@ -87,11 +87,11 @@ public class KaMediaUtils {
             }
             attemptCount++;
             if (type.equalsIgnoreCase(KoreMedia.MEDIA_TYPE_AUDIO)) {
-                mediaFile = new File(appDirPath + File.separator + name + getMediaExtension(KoreMedia.MEDIA_TYPE_AUDIO, false));
+                mediaFile = new File(appDirPath + File.separator + name + fileExtn);
             } else if (type.equalsIgnoreCase(KoreMedia.MEDIA_TYPE_VIDEO)) {
-                mediaFile = new File(appDirPath + File.separator + name + getMediaExtension(KoreMedia.MEDIA_TYPE_VIDEO, false));
+                mediaFile = new File(appDirPath + File.separator + name + fileExtn);
             } else if (type.equalsIgnoreCase(KoreMedia.MEDIA_TYPE_IMAGE)) {
-                mediaFile = new File(appDirPath + File.separator + name + getMediaExtension(KoreMedia.MEDIA_TYPE_IMAGE, false));
+                mediaFile = new File(appDirPath + File.separator + name + fileExtn);
             } else if (type.equalsIgnoreCase(KoreMedia.MEDIA_TYPE_ARCHIVE)) {
                 mediaFile = new File(appDirPath + File.separator + name + ".kore");    //".kore"
             } else {
@@ -111,7 +111,7 @@ public class KaMediaUtils {
         OutputStream out = null;
         try {
             ContentResolver contentResolver = mContext.getContentResolver();
-            File file = KaMediaUtils.getOutputMediaFile(BitmapUtils.obtainMediaTypeOfExtn(extn), fileName);
+            File file = KaMediaUtils.getOutputMediaFile(BitmapUtils.obtainMediaTypeOfExtn(extn), fileName, extn);
             inputStream = contentResolver.openInputStream(uri);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 out = Files.newOutputStream(file.toPath());
@@ -191,7 +191,7 @@ public class KaMediaUtils {
         new DownloadFileFromURL(context).execute(sourceFilePath);
     }
 
-    public static String getMediaExtension(String MEDIA_TYPE, boolean isPlain) {
+    public static String getMediaExtension(String MEDIA_TYPE) {
         String audio_extn = null;
         String video_extn = null;
 

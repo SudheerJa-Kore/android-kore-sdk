@@ -338,6 +338,123 @@ public class BotFooterViewModel extends BaseViewModel<ComposeFooterUpdate> {
         }
     }
 
+    protected class SaveCapturedVideoTask extends AsyncTaskExecutor<String> {
+
+        private final String filePath;
+        private final String fileName;
+        private String extn = null;
+
+        public SaveCapturedVideoTask(String filePath, String fileName) {
+            this.filePath = filePath;
+            this.fileName = fileName;
+        }
+
+        @Override
+        protected void doInBackground(String... strings) {
+
+            if (filePath == null)
+                return;
+
+            try {
+                File videoFile = new File(filePath);
+
+                if (!videoFile.exists()) {
+                    LogUtils.e(LOG_TAG, "Video file does not exist");
+                    return;
+                }
+
+                // get extension
+                extn = filePath.substring(filePath.lastIndexOf(".") + 1);
+
+                // IMPORTANT: wait until camera finishes writing
+                long fileSize = 0;
+                int retry = 0;
+
+                while (retry < 5) {
+                    fileSize = videoFile.length();
+                    if (fileSize > 0) break;
+
+                    Thread.sleep(300);
+                    retry++;
+                }
+
+                LogUtils.d(LOG_TAG, "Video file size = " + fileSize);
+
+                if (fileSize == 0) {
+                    extn = null;
+                    LogUtils.e(LOG_TAG, "Video file size is zero");
+                }
+
+            } catch (Exception e) {
+                LogUtils.e(LOG_TAG, e.toString());
+                extn = null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute() {
+
+            if (extn != null) {
+
+                int bufferSize = KoreMedia.BUFFER_SIZE_VIDEO;
+
+                if (!SDKConfiguration.Client.isWebHook) {
+                    KoreWorker.getInstance().addTask(
+                            new UploadBulkFile(
+                                    fileName,
+                                    filePath,
+                                    "bearer " + SocketWrapper.getInstance(context.get()).getAccessToken(),
+                                    SocketWrapper.getInstance(context.get()).getBotUserId(),
+                                    "workflows",
+                                    extn,
+                                    bufferSize,
+                                    new Messenger(messagesMediaUploadAcknowledgeHandler),
+                                    null,
+                                    "AT_" + System.currentTimeMillis(),
+                                    context.get(),
+                                    BitmapUtils.obtainMediaTypeOfExtn(extn),
+                                    SDKConfiguration.Server.SERVER_URL,
+                                    null,
+                                    true,
+                                    SDKConfiguration.Client.isWebHook,
+                                    SDKConfiguration.Client.bot_id
+                            )
+                    );
+                } else {
+                    KoreWorker.getInstance().addTask(
+                            new UploadBulkFile(
+                                    fileName,
+                                    filePath,
+                                    "bearer " + jwt,
+                                    SocketWrapper.getInstance(context.get()).getBotUserId(),
+                                    "workflows",
+                                    extn,
+                                    bufferSize,
+                                    new Messenger(messagesMediaUploadAcknowledgeHandler),
+                                    null,
+                                    "AT_" + System.currentTimeMillis(),
+                                    context.get(),
+                                    BitmapUtils.obtainMediaTypeOfExtn(extn),
+                                    SDKConfiguration.Server.SERVER_URL,
+                                    null,
+                                    true,
+                                    SDKConfiguration.Client.isWebHook,
+                                    SDKConfiguration.Client.bot_id
+                            )
+                    );
+                }
+
+            } else {
+                showToast(context.get(), "Unable to attach video!");
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            showToast(context.get(), "Unable to attach video!");
+        }
+    }
+
     protected class SaveCapturedImageTask extends AsyncTaskExecutor<String> {
         private final String filePath;
         private final String fileName;
