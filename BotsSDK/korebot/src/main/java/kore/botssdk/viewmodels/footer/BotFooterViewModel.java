@@ -11,9 +11,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,8 +18,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.Process;
-import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.text.TextUtils;
 import android.util.Log;
@@ -32,7 +27,6 @@ import android.webkit.MimeTypeMap;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -41,7 +35,6 @@ import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.util.HashMap;
-import java.util.Objects;
 
 import kore.botssdk.R;
 import kore.botssdk.activity.KaCaptureImageActivity;
@@ -54,7 +47,6 @@ import kore.botssdk.models.KoreComponentModel;
 import kore.botssdk.models.KoreMedia;
 import kore.botssdk.net.SDKConfiguration;
 import kore.botssdk.utils.AsyncTaskExecutor;
-import kore.botssdk.utils.AsyncTasks;
 import kore.botssdk.utils.BitmapUtils;
 import kore.botssdk.utils.BundleConstants;
 import kore.botssdk.utils.LogUtils;
@@ -83,14 +75,14 @@ public class BotFooterViewModel extends BaseViewModel<ComposeFooterUpdate> {
         new SaveCapturedImageTask(fP, fN, fPT).executeAsync();
     }
 
-    public void processFileUpload(String jwt, String fileName, String filePath, String extn, String mediaType, String thumbnailFilePath, String orientation) {
+    public void processFileUpload(String jwt, String fileName, String filePath, String ext, String mediaType, String thumbnailFilePath, String orientation) {
         KoreWorker.getInstance().addTask(new UploadBulkFile(
                 fileName,
                 filePath,
                 "bearer " + jwt,
                 SocketWrapper.getInstance(context.get()).getBotUserId(),
                 "workflows",
-                extn,
+                ext,
                 getBufferSize(mediaType),
                 new Messenger(messagesMediaUploadAcknowledgeHandler),
                 thumbnailFilePath,
@@ -105,14 +97,14 @@ public class BotFooterViewModel extends BaseViewModel<ComposeFooterUpdate> {
         );
     }
 
-    public void processVideoFileUpload(String jwt, String fileName, Uri filePath, String extn, String mediaType, String thumbnailFilePath, String orientation) {
+    public void processVideoFileUpload(String jwt, String fileName, Uri filePath, String ext, String mediaType, String thumbnailFilePath, String orientation) {
         KoreWorker.getInstance().addTask(new UploadVideoFile(
                 fileName,
                 filePath,
                 "bearer " + jwt,
                 SocketWrapper.getInstance(context.get()).getBotUserId(),
                 "workflows",
-                extn,
+                ext,
                 getBufferSize(mediaType),
                 new Messenger(messagesMediaUploadAcknowledgeHandler),
                 thumbnailFilePath,
@@ -129,29 +121,9 @@ public class BotFooterViewModel extends BaseViewModel<ComposeFooterUpdate> {
 
     public void processVideoResponse(String jwt, Uri selectedImage) {
         String fileName = getFileName(context.get(), selectedImage);
-        String extn = getFileExtensionFromMime(context.get(), selectedImage);
+        String ext = getFileExtensionFromMime(context.get(), selectedImage);
         String thumbnail = loadThumbnailAndGetPath(context.get(), selectedImage, 800);
-        processVideoFileUpload(jwt, fileName, selectedImage, extn, BitmapUtils.obtainMediaTypeOfExtn(extn), thumbnail, BitmapUtils.ORIENTATION_LS);
-//        } else {
-//            try {
-//                DocumentFile pickFile = DocumentFile.fromSingleUri(context.get(), selectedImage);
-//                String name = null;
-//                String type = null;
-//
-//                if (pickFile != null) {
-//                    name = pickFile.getName();
-//                    type = pickFile.getType();
-//                }
-//
-//                if (type != null && type.contains("video")) {
-//                    KaMediaUtils.setupAppDir(context.get(), BundleConstants.MEDIA_TYPE_VIDEO);
-//                    String filePath = KaMediaUtils.getAppDir() + File.separator + name;
-//                    new SaveVideoTask(jwt, filePath, name, selectedImage, context.get()).executeAsync();
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
+        processVideoFileUpload(jwt, fileName, selectedImage, ext, BitmapUtils.obtainMediaTypeOfExtn(ext), thumbnail, BitmapUtils.ORIENTATION_LS);
     }
 
     public static @Nullable String loadThumbnailAndGetPath(
@@ -208,10 +180,8 @@ public class BotFooterViewModel extends BaseViewModel<ComposeFooterUpdate> {
 
 
     public static String getFileName(Context context, Uri uri) {
-        Cursor cursor = null;
-        try {
-            cursor = context.getContentResolver()
-                    .query(uri, null, null, null, null);
+        try (Cursor cursor = context.getContentResolver()
+                .query(uri, null, null, null, null)) {
 
             if (cursor != null && cursor.moveToFirst()) {
                 int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
@@ -219,8 +189,6 @@ public class BotFooterViewModel extends BaseViewModel<ComposeFooterUpdate> {
                     return cursor.getString(nameIndex);
                 }
             }
-        } finally {
-            if (cursor != null) cursor.close();
         }
         return null;
     }
@@ -242,7 +210,7 @@ public class BotFooterViewModel extends BaseViewModel<ComposeFooterUpdate> {
         if (filePath != null) {
             fileName = data.getStringExtra("fileName");
             filePathThumbnail = data.getStringExtra(THUMBNAIL_FILE_PATH);
-            String extn = filePath.substring(filePath.lastIndexOf(".") + 1);
+            String ext = filePath.substring(filePath.lastIndexOf(".") + 1);
             Bitmap thePic = BitmapUtils.decodeBitmapFromFile(filePath, 800, 600, false);
             OutputStream fOut = null;
             if (thePic != null) {
@@ -266,12 +234,12 @@ public class BotFooterViewModel extends BaseViewModel<ComposeFooterUpdate> {
                         assert fOut != null;
                         fOut.close();
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LogUtils.d(LOG_TAG, "Exception in processImageResponse " + e);
                     }
                 }
             }
 
-            KoreWorker.getInstance().addTask(new UploadBulkFile(fileName, filePath, "bearer " + jwt, SocketWrapper.getInstance(context.get()).getBotUserId(), "workflows", extn, KoreMedia.BUFFER_SIZE_IMAGE, new Messenger(messagesMediaUploadAcknowledgeHandler), filePathThumbnail, "AT_" + System.currentTimeMillis(), context.get(), BitmapUtils.obtainMediaTypeOfExtn(extn), SDKConfiguration.Server.SERVER_URL, orientation, true, SDKConfiguration.Client.isWebHook, SDKConfiguration.Client.bot_id));
+            KoreWorker.getInstance().addTask(new UploadBulkFile(fileName, filePath, "bearer " + jwt, SocketWrapper.getInstance(context.get()).getBotUserId(), "workflows", ext, KoreMedia.BUFFER_SIZE_IMAGE, new Messenger(messagesMediaUploadAcknowledgeHandler), filePathThumbnail, "AT_" + System.currentTimeMillis(), context.get(), BitmapUtils.obtainMediaTypeOfExtn(ext), SDKConfiguration.Server.SERVER_URL, orientation, true, SDKConfiguration.Client.isWebHook, SDKConfiguration.Client.bot_id));
         } else {
             ToastUtils.showToast(context.get(), "Unable to attach file!");
         }
@@ -343,7 +311,7 @@ public class BotFooterViewModel extends BaseViewModel<ComposeFooterUpdate> {
         private final String fileName;
         private final String filePathThumbnail;
         private String orientation;
-        private String extn = null;
+        private String ext = null;
 
         public SaveCapturedImageTask(String filePath, String fileName, String filePathThumbnail) {
             this.filePath = filePath;
@@ -355,7 +323,7 @@ public class BotFooterViewModel extends BaseViewModel<ComposeFooterUpdate> {
         protected void doInBackground(String... strings) {
             OutputStream fOut = null;
             if (filePath != null) {
-                extn = filePath.substring(filePath.lastIndexOf(".") + 1);
+                ext = filePath.substring(filePath.lastIndexOf(".") + 1);
                 Bitmap thePic = BitmapUtils.decodeBitmapFromFile(filePath, 800, 600, false);
                 if (thePic != null) {
                     try {
@@ -378,7 +346,7 @@ public class BotFooterViewModel extends BaseViewModel<ComposeFooterUpdate> {
                             if (fOut != null)
                                 fOut.close();
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            LogUtils.d(LOG_TAG, "Exception in SaveCapturedImageTask " + e);
                         }
                     }
                 }
@@ -387,11 +355,11 @@ public class BotFooterViewModel extends BaseViewModel<ComposeFooterUpdate> {
 
         @Override
         protected void onPostExecute() {
-            if (extn != null) {
+            if (ext != null) {
                 if (!SDKConfiguration.Client.isWebHook) {
-                    KoreWorker.getInstance().addTask(new UploadBulkFile(fileName, filePath, "bearer " + SocketWrapper.getInstance(context.get()).getAccessToken(), SocketWrapper.getInstance(context.get()).getBotUserId(), "workflows", extn, KoreMedia.BUFFER_SIZE_IMAGE, new Messenger(messagesMediaUploadAcknowledgeHandler), filePathThumbnail, "AT_" + System.currentTimeMillis(), context.get(), BitmapUtils.obtainMediaTypeOfExtn(extn), SDKConfiguration.Server.SERVER_URL, orientation, true, SDKConfiguration.Client.isWebHook, SDKConfiguration.Client.bot_id));
+                    KoreWorker.getInstance().addTask(new UploadBulkFile(fileName, filePath, "bearer " + SocketWrapper.getInstance(context.get()).getAccessToken(), SocketWrapper.getInstance(context.get()).getBotUserId(), "workflows", ext, KoreMedia.BUFFER_SIZE_IMAGE, new Messenger(messagesMediaUploadAcknowledgeHandler), filePathThumbnail, "AT_" + System.currentTimeMillis(), context.get(), BitmapUtils.obtainMediaTypeOfExtn(ext), SDKConfiguration.Server.SERVER_URL, orientation, true, SDKConfiguration.Client.isWebHook, SDKConfiguration.Client.bot_id));
                 } else {
-                    KoreWorker.getInstance().addTask(new UploadBulkFile(fileName, filePath, "bearer " + jwt, SocketWrapper.getInstance(context.get()).getBotUserId(), "workflows", extn, KoreMedia.BUFFER_SIZE_IMAGE, new Messenger(messagesMediaUploadAcknowledgeHandler), filePathThumbnail, "AT_" + System.currentTimeMillis(), context.get(), BitmapUtils.obtainMediaTypeOfExtn(extn), SDKConfiguration.Server.SERVER_URL, orientation, true, SDKConfiguration.Client.isWebHook, SDKConfiguration.Client.bot_id));
+                    KoreWorker.getInstance().addTask(new UploadBulkFile(fileName, filePath, "bearer " + jwt, SocketWrapper.getInstance(context.get()).getBotUserId(), "workflows", ext, KoreMedia.BUFFER_SIZE_IMAGE, new Messenger(messagesMediaUploadAcknowledgeHandler), filePathThumbnail, "AT_" + System.currentTimeMillis(), context.get(), BitmapUtils.obtainMediaTypeOfExtn(ext), SDKConfiguration.Server.SERVER_URL, orientation, true, SDKConfiguration.Client.isWebHook, SDKConfiguration.Client.bot_id));
                 }
             } else {
                 showToast(context.get(), "Unable to attach!");
@@ -404,21 +372,4 @@ public class BotFooterViewModel extends BaseViewModel<ComposeFooterUpdate> {
             showToast(context.get(), "Unable to attach!");
         }
     }
-
-    public Bitmap overlay(Bitmap bitmap1, Bitmap bitmap2) {
-        int bitmap1Width = bitmap1.getWidth();
-        int bitmap1Height = bitmap1.getHeight();
-        int bitmap2Width = bitmap2.getWidth();
-        int bitmap2Height = bitmap2.getHeight();
-
-        float marginLeft = (float) (bitmap1Width * 0.5 - bitmap2Width * 0.5);
-        float marginTop = (float) (bitmap1Height * 0.5 - bitmap2Height * 0.5);
-
-        Bitmap overlayBitmap = Bitmap.createBitmap(bitmap1Width, bitmap1Height, Objects.requireNonNull(bitmap1.getConfig()));
-        Canvas canvas = new Canvas(overlayBitmap);
-        canvas.drawBitmap(bitmap1, new Matrix(), null);
-        canvas.drawBitmap(bitmap2, marginLeft, marginTop, null);
-        return overlayBitmap;
-    }
-
 }

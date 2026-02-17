@@ -55,44 +55,33 @@ import kore.botssdk.utils.LogUtils;
 
 
 public class UploadBulkFile implements Work, FileTokenListener, ChunkUploadListener {
-
     private static final String BOUNDARY = "*****";
     private static final String LINE_FEED = "\r\n";
     private static final String CHARSET = "UTF-8";
     private static final DecimalFormat df2 = new DecimalFormat("###.##");
     public static final String error_msz_key = "error_msz_key";
     public static final String isFileSizeMore_key = "isFileSizeMore";
-    public static final String fileSizeBytes_key = "fileSizeBytes";
     private final String LOG_TAG = getClass().getSimpleName();
     private final String fileName;
-    private String outFilePath = null;
-    private String accessToken = null;
-    //	private String userId = null;
-    private String userOrTeamId = null;
-    private String fileContext = null;
+    String outFilePath;
+    String accessToken;
+    String userOrTeamId;
+    String fileContext;
     private String fileToken = null;
-    private String fileExtn = null;
-    private String orientation = null;
+    String fileExtn;
+    String orientation;
     private final int BUFFER_SIZE;
     private final Messenger messenger;
-
-    //	private int chunkCount = 0;
     private final String thumbnailFilePath;
     private final String messageId;
-    //	private boolean isTeam;
     private final Context context;
     private FileUploadedListener listener;
     private final String componentType;
     private int noOfMergeAttempts;
     private final String host;
-
     final BotDBManager helper;
-    //	KoreBaseDao<FileUploadInfo, String> fileDao;
     final FileUploadInfo uploadInfo = new FileUploadInfo();
     public static final long FILE_SIZE_20MB = 20 * 1024 * 1024;
-//	KoreBaseDao<FileUploadInfo, String> uploadDao;
-
-
     final ExecutorService executor = KoreFileUploadServiceExecutor.getInstance().getExecutor();
     private ProgressDialog pDialog;
     private final boolean isAnonymousUser;
@@ -106,7 +95,6 @@ public class UploadBulkFile implements Work, FileTokenListener, ChunkUploadListe
         this.fileName = fileName;
         this.outFilePath = outFilePath;
         this.accessToken = accessToken;
-//		this.userId = userId;
         this.fileContext = fileContext;
         this.fileExtn = fileExtn;
         this.BUFFER_SIZE = BUFFER_SIZE;
@@ -114,7 +102,6 @@ public class UploadBulkFile implements Work, FileTokenListener, ChunkUploadListe
         this.thumbnailFilePath = thumbnailFilePath;
         this.messageId = messageId;
         this.context = context;
-//		this.isTeam = isTeam;
         this.componentType = componentType;
         this.host = host;
         this.orientation = orientation;
@@ -129,26 +116,23 @@ public class UploadBulkFile implements Work, FileTokenListener, ChunkUploadListe
     private void upLoadProgressState(final int progress, final boolean show) {
         Handler mainHandler = new Handler(context.getMainLooper());
 
-        Runnable myRunnable = new Runnable() {
-            @Override
-            public void run() {
-                if (show) {
-                    if (pDialog == null) {
-                        pDialog = new ProgressDialog(context);
-                        pDialog.setCancelable(false);
-                        pDialog.setIndeterminate(false);
-                        pDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                        pDialog.setMax(100);
-                    }
-                    pDialog.setMessage("Uploading...");
-                    pDialog.setProgress(progress);
-                    if (!pDialog.isShowing()) {
-                        pDialog.show();
-                    }
-                } else {
-                    if (pDialog != null && pDialog.isShowing()) {
-                        pDialog.dismiss();
-                    }
+        Runnable myRunnable = () -> {
+            if (show) {
+                if (pDialog == null) {
+                    pDialog = new ProgressDialog(context);
+                    pDialog.setCancelable(false);
+                    pDialog.setIndeterminate(false);
+                    pDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                    pDialog.setMax(100);
+                }
+                pDialog.setMessage("Uploading...");
+                pDialog.setProgress(progress);
+                if (!pDialog.isShowing()) {
+                    pDialog.show();
+                }
+            } else {
+                if (pDialog != null && pDialog.isShowing()) {
+                    pDialog.dismiss();
                 }
             }
         };
@@ -173,10 +157,7 @@ public class UploadBulkFile implements Work, FileTokenListener, ChunkUploadListe
     private synchronized void startUpload() throws IOException {
         noOfMergeAttempts = 1;
         ByteArrayOutputStream chunkbaos = new ByteArrayOutputStream();
-
-        int dataSizeRead = 0;
-//		int dataSizeReadForChunkCount = 0;
-
+        int dataSizeRead;
         int totalbyteswritten = 0;
         byte[] buffer = new byte[BUFFER_SIZE];
         FileInputStream fis = null;
@@ -233,7 +214,7 @@ public class UploadBulkFile implements Work, FileTokenListener, ChunkUploadListe
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtils.e(LOG_TAG, "Exception in uploading chunk " + e);
             showToastMsg("Unable to attach file");
         } finally {
             if (fis != null)
@@ -246,14 +227,10 @@ public class UploadBulkFile implements Work, FileTokenListener, ChunkUploadListe
     private void showToastMsg(final String msg) {
         Handler mainHandler = new Handler(context.getMainLooper());
 
-        Runnable myRunnable = new Runnable() {
-            @Override
-            public void run() {
-                Toast toastView = Toast.makeText(context, msg, Toast.LENGTH_LONG);
-                toastView.setGravity(Gravity.CENTER, 0, 0);
-                toastView.show();
-
-            }
+        Runnable myRunnable = () -> {
+            Toast toastView = Toast.makeText(context, msg, Toast.LENGTH_LONG);
+            toastView.setGravity(Gravity.CENTER, 0, 0);
+            toastView.show();
         };
         mainHandler.post(myRunnable);
     }
@@ -261,7 +238,7 @@ public class UploadBulkFile implements Work, FileTokenListener, ChunkUploadListe
     private synchronized void startUploadFailedChunks(ArrayList<String> failedChunkList) throws IOException {
         ByteArrayOutputStream chunkbaos = new ByteArrayOutputStream();
 
-        int dataSizeRead = 0;
+        int dataSizeRead;
         byte[] buffer = new byte[BUFFER_SIZE];
         InputStream fis = null;
 
@@ -282,7 +259,7 @@ public class UploadBulkFile implements Work, FileTokenListener, ChunkUploadListe
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtils.e(LOG_TAG, "Exception in startUploadFailedChunks " + e);
         } finally {
 
             if (fis != null)
@@ -303,7 +280,7 @@ public class UploadBulkFile implements Work, FileTokenListener, ChunkUploadListe
             Objects.requireNonNull(helper.getChunkInfoMap().get(fileToken)).put(Integer.parseInt(chunkNo), chInfo);
             helper.getFileUploadInfoMap().put(fileToken, uploadInfo);
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtils.e(LOG_TAG, "Exception in notifyChunkUploadCompleted " + e);
         }
 
         if (uploadInfo.getTotalChunks() == uploadInfo.getUploadCount()) {
@@ -312,7 +289,7 @@ public class UploadBulkFile implements Work, FileTokenListener, ChunkUploadListe
             try {
                 sendMergeSignal(uploadInfo.getTotalChunks(), fileContext);
             } catch (IOException e) {
-                e.printStackTrace();
+                LogUtils.e(LOG_TAG, "Exception in notifyChunkUploadCompleted " + e);
             }
         }
     }
@@ -324,14 +301,11 @@ public class UploadBulkFile implements Work, FileTokenListener, ChunkUploadListe
     }
 
     void setChunkCount(int n) {
-        if (uploadInfo != null) {
-            uploadInfo.setTotalChunks(n);
-            try {
-//				fileDao.update(uploadInfo);
-                helper.getFileUploadInfoMap().put(fileToken, uploadInfo);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        uploadInfo.setTotalChunks(n);
+        try {
+            helper.getFileUploadInfoMap().put(fileToken, uploadInfo);
+        } catch (Exception e) {
+            LogUtils.e(LOG_TAG, "Exception in setChunkCount " + e);
         }
     }
 
@@ -342,7 +316,7 @@ public class UploadBulkFile implements Work, FileTokenListener, ChunkUploadListe
             return;
         }
         noOfMergeAttempts++;
-        String fileID = "";
+        String fileID;
         HttpsURLConnection httpsURLConnection = null;
         InputStream fis = null;
         ByteArrayOutputStream thumbBaos = null;
@@ -398,7 +372,7 @@ public class UploadBulkFile implements Work, FileTokenListener, ChunkUploadListe
             } else {
                 LogUtils.d(LOG_TAG, "There is no fileContext !!");
             }
-            if (thumbnailFilePath != null && !thumbnailFilePath.equalsIgnoreCase("") && fileContext.equalsIgnoreCase("knowledge")) {
+            if (thumbnailFilePath != null && !thumbnailFilePath.equalsIgnoreCase("") && Objects.requireNonNull(fileContext).equalsIgnoreCase("knowledge")) {
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     fis = Files.newInputStream(Paths.get(thumbnailFilePath));
@@ -411,14 +385,14 @@ public class UploadBulkFile implements Work, FileTokenListener, ChunkUploadListe
                     int endInd = thumbnailFilePath.indexOf(".", startInd);
                     String thfileName = thumbnailFilePath.substring(startInd, endInd);
 
-                    int dataRead = 0;
+                    int dataRead;
                     byte[] buff = new byte[2 * 1024];
                     /*file size is less than BUFFER_SIZE..just send the file*/
                     while ((dataRead = fis.read(buff)) != -1) {
                         thumbBaos.write(buff, 0, dataRead);
                     }
                     addFormField(dataOutputStream, "thumbnailUpload", String.valueOf(true));
-                    addFilePart(dataOutputStream, "thumbnail", thumbBaos.toByteArray(), thfileName, "image/png");
+                    addFilePart(dataOutputStream, thumbBaos.toByteArray(), thfileName);
                     addFormField(dataOutputStream, "thumbnailExtension", "png");
                     addFormField(dataOutputStream, "thumbnailUpload", String.valueOf(true));
                     addFormField(dataOutputStream, "thumbnailUpload", String.valueOf(true));
@@ -497,15 +471,13 @@ public class UploadBulkFile implements Work, FileTokenListener, ChunkUploadListe
                 }
                 LogUtils.d(LOG_TAG, "Hi res code is " + resCode);
                 if (resCode == Constants.UPLOAD_ERROR_CODE_404) {
-                    handleErr404(httpsURLConnection.getErrorStream(), fileName);
+                    handleErr404(httpsURLConnection.getErrorStream());
                 } else {
                     sendUploadFailedNotice(true);
                 }
             } else {
                 sendUploadFailedNotice(true);
             }
-
-            e.printStackTrace();
             LogUtils.e(LOG_TAG, "Failed to send the merge initiation message " + e);
         } finally {
             try {
@@ -535,7 +507,7 @@ public class UploadBulkFile implements Work, FileTokenListener, ChunkUploadListe
 
                 helper.getFileUploadInfoMap().put(fileToken, uploadInfo);
             } catch (Exception ex) {
-                ex.printStackTrace();
+                LogUtils.e(LOG_TAG, "Failed to send the merge initiation message" + ex);
             }
         }
     }
@@ -549,10 +521,10 @@ public class UploadBulkFile implements Work, FileTokenListener, ChunkUploadListe
         dataOutputStream.flush();
     }
 
-    private void addFilePart(DataOutputStream dataOutputStream, String fieldName, byte[] uploadFileBytes, String fileName, String mimeType) throws IOException {
+    private void addFilePart(DataOutputStream dataOutputStream, byte[] uploadFileBytes, String fileName) throws IOException {
         dataOutputStream.writeBytes("--" + BOUNDARY + LINE_FEED);
-        dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"" + fieldName + "\"; filename=\"" + fileName + "\"" + LINE_FEED);
-        dataOutputStream.writeBytes("Content-Type: " + mimeType + LINE_FEED);
+        dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"" + "thumbnail" + "\"; filename=\"" + fileName + "\"" + LINE_FEED);
+        dataOutputStream.writeBytes("Content-Type: " + "image/png" + LINE_FEED);
         dataOutputStream.writeBytes(LINE_FEED);
 
         dataOutputStream.write(uploadFileBytes);
@@ -567,7 +539,7 @@ public class UploadBulkFile implements Work, FileTokenListener, ChunkUploadListe
             return df2.format((double) file.length() / (1024 * 1024)) + "mb";
     }
 
-    private void handleErr404(InputStream errorStream, String fileName) throws IOException {
+    private void handleErr404(InputStream errorStream) {
         LogUtils.d(LOG_TAG, "Starting upload failed chunks");
         StringBuilder response = new StringBuilder();
         String line;
@@ -580,17 +552,17 @@ public class UploadBulkFile implements Work, FileTokenListener, ChunkUploadListe
                 MissingChunks msc = new Gson().fromJson(response.toString(), MissingChunks.class);
                 if (msc != null) {
                     UploadError uE = msc.getErrors().get(0);
-                    ArrayList<String> missingChunks = new ArrayList<String>(Arrays.asList(uE.getMsg().substring(1, uE.getMsg().length() - 1).split("\\s*,\\s*")));
-                    changeUploadInfoForFailedChunks(missingChunks, fileName);
+                    ArrayList<String> missingChunks = new ArrayList<>(Arrays.asList(uE.getMsg().substring(1, uE.getMsg().length() - 1).split("\\s*,\\s*")));
+                    changeUploadInfoForFailedChunks(missingChunks);
                     startUploadFailedChunks(missingChunks);
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtils.d(LOG_TAG, "Starting upload failed chunks" + e);
         }
     }
 
-    private void changeUploadInfoForFailedChunks(ArrayList<String> chunkNumbers, String fileName) {
+    private void changeUploadInfoForFailedChunks(ArrayList<String> chunkNumbers) {
         try {
             uploadInfo.setUploadCount(uploadInfo.getUploadCount() - chunkNumbers.size());
             for (String chunkNo : chunkNumbers) {
@@ -603,7 +575,7 @@ public class UploadBulkFile implements Work, FileTokenListener, ChunkUploadListe
             uploadInfo.setUploaded(false);
             helper.getFileUploadInfoMap().put(fileToken, uploadInfo);
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtils.d(LOG_TAG, "Starting upload failed chunks" + e);
         }
     }
 

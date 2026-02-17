@@ -29,10 +29,10 @@ public class UploadExecutor implements Runnable {
     private final String accessToken;
     private final String fileToken;
     private final String userOrTeamId;
-    private byte[] dataToSet = null;
-    private int chunkNo = 0;
+    byte[] dataToSet;
+    int chunkNo;
     private final Context context;
-    private ChunkUploadListener mListener = null;
+    ChunkUploadListener mListener;
     private final String host;
     private final boolean isAnonymousUser;
     private final boolean isWebhook;
@@ -60,7 +60,7 @@ public class UploadExecutor implements Runnable {
 
     @Override
     public void run() {
-        String serverResponse = null;
+        StringBuilder serverResponse;
         HttpsURLConnection httpsURLConnection = null;
         BufferedReader bufferedReader = null;
         DataOutputStream dataOutputStream = null;
@@ -70,18 +70,16 @@ public class UploadExecutor implements Runnable {
         try {
 
             LogUtils.d(LOG_TAG, "About to send chunks" + chunkNo + "for file" + fileName);
-            String FULL_URL = null;
+            String FULL_URL = host + String.format(FileUploadEndPoints.WEBHOOK_ANONYMOUS_CHUNK_UPLOAD, botId, "ivr", fileToken);
+
             if (isAnonymousUser) {
                 if (!isWebhook)
                     FULL_URL = host + String.format(FileUploadEndPoints.ANONYMOUS_CHUNK_UPLOAD, userOrTeamId, fileToken);
-                else
-                    FULL_URL = host + String.format(FileUploadEndPoints.WEBHOOK_ANONYMOUS_CHUNK_UPLOAD, botId, "ivr", fileToken);
             } else {
                 if (!isWebhook)
                     FULL_URL = host + String.format(FileUploadEndPoints.CHUNK_UPLOAD, userOrTeamId, fileToken);
-                else
-                    FULL_URL = host + String.format(FileUploadEndPoints.WEBHOOK_ANONYMOUS_CHUNK_UPLOAD, botId, "ivr", fileToken);
             }
+
             KoreHttpsUrlConnectionBuilder koreHttpsUrlConnectionBuilder = new KoreHttpsUrlConnectionBuilder(context, FULL_URL);
             httpsURLConnection = koreHttpsUrlConnectionBuilder.getHttpsURLConnection();
             httpsURLConnection.setConnectTimeout(Constants.CONNECTION_TIMEOUT);
@@ -102,46 +100,43 @@ public class UploadExecutor implements Runnable {
             addFormField(dataOutputStream, "fileToken", fileToken);
 
             // Add chunk as a file part (byte array)
-            addFilePart(dataOutputStream, "chunk", dataToSet, fileName);
+            addFilePart(dataOutputStream, dataToSet, fileName);
 
             // End of multipart/form-data
             dataOutputStream.writeBytes("--" + BOUNDARY + "--" + LINE_FEED);
             dataOutputStream.flush();
 
             //Real upload starting here -->>
-            LogUtils.d("upload new", "good so far");
             inputStream = httpsURLConnection.getInputStream();
             inputStreamReader = new InputStreamReader(inputStream);
             bufferedReader = new BufferedReader(inputStreamReader);
 
-            serverResponse = "";
+            serverResponse = new StringBuilder();
             for (int c = bufferedReader.read(); c != -1; c = bufferedReader.read()) {
-                serverResponse = serverResponse + (char) c;
+                serverResponse.append((char) c);
             }
             LogUtils.d(LOG_TAG, "Got serverResponse for chunk upload" + serverResponse);
             int statusCode = httpsURLConnection.getResponseCode();
             LogUtils.e(LOG_TAG, "status code for chunks" + chunkNo + "is" + statusCode);
 
-            String chunkNo = null;
+            String chunkNo;
 
             if (statusCode == 200) {
-                JSONObject jsonObject = new JSONObject(serverResponse);
+                JSONObject jsonObject = new JSONObject(serverResponse.toString());
 
-                if (jsonObject.get("chunkNo") != null) {
-                    chunkNo = (String) jsonObject.get("chunkNo");
-                    if (mListener != null)
-                        mListener.notifyChunkUploadCompleted(chunkNo, fileName);
-                    LogUtils.e(LOG_TAG, "Response for chunk ::::" + chunkNo + "for file" + fileName);
-                }
+                jsonObject.get("chunkNo");
+                chunkNo = (String) jsonObject.get("chunkNo");
+                if (mListener != null)
+                    mListener.notifyChunkUploadCompleted(chunkNo, fileName);
+                LogUtils.e(LOG_TAG, "Response for chunk ::::" + chunkNo + "for file" + fileName);
 
             } else {
                 if (mListener != null)
-                    mListener.notifyChunkUploadCompleted(chunkNo, fileName);
+                    mListener.notifyChunkUploadCompleted(null, fileName);
                 throw new Exception("Response code not 200");
             }
         } catch (Exception e) {
             LogUtils.e(LOG_TAG, "Exception in uploading chunk " + e);
-            e.printStackTrace();
             if (mListener != null)
                 mListener.notifyChunkUploadCompleted(chunkNo + "", fileName);
             LogUtils.e(LOG_TAG, "Failed to post message for chunk no:: " + this.chunkNo);
@@ -160,7 +155,7 @@ public class UploadExecutor implements Runnable {
                 if (dataOutputStream != null)
                     dataOutputStream.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                LogUtils.e(LOG_TAG, "Exception in uploading chunk " + e);
             }
         }
     }
@@ -174,9 +169,9 @@ public class UploadExecutor implements Runnable {
         dataOutputStream.flush();
     }
 
-    private void addFilePart(DataOutputStream dataOutputStream, String fieldName, byte[] uploadFileBytes, String fileName) throws IOException {
+    private void addFilePart(DataOutputStream dataOutputStream, byte[] uploadFileBytes, String fileName) throws IOException {
         dataOutputStream.writeBytes("--" + BOUNDARY + LINE_FEED);
-        dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"" + fieldName + "\"; filename=\"" + fileName + "\"" + LINE_FEED);
+        dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"" + "chunk" + "\"; filename=\"" + fileName + "\"" + LINE_FEED);
         dataOutputStream.writeBytes("Content-Type: application/octet-stream" + LINE_FEED);
         dataOutputStream.writeBytes(LINE_FEED);
 
