@@ -10,6 +10,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,6 +24,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.view.OrientationEventListener;
+import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
@@ -59,6 +61,7 @@ import kore.botssdk.utils.BundleConstants;
 import kore.botssdk.utils.KaMediaUtils;
 import kore.botssdk.utils.KaPermissionsHelper;
 import kore.botssdk.utils.LogUtils;
+import kore.botssdk.utils.StringUtils;
 
 @SuppressLint("UnknownNullness")
 public class KaCaptureImageActivity extends KaAppCompatActivity implements KoreMedia, ActivityResultCallback<ActivityResult> {
@@ -552,8 +555,15 @@ public class KaCaptureImageActivity extends KaAppCompatActivity implements KoreM
             Bitmap highResBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), mediaUri);
             Bitmap bitmapPic = BitmapUtils.getScaledBitmap(highResBitmap);
             String fileName = "IMG_" + System.currentTimeMillis() + ".jpg";
+            String fileExt = getFileExtension(KaCaptureImageActivity.this, mediaUri);
 
-            File file = KaMediaUtils.getOutputMediaFile(MEDIA_TYPE, fileName, ".jpg");
+            if(!StringUtils.isNullOrEmpty(fileExt))
+            {
+                fileName = "IMG_" + System.currentTimeMillis() +"."+fileExt;
+            }
+            else fileExt = ".jpg";
+
+            File file = KaMediaUtils.getOutputMediaFile(MEDIA_TYPE, fileName, fileExt);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 fOut = Files.newOutputStream(file.toPath());
@@ -582,6 +592,17 @@ public class KaCaptureImageActivity extends KaAppCompatActivity implements KoreM
         returnResult();
     }
 
+
+    public static String getFileExtension(Context context, Uri uri) {
+        ContentResolver cr = context.getContentResolver();
+        String mimeType = cr.getType(uri);
+
+        if (mimeType != null) {
+            return MimeTypeMap.getSingleton()
+                    .getExtensionFromMimeType(mimeType);
+        }
+        return null;
+    }
 
     void getFullImage() {
 
