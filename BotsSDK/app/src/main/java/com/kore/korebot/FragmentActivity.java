@@ -1,17 +1,27 @@
 package com.kore.korebot;
 
 import android.annotation.SuppressLint;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.WindowInsetsController;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.kore.korebot.customtemplates.LinkTemplateHolder;
 
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import kore.botssdk.fragment.botchat.BotChatFragment;
@@ -20,6 +30,7 @@ import kore.botssdk.models.BrandingModel;
 import kore.botssdk.net.RestResponse;
 import kore.botssdk.net.SDKConfig;
 import kore.botssdk.net.SDKConfiguration;
+import kore.botssdk.utils.BundleConstants;
 import kore.botssdk.utils.LangUtils;
 import kore.botssdk.utils.LogUtils;
 import kore.botssdk.utils.NetworkUtility;
@@ -32,6 +43,29 @@ public class FragmentActivity extends AppCompatActivity implements BotChatCloseL
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_activity);
+
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
+        WindowInsetsControllerCompat controller =
+                new WindowInsetsControllerCompat(getWindow(), getWindow().getDecorView());
+
+        controller.setAppearanceLightStatusBars(true);
+        controller.setAppearanceLightNavigationBars(true);
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.flChatBot), (view, windowInsets) -> {
+            Insets ime = windowInsets.getInsets(WindowInsetsCompat.Type.ime());
+            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            int bottom = ime.bottom;
+            if (bottom == 0) bottom = insets.bottom;
+            view.setPadding(insets.left,insets.top, insets.right, bottom);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                Objects.requireNonNull(getWindow().getInsetsController()).setSystemBarsAppearance(
+                        WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS,
+                        WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
+                );
+            }
+            return WindowInsetsCompat.CONSUMED;
+        });
 
         //Can set Language for Bot SDK
         LangUtils.setAppLanguages(this, LangUtils.LANG_EN);
@@ -108,6 +142,9 @@ public class FragmentActivity extends AppCompatActivity implements BotChatCloseL
 
         // Flag to set status bar color as header background color
         SDKConfig.setIsUpdateStatusBarColor(true);
+
+        //Flag to send the custom fonts to the SDK
+        //SDKConfig.setFontFamily(ResourcesCompat.getFont(MainActivity.this, R.font.fss_light), ResourcesCompat.getFont(MainActivity.this, R.font.fss_regular), ResourcesCompat.getFont(MainActivity.this, R.font.fss_bold));
 
         //Method to reset the bot connection and start a new session by overriding the previous state
         // SDKConfig.disconnectBotSession(FragmentActivity.this);

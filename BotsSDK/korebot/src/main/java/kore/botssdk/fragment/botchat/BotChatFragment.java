@@ -13,17 +13,21 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
@@ -470,8 +474,34 @@ public class BotChatFragment extends Fragment implements BotChatViewListener, Co
             }
 
         };
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
-        builder.setMessage(R.string.close_or_minimize).setCancelable(false).setPositiveButton(R.string.minimize, dialogClickListener).setNegativeButton(R.string.close, dialogClickListener).setNeutralButton(R.string.cancel, dialogClickListener).show();
+
+        AlertDialog dialog = new AlertDialog.Builder(requireActivity())
+                .setMessage(R.string.close_or_minimize)
+                .setCancelable(false)
+                .setPositiveButton(R.string.minimize, dialogClickListener)
+                .setNegativeButton(R.string.close, dialogClickListener)
+                .setNeutralButton(R.string.cancel, dialogClickListener)
+                .create();
+
+        dialog.show();
+
+        if(SDKConfiguration.getRegular() != null)
+        {
+            // 1️⃣ Set message font
+            TextView messageView = dialog.findViewById(android.R.id.message);
+            if (messageView != null) {
+                messageView.setTypeface(SDKConfiguration.getRegular());
+            }
+
+            // 2️⃣ Set button fonts
+            Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+            Button neutralButton  = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
+
+            if (positiveButton != null) positiveButton.setTypeface(SDKConfiguration.getRegular());
+            if (negativeButton != null) negativeButton.setTypeface(SDKConfiguration.getRegular());
+            if (neutralButton != null)  neutralButton.setTypeface(SDKConfiguration.getRegular());
+        }
     }
 
     private void showTemplateBottomSheet(BotResponse botResponse) {
