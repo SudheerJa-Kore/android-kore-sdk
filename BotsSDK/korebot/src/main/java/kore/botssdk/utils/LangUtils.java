@@ -13,6 +13,8 @@ import androidx.annotation.RequiresApi;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 
+import kore.botssdk.net.SDKConfiguration;
+
 public class LangUtils {
     public static final String LANG_EN = "en";
     public static final String LANG_ES = "es";
@@ -24,6 +26,7 @@ public class LangUtils {
         // Assume that there is an array called language_key which contains all the supported language tags
         Locale appDefaultLocale = Locale.forLanguageTag(lang);
         updateResources(context, appDefaultLocale);
+        SDKConfiguration.setDeviceLocale(Locale.forLanguageTag(lang));
     }
 
     private static void updateResources(@NonNull Context context, @NonNull Locale locale) {

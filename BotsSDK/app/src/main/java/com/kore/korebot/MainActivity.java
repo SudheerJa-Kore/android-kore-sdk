@@ -108,7 +108,10 @@ public class MainActivity extends AppCompatActivity {
         SDKConfig.setIsShowHeader(true);
 
         //Flag to show bot header minimize icon or hide
-        SDKConfig.showHeaderMinimize(false);
+        SDKConfig.showHeaderMinimize(true);
+
+        //Flag to send the custom fonts to the SDK
+        //SDKConfig.setFontFamily(ResourcesCompat.getFont(MainActivity.this, R.font.fss_light), ResourcesCompat.getFont(MainActivity.this, R.font.fss_regular), ResourcesCompat.getFont(MainActivity.this, R.font.fss_bold));
 
         //Set local branding model by overriding the branding api response
         SDKConfig.setLocalBranding(false, getLocalBrandingModel());

@@ -2,6 +2,7 @@ package kore.botssdk.net;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -22,6 +23,12 @@ public class SDKConfig {
     private static boolean isUpdateStatusBarColor = false;
     private static boolean isShowActionBar = true;
     private static boolean isShowHeaderMinimize = true;
+
+    public static void setFontFamily(Typeface regularTf,
+                                     Typeface semiBoldTf,
+                                     Typeface boldTf) {
+        SDKConfiguration.setFontFamily(regularTf, semiBoldTf, boldTf);
+    }
 
     public static void setCustomTemplateView(@NonNull String templateName, @NonNull View templateView) {
         SDKConfiguration.setCustomTemplateView(templateName, templateView);

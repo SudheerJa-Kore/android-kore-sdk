@@ -240,7 +240,12 @@ public abstract class BaseViewHolder extends RecyclerView.ViewHolder {
                 LinearLayoutCompat.LayoutParams params = (LinearLayoutCompat.LayoutParams) bubbleText.getLayoutParams();
                 params.bottomMargin = ChatAdapterItemDecoration.commonVerticalMargin * 2;
             }
+
             Typeface regular = KaFontUtils.getCustomTypeface("regular", context);
+            if(SDKConfiguration.getRegular() != null) {
+                regular = SDKConfiguration.getRegular();
+            }
+
 
             GradientDrawable leftDrawable = (GradientDrawable) ResourcesCompat.getDrawable(context.getResources(), R.drawable.theme1_left_bubble_bg, context.getTheme());
 

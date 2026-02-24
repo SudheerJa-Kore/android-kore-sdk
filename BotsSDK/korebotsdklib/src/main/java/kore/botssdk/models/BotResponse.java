@@ -198,15 +198,6 @@ public class BotResponse extends BaseBotMessage {
         this.contentState = contentState;
     }
 
-    /*
-     * returns null if there are no messages
-     *
-     * @return
-     */
-    public BotResponseMessage getTempMessage() {
-        return message != null && message.size() > 0 ? message.get(0) : null;
-    }
-
     public BotInfoModel getBotInfo() {
         return botInfo;
     }

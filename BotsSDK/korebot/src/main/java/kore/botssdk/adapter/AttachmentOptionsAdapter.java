@@ -46,18 +46,24 @@ public class AttachmentOptionsAdapter extends BaseAdapter {
             KaFontUtils.applyCustomFont(mContext, view);
             holder = new ListItemViewHolder();
             holder.title = view.findViewById(R.id.hash_text_view);
+            holder.vDivider = view.findViewById(R.id.vDivider);
             view.setTag(holder);
         } else {
             holder = (ListItemViewHolder) view.getTag();
         }
+
         String dataObj = (String) getItem(position);
         holder.title.setText(dataObj);
 
+        if(position == data.size() - 1){
+            holder.vDivider.setVisibility(View.GONE);
+        }
 
         return view;
     }
 
     static class ListItemViewHolder {
         TextView title;
+        View vDivider;
     }
 }

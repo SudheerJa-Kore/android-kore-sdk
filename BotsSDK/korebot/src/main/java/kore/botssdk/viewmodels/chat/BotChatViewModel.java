@@ -238,8 +238,8 @@ public class BotChatViewModel extends ViewModel {
             try {
                 long timeMillis = botResponse.getTimestamp() == 0L ? botResponse.getTimeInMillis(botResponse.getCreatedOn(), true) : botResponse.getTimestamp();
                 botResponse.setCreatedInMillis(timeMillis);
-                botResponse.setFormattedDate(DateUtils.formattedSentDateV6(timeMillis));
-                botResponse.setTimeStamp(botResponse.prepareTimeStamp(timeMillis));
+                botResponse.setFormattedDate(DateUtils.formattedSentDateV6(context, timeMillis));
+                botResponse.setTimeStamp(botResponse.prepareLocaleTimeStamp(context, timeMillis));
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }

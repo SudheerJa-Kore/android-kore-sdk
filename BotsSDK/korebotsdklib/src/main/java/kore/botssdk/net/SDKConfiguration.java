@@ -5,10 +5,12 @@ package kore.botssdk.net;
  */
 
 import android.annotation.SuppressLint;
+import android.graphics.Typeface;
 import android.util.Log;
 import android.view.View;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 import kore.botssdk.models.BrandingModel;
 
@@ -26,10 +28,29 @@ public class SDKConfiguration {
     private static final boolean APPLY_FONT_STYLE = true;
     protected static HashMap<String, View> hsh = new HashMap<>();
     protected static HashMap<String, Class<?>> hshViewHolders = new HashMap<>();
+    private static Locale LOCALE_DEVICE;
 
     public static boolean isApplyFontStyle() {
         return APPLY_FONT_STYLE;
     }
+
+    private static Typeface regular;
+    private static Typeface bold;
+    private static Typeface semiBold;
+
+    public static void setFontFamily(Typeface regularTf,
+                                     Typeface semiBoldTf,
+                                     Typeface boldTf) {
+        regular = regularTf;
+        semiBold = semiBoldTf;
+        bold = boldTf;
+    }
+
+    public static Typeface getRegular() { return regular; }
+
+    public static Typeface getSemiBold() { return semiBold; }
+
+    public static Typeface getBold() { return bold; }
 
     //JWTServer related configurations
     @SuppressLint({"HardcodedPassword", "emptyPassword"})
@@ -175,6 +196,16 @@ public class SDKConfiguration {
 
     public static void setTimeStampsRequired(boolean timeStampsRequired) {
         TIME_STAMPS_REQUIRED = timeStampsRequired;
+    }
+
+    public static Locale getDeviceLocale()
+    {
+        return LOCALE_DEVICE;
+    }
+
+    public static void setDeviceLocale(Locale locale)
+    {
+        LOCALE_DEVICE = locale;
     }
 
     public static void setCustomTemplateView(String templateName, View templateView) {
