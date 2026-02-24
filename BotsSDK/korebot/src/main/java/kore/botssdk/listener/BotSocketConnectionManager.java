@@ -383,8 +383,8 @@ public class BotSocketConnectionManager extends BaseSocketConnectionManager {
         try {
             long timeMillis = botRequest.getTimeInMillis(botRequest.getCreatedOn(), false);
             botRequest.setCreatedInMillis(timeMillis);
-            botRequest.setFormattedDate(DateUtils.formattedSentDateV6(timeMillis));
-            botRequest.setTimeStamp(botRequest.prepareTimeStamp(timeMillis));
+            botRequest.setFormattedDate(DateUtils.formattedSentDateV6(mContext, timeMillis));
+            botRequest.setTimeStamp(botRequest.prepareLocaleTimeStamp(mContext, timeMillis));
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -415,8 +415,8 @@ public class BotSocketConnectionManager extends BaseSocketConnectionManager {
         try {
             long timeMillis = botRequest.getTimeInMillis(botRequest.getCreatedOn(), false);
             botRequest.setCreatedInMillis(timeMillis);
-            botRequest.setFormattedDate(DateUtils.formattedSentDateV6(timeMillis));
-            botRequest.setTimeStamp(botRequest.prepareTimeStamp(timeMillis));
+            botRequest.setFormattedDate(DateUtils.formattedSentDateV6(mContext, timeMillis));
+            botRequest.setTimeStamp(botRequest.prepareLocaleTimeStamp(mContext, timeMillis));
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -447,8 +447,8 @@ public class BotSocketConnectionManager extends BaseSocketConnectionManager {
         try {
             long timeMillis = botRequest.getTimeInMillis(botRequest.getCreatedOn(), false);
             botRequest.setCreatedInMillis(timeMillis);
-            botRequest.setFormattedDate(DateUtils.formattedSentDateV6(timeMillis));
-            botRequest.setTimeStamp(botRequest.prepareTimeStamp(timeMillis));
+            botRequest.setFormattedDate(DateUtils.formattedSentDateV6(mContext, timeMillis));
+            botRequest.setTimeStamp(botRequest.prepareLocaleTimeStamp(mContext, timeMillis));
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }

@@ -52,7 +52,9 @@ public class KaFontUtils {
             if (((String) tag).equalsIgnoreCase(ROBOTO_LIGHT)) {
                 if (robotoLight == null) {
                     robotoLight = ResourcesCompat.getFont(context,R.font.latoregular);
-                    //robotoLight = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Light.ttf");
+
+                    if(SDKConfiguration.getRegular() != null)
+                        robotoLight = SDKConfiguration.getRegular();
                 }
                 myview.setTypeface(robotoLight);
             } else if (((String) tag).equalsIgnoreCase(ROBOTO_LIGHT_ITALICS)) {
@@ -64,6 +66,10 @@ public class KaFontUtils {
                 if (robotoRegular == null) {
                     robotoRegular = ResourcesCompat.getFont(context,R.font.latoregular);
                 }
+
+                if(SDKConfiguration.getRegular() != null)
+                    robotoRegular = SDKConfiguration.getRegular();
+
                 myview.setTypeface(robotoRegular);
             } else if (((String) tag).equalsIgnoreCase(ROBOTO_REGULAR_ITALICS)) {
                 if (robotoRegularItalic == null) {
@@ -74,6 +80,10 @@ public class KaFontUtils {
                 if (robotoMedium == null) {
                     robotoMedium = ResourcesCompat.getFont(context,R.font.latoregular);
                 }
+
+                if(SDKConfiguration.getRegular() != null)
+                    robotoMedium = SDKConfiguration.getRegular();
+
                 myview.setTypeface(robotoMedium);
             } else if (((String) tag).equalsIgnoreCase(ROBOTO_MEDIUM_ITALICS)) {
                 if (robotoMediumItalic == null) {
@@ -84,6 +94,10 @@ public class KaFontUtils {
                 if (robotoBold == null) {
                     robotoBold = ResourcesCompat.getFont(context,R.font.latobold);
                 }
+
+                if(SDKConfiguration.getBold() != null)
+                    robotoBold = SDKConfiguration.getBold();
+
                 myview.setTypeface(robotoBold);
             } else if (((String) tag).equalsIgnoreCase(ROBOTO_BOLD_ITALICS)) {
                 if (robotoBoldItalic == null) {
@@ -94,6 +108,10 @@ public class KaFontUtils {
                 if (robotoExtraBold == null) {
                     robotoExtraBold = ResourcesCompat.getFont(context,R.font.latobold);
                 }
+
+                if(SDKConfiguration.getBold() != null)
+                    robotoExtraBold = SDKConfiguration.getBold();
+
                 myview.setTypeface(robotoExtraBold);
             }
         }

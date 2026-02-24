@@ -72,11 +72,17 @@ public class HistoryRepository {
                                         BotResponse r = Utils.buildBotMessage(outer, msg.getBotId(), SDKConfiguration.Client.bot_name, msg.getCreatedOn(), msg.getId());
                                         r.setType(msg.getType());
                                         r.setIcon(history.getIcon());
+                                        long timeMillis = r.getTimeInMillis(msg.getCreatedOn(), true);
+                                        r.setFormattedDate(DateUtils.formattedSentDateV6(context, timeMillis));
+                                        r.setTimeStamp(r.prepareLocaleTimeStamp(context, timeMillis));
                                         msgs.add(r);
                                     } catch (com.google.gson.JsonSyntaxException ex) {
                                         BotResponse r = Utils.buildBotMessage(data, msg.getBotId(), SDKConfiguration.Client.bot_name, msg.getCreatedOn(), msg.getId());
                                         r.setType(msg.getType());
                                         r.setIcon(history.getIcon());
+                                        long timeMillis = r.getTimeInMillis(msg.getCreatedOn(), true);
+                                        r.setFormattedDate(DateUtils.formattedSentDateV6(context, timeMillis));
+                                        r.setTimeStamp(r.prepareLocaleTimeStamp(context, timeMillis));
                                         msgs.add(r);
                                     }
                                 } else {
@@ -98,8 +104,8 @@ public class HistoryRepository {
                                         try {
                                             long timeMillis = botRequest.getTimeInMillis(msg.getCreatedOn(), true);
                                             botRequest.setCreatedInMillis(timeMillis);
-                                            botRequest.setFormattedDate(DateUtils.formattedSentDateV6(timeMillis));
-                                            botRequest.setTimeStamp(botRequest.prepareTimeStamp(timeMillis));
+                                            botRequest.setFormattedDate(DateUtils.formattedSentDateV6(context, timeMillis));
+                                            botRequest.setTimeStamp(botRequest.prepareLocaleTimeStamp(context, timeMillis));
                                         } catch (ParseException e) {
                                             throw new RuntimeException(e);
                                         }

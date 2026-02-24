@@ -1,11 +1,12 @@
 package kore.botssdk.models;
 
+import android.content.Context;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import kore.botssdk.net.SDKConfiguration;
 import kore.botssdk.utils.DateUtils;
 
 public abstract class BaseBotMessage {
@@ -80,11 +81,8 @@ public abstract class BaseBotMessage {
 
     public String prepareTimeStamp(long milliSecs) {
         return DateUtils.getDateEEMMMDDYYYYHhMmSs(milliSecs);
-//        if (this instanceof BotRequest) {
-//            return (DateUtils.getTimeInAmPm(milliSecs) + ", " + DateUtils.formattedSentDateV6(milliSecs)) + "<medium><b>" + " You" + "</b></medium>";
-//        } else {
-//            return "<medium><b>" + SDKConfiguration.Client.bot_name + "</b></medium>" + " " + DateUtils.getTimeInAmPm(milliSecs) + ", " +
-//                    DateUtils.formattedSentDateV6(milliSecs);
-//        }
+    }
+    public String prepareLocaleTimeStamp(Context context, long milliSecs) {
+        return DateUtils.getDateEEMMMDDYYYYHhMmSs(context, milliSecs);
     }
 }

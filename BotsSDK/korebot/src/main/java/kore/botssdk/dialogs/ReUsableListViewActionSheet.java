@@ -58,7 +58,7 @@ public class ReUsableListViewActionSheet extends Dialog {
         optionsListView.setAdapter(adapter);
 
         ViewGroup.LayoutParams params = optionsListView.getLayoutParams();
-        params.height = (int)(70 * dp1) * (adapter.getCount() - 1);
+        params.height = (int)(52 * dp1) * (adapter.getCount() - 1);
         optionsListView.setLayoutParams(params);
     }
 

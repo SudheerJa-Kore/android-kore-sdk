@@ -128,33 +128,6 @@ public class KnowledgeDetailModel implements Serializable {
         return sharedBy;
     }
 
-    public String getFormattedModifiedDate() {
-        if (formattedModifiedDate == null) {
-            formattedModifiedDate = DateUtils.formattedSentDateV6(lastMod);
-        }
-        return formattedModifiedDate;
-    }
-
-    public String getFormattedHeaderDate() {
-        if (formattedHeaderDate == null) {
-            formattedHeaderDate = DateUtils.formattedSentDateV8(lastMod, false);
-        }
-        return formattedHeaderDate;
-    }
-
-    private String formattedHeaderDate;
-
-    public void setFormattedModifiedDate(String formattedModifiedDate) {
-        this.formattedModifiedDate = formattedModifiedDate;
-    }
-
-    public String getLastModifiedDate() {
-        return "Modified " + DateUtils.formattedSentDateV8(lastMod, true);
-    }
-
-    private String formattedModifiedDate;
-
-
     public void setSharedBy(String sharedBy) {
         this.sharedBy = sharedBy;
     }

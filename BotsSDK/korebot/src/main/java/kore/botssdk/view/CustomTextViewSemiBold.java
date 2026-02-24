@@ -9,6 +9,7 @@ import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.res.ResourcesCompat;
 
 import kore.botssdk.R;
+import kore.botssdk.net.SDKConfiguration;
 
 public class CustomTextViewSemiBold extends AppCompatTextView {
 
@@ -26,9 +27,13 @@ public class CustomTextViewSemiBold extends AppCompatTextView {
 
     private void style(Context context, AttributeSet attrs) {
 
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ActionBar);
+        if(SDKConfiguration.getSemiBold() != null)
+        {
+            setTypeface(SDKConfiguration.getSemiBold());
+            return;
+        }
+
         Typeface tfRegular = ResourcesCompat.getFont(context, R.font.latosemibold);
         setTypeface(tfRegular);
-        a.recycle();
     }
 }

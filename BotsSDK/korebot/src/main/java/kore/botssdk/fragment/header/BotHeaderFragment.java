@@ -40,8 +40,10 @@ public class BotHeaderFragment extends BaseHeaderFragment {
             tvBotTitle.setText(!TextUtils.isEmpty(title) ? title : SDKConfiguration.Client.bot_name);
             if (brandingModel.getWidgetHeaderColor() != null)
                 view.setBackgroundColor(Color.parseColor(brandingModel.getWidgetHeaderColor()));
-            if (brandingModel.getWidgetTextColor() != null)
+            if (brandingModel.getWidgetTextColor() != null) {
                 tvBotTitle.setTextColor(Color.parseColor(brandingModel.getWidgetTextColor()));
+                ivHeaderMinimize.setColorFilter(Color.parseColor(brandingModel.getWidgetTextColor()));
+            }
         }
     }
 
