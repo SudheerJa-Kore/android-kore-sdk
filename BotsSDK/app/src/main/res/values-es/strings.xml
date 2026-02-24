@@ -19,4 +19,21 @@
     <string name="cancel">Cancelar</string>
     <string name="close_or_minimize">¿Quieres cerrar la conversación o minimizarla?</string>
     <string name="custom_header">Encabezado personalizado</string>
+    <string name="today">Hoy</string>
+    <string name="yesterday">Ayer</string>
+    <string name="tomorrow">Mañana</string>
+    <string name="attachment_capture_photo">Capturar foto</string>
+    <string name="attachment_capture_video">Capturar video</string>
+    <string name="attachment_upload_photo">Subir foto</string>
+    <string name="attachment_upload_video">Subir video</string>
+    <string name="attachment_upload_document">Subir documento</string>
+    <string name="choose">Elegir</string>
+
+    <string-array name="attachments_strings">
+        <item>@string/attachment_capture_photo</item>
+        <item>@string/attachment_capture_video</item>
+        <item>@string/attachment_upload_photo</item>
+        <item>@string/attachment_upload_video</item>
+        <item>@string/attachment_upload_document</item>
+    </string-array>
 </resources>
