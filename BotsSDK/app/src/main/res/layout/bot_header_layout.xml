@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
     android:layout_height="wrap_content">
 
     <kore.botssdk.view.CustomTextViewBold
         android:id="@+id/tvBotName"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
         android:layout_marginStart="@dimen/dimen_15dp"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:maxLines="2"
         android:layout_marginTop="@dimen/dimen_15dp"
         android:layout_marginEnd="@dimen/dimen_15dp"
         android:layout_marginBottom="@dimen/dimen_15dp"
@@ -21,10 +25,8 @@
         android:id="@+id/ivHeaderMinimize"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
         android:visibility="gone"
         android:layout_marginEnd="@dimen/dimen_20dp"
         android:contentDescription="@string/app_name"
         android:src="@drawable/header_minimis"/>
-</RelativeLayout>
+</LinearLayout>
