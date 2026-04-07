@@ -3,7 +3,6 @@ package kore.botssdk.models;
 import kore.botssdk.net.RestResponse;
 
 /**
- * Created by Pradeep Mahato on 03-Jun-16.
  * Copyright (c) 2014 Kore Inc. All rights reserved.
  */
 
@@ -12,7 +11,7 @@ public class BotRequest extends BaseBotMessage {
     private RestResponse.BotMessage message;
     private final String resourceid = "/bot.message";
     private BotInfoModel botInfo;
-    private final long id = 1;
+    private long id;
 
     public void setMessage(RestResponse.BotMessage message) {
         this.message = message;
@@ -33,6 +32,26 @@ public class BotRequest extends BaseBotMessage {
 
     public void setCreatedOn(String createdOn) {
         this.createdOn = createdOn;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public enum MessageStatus {
+        SENDING,
+        SENT,
+        FAILED
+    }
+
+    private MessageStatus status;
+
+    public MessageStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(MessageStatus status) {
+        this.status = status;
     }
 
 }

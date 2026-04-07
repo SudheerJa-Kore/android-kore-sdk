@@ -24,6 +24,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentTransaction;
@@ -52,6 +53,7 @@ import kore.botssdk.listener.BotChatViewListener;
 import kore.botssdk.listener.BotSocketConnectionManager;
 import kore.botssdk.listener.ComposeFooterInterface;
 import kore.botssdk.listener.InvokeGenericWebViewInterface;
+import kore.botssdk.models.BaseBotMessage;
 import kore.botssdk.models.BotRequest;
 import kore.botssdk.models.BotResponse;
 import kore.botssdk.models.BrandingModel;
@@ -264,9 +266,7 @@ public class NewBotChatActivity extends BotAppCompactActivity implements BotChat
                 if(botHeaderFragment.getMinimize() != null)
                 {
                     botHeaderFragment.getMinimize().setVisibility(SDKConfig.isIsShowHeaderMinimize() ? View.VISIBLE : View.GONE);
-                    botHeaderFragment.getMinimize().setOnClickListener(v -> {
-                        showCloseAlert();
-                    });
+                    botHeaderFragment.getMinimize().setOnClickListener(v -> showCloseAlert());
                 }
             }
 
@@ -382,12 +382,17 @@ public class NewBotChatActivity extends BotAppCompactActivity implements BotChat
     }
 
     @Override
+    public void updateMessageStatus(BotRequest botRequest) {
+        botContentFragment.updateMessageStatus(botRequest);
+    }
+
+    @Override
     public void onSendClick(String message, boolean isFromUtterance) {
         botContentFragment.showTypingStatus();
 
         if (!StringUtils.isNullOrEmpty(message)) {
             if (!SDKConfiguration.Client.isWebHook)
-                BotSocketConnectionManager.getInstance().sendMessage(message, null);
+                BotSocketConnectionManager.getInstance().sendMessage(message);
             else {
                 mViewModel.addSentMessageToChat(message);
                 mViewModel.sendWebHookMessage(jwt, false, message, null);
@@ -403,7 +408,7 @@ public class NewBotChatActivity extends BotAppCompactActivity implements BotChat
             if (payload != null) {
                 BotSocketConnectionManager.getInstance().sendPayload(message, payload);
             } else {
-                BotSocketConnectionManager.getInstance().sendMessage(message, "");
+                BotSocketConnectionManager.getInstance().sendMessage(message);
             }
         } else {
             BotSocketConnectionManager.getInstance().stopTextToSpeech();
@@ -428,6 +433,11 @@ public class NewBotChatActivity extends BotAppCompactActivity implements BotChat
                 mViewModel.sendWebHookMessage(jwt, false, message, attachments);
             }
         }
+    }
+
+    @Override
+    public void onSendClick(BaseBotMessage message, boolean isFromUtterance) {
+        botClient.sendMessage(new Gson().toJson(message));
     }
 
     public void onEvent(String jwt) {
@@ -615,7 +625,7 @@ public class NewBotChatActivity extends BotAppCompactActivity implements BotChat
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
         if (botContentFragment != null) {

@@ -15,6 +15,8 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.core.app.NotificationCompat;
 import androidx.lifecycle.ViewModel;
@@ -29,7 +31,9 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import kore.botssdk.R;
 import kore.botssdk.activity.NewBotChatActivity;
@@ -39,6 +43,7 @@ import kore.botssdk.listener.BaseSocketConnectionManager;
 import kore.botssdk.listener.BotChatViewListener;
 import kore.botssdk.listener.BotSocketConnectionManager;
 import kore.botssdk.listener.SocketChatListener;
+import kore.botssdk.models.AcknowledgeModel;
 import kore.botssdk.models.AgentInfoModel;
 import kore.botssdk.models.BaseBotMessage;
 import kore.botssdk.models.BotInfoModel;
@@ -91,6 +96,10 @@ public class BotChatViewModel extends ViewModel {
     private static final String KORE_PUSH_SERVICE = "Kore_Push_Service";
     private static final String KORE_ANDROID = "Kore_Android";
     private static final String NOTIFICATION = "Notification";
+    Map<Long, BotRequest> messageMap = new ConcurrentHashMap<>();
+    Map<Long, Runnable> timeoutMap = new ConcurrentHashMap<>();
+    Handler handler = new Handler(Looper.getMainLooper());
+
     public BotChatViewModel(Context context, BotClient botClient, BotChatViewListener chatView) {
         this.context = context.getApplicationContext();
         this.repository = new BrandingRepository(context, chatView);
@@ -160,9 +169,31 @@ public class BotChatViewModel extends ViewModel {
                     processPayload(data.getPayLoad(), null);
                 else processStreamMessage(data.getPayLoad());
 
-            } else if (data.getEvent_type().equals(BaseSocketConnectionManager.EVENT_TYPE.TYPE_MESSAGE_UPDATE)) {
-                chatView.updateContentListOnSend(data.getBotRequest());
+            } else if (data.getEvent_type().equals(BaseSocketConnectionManager.EVENT_TYPE.TYPE_MESSAGE_UPDATE))
+            {
+                BotRequest botRequest = data.getBotRequest();
+                long messageId = data.getBotRequest().getCreatedInMillis();
+                botRequest.setStatus(BotRequest.MessageStatus.SENDING);
+                messageMap.put(messageId, botRequest);
+                startTimeout(messageId);
+                chatView.updateContentListOnSend(botRequest);
             }
+        }
+
+        private void startTimeout(long messageId) {
+
+            Runnable runnable = () ->
+            {
+                BotRequest botRequest = messageMap.get(messageId);
+
+                if (botRequest != null && botRequest.getStatus() == BotRequest.MessageStatus.SENDING) {
+                    botRequest.setStatus(BotRequest.MessageStatus.FAILED);
+                    chatView.updateMessageStatus(botRequest);
+                }
+            };
+
+            timeoutMap.put(messageId, runnable);
+            handler.postDelayed(runnable, 5000); // 5 seconds
         }
 
         @Override
@@ -219,6 +250,26 @@ public class BotChatViewModel extends ViewModel {
         }
     }
 
+    private void cancelTimeout(long messageId) {
+        Runnable runnable = timeoutMap.get(messageId);
+        if (runnable != null) {
+            handler.removeCallbacks(runnable);
+            timeoutMap.remove(messageId);
+        }
+    }
+
+    private void handleAck(long messageId) {
+        BotRequest botRequest = messageMap.get(messageId);
+
+        if (botRequest != null) {
+            botRequest.setStatus(BotRequest.MessageStatus.SENT);
+            cancelTimeout(messageId);
+
+            chatView.updateMessageStatus(botRequest);
+            messageMap.remove(messageId);
+        }
+    }
+
 
     /**
      * payload processing
@@ -228,8 +279,16 @@ public class BotChatViewModel extends ViewModel {
         try {
             final BotResponse botResponse = botLocalResponse != null ? botLocalResponse : gson.fromJson(payload, BotResponse.class);
             if (botResponse == null || botResponse.getMessage() == null || botResponse.getMessage().isEmpty()) {
+                AcknowledgeModel acknowledgeModel = gson.fromJson(payload, AcknowledgeModel.class);
+                if (acknowledgeModel != null) {
+                    long messageId = acknowledgeModel.getReplyto();
+                    handleAck(messageId);
+                    return;
+                }
+
                 return;
             }
+
             if (botResponse.getMessageId() != null) lastMsgId = botResponse.getMessageId();
             isStreamMessage = botResponse.issM();
 

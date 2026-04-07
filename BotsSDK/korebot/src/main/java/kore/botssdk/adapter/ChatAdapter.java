@@ -28,6 +28,7 @@ import kore.botssdk.models.PayloadInner;
 import kore.botssdk.models.PayloadOuter;
 import kore.botssdk.net.SDKConfiguration;
 import kore.botssdk.utils.BundleConstants;
+import kore.botssdk.utils.LogUtils;
 import kore.botssdk.utils.StringUtils;
 import kore.botssdk.viewholders.AdvanceMultiSelectTemplateHolder;
 import kore.botssdk.viewholders.AdvancedListTemplateHolder;
@@ -423,6 +424,14 @@ public class ChatAdapter extends RecyclerView.Adapter<BaseViewHolder> implements
             notifyItemInserted(0);
         } else {
             notifyItemRangeChanged(baseBotMessageArrayList.size() - 2, baseBotMessageArrayList.size() - 1);
+        }
+    }
+
+    public void updateBaseBotMessage(BaseBotMessage baseBotMessage) {
+        int index = baseBotMessageArrayList.indexOf(baseBotMessage);
+        if (index != -1) {
+            baseBotMessageArrayList.set(index, baseBotMessage);
+            notifyItemChanged(index);
         }
     }
 

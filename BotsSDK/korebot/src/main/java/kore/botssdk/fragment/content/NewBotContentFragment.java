@@ -34,6 +34,7 @@ import kore.botssdk.models.PayloadOuter;
 import kore.botssdk.models.QuickReplyTemplate;
 import kore.botssdk.net.SDKConfiguration;
 import kore.botssdk.utils.BundleUtils;
+import kore.botssdk.utils.LogUtils;
 import kore.botssdk.utils.StringUtils;
 import kore.botssdk.view.CircularProfileView;
 import kore.botssdk.view.DotsTextView;
@@ -189,17 +190,6 @@ public class NewBotContentFragment extends BaseContentFragment {
         botsBubblesListView.smoothScrollToPosition(botsChatAdapter.getItemCount());
     }
 
-//    @Override
-//    public void addStreamingMessage(String message) {
-//        if(!message.isBlank())
-//        {
-//            botsChatAdapter.addStreamingMessage(message);
-//            botsBubblesListView.post(() -> {
-//                botsBubblesListView.scrollBy(0, 2500);
-//            });
-//        }
-//    }
-
     @Override
     public void addStreamingMessage(String message) {
 
@@ -315,6 +305,15 @@ public class NewBotContentFragment extends BaseContentFragment {
                 botsChatAdapter.addBaseBotMessage(botRequest);
                 quickReplyView.populateQuickReplyView(null);
                 scrollToBottom();
+            }
+        }
+    }
+
+    @Override
+    public void updateMessageStatus(BotRequest botRequest) {
+        if (botRequest.getMessage() != null) {
+            if (botsChatAdapter != null) {
+                botsChatAdapter.updateBaseBotMessage(botRequest);
             }
         }
     }

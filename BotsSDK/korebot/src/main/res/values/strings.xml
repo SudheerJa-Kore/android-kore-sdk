@@ -196,6 +196,7 @@
     <string name="copy_to_clipboard">Copied to clipboard</string>
     <string name="downloading_file">Downloading file…</string>
     <string name="downloading_failed">Downloading failed!</string>
+    <string name="send_again">Send again</string>
 
     <string-array name="attachments_strings">
         <item>@string/attachment_capture_photo</item>
