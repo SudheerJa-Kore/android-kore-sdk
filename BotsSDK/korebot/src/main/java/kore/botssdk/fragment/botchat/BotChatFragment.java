@@ -387,7 +387,6 @@ public class BotChatFragment extends Fragment implements BotChatViewListener, Co
 
     @Override
     public void onSendClick(BaseBotMessage message, boolean isFromUtterance) {
-        LogUtils.e("Resending text", new Gson().toJson(message));
         botClient.sendMessage(new Gson().toJson(message));
     }
 
