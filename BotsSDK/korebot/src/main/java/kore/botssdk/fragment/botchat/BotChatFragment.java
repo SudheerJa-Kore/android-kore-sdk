@@ -13,7 +13,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,7 +26,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
@@ -56,6 +54,7 @@ import kore.botssdk.listener.BotChatViewListener;
 import kore.botssdk.listener.BotSocketConnectionManager;
 import kore.botssdk.listener.ComposeFooterInterface;
 import kore.botssdk.listener.InvokeGenericWebViewInterface;
+import kore.botssdk.models.BaseBotMessage;
 import kore.botssdk.models.BotRequest;
 import kore.botssdk.models.BotResponse;
 import kore.botssdk.models.BrandingModel;
@@ -337,10 +336,15 @@ public class BotChatFragment extends Fragment implements BotChatViewListener, Co
     }
 
     @Override
+    public void updateMessageStatus(BotRequest botRequest) {
+        botContentFragment.updateMessageStatus(botRequest);
+    }
+
+    @Override
     public void onSendClick(String message, boolean isFromUtterance) {
         if (!StringUtils.isNullOrEmpty(message)) {
             if (!SDKConfiguration.Client.isWebHook)
-                BotSocketConnectionManager.getInstance().sendMessage(message, null);
+                BotSocketConnectionManager.getInstance().sendMessage(message);
             else {
                 mViewModel.addSentMessageToChat(message);
                 mViewModel.sendWebHookMessage(jwt, false, message, null);
@@ -355,7 +359,7 @@ public class BotChatFragment extends Fragment implements BotChatViewListener, Co
             if (payload != null) {
                 BotSocketConnectionManager.getInstance().sendPayload(message, payload);
             } else {
-                BotSocketConnectionManager.getInstance().sendMessage(message, "");
+                BotSocketConnectionManager.getInstance().sendMessage(message);
             }
         } else {
             BotSocketConnectionManager.getInstance().stopTextToSpeech();
@@ -379,6 +383,12 @@ public class BotChatFragment extends Fragment implements BotChatViewListener, Co
                 mViewModel.sendWebHookMessage(jwt, false, message, attachments);
             }
         }
+    }
+
+    @Override
+    public void onSendClick(BaseBotMessage message, boolean isFromUtterance) {
+        LogUtils.e("Resending text", new Gson().toJson(message));
+        botClient.sendMessage(new Gson().toJson(message));
     }
 
     public void onEvent(String jwt) {

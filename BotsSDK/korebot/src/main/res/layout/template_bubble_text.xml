@@ -3,7 +3,7 @@
     android:id="@+id/layoutBubble"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
     <kore.botssdk.view.LinkifyTextView
         android:id="@+id/bubble_text"
@@ -13,4 +13,19 @@
         android:focusable="false"
         android:longClickable="false"
         android:textSize="16sp" />
+
+    <kore.botssdk.view.CustomTextView
+        android:id="@+id/tvSendAgain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/send_again"
+        android:layout_gravity="end"
+        android:drawablePadding="@dimen/dimen_5dp"
+        android:gravity="center_vertical"
+        android:drawableStart="@drawable/resource_return"
+        android:drawableTint="@color/color_red"
+        android:layout_marginEnd="@dimen/dimen_20dp"
+        android:textColor="@color/color_red"
+        android:visibility="gone"/>
+
 </androidx.appcompat.widget.LinearLayoutCompat>

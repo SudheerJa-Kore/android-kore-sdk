@@ -1,5 +1,7 @@
 package kore.botssdk.viewholders;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static org.apache.commons.lang3.StringEscapeUtils.unescapeHtml4;
 
 import android.content.Context;
@@ -8,6 +10,7 @@ import android.text.SpannableStringBuilder;
 import android.text.style.URLSpan;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.LinearLayoutCompat;
@@ -41,11 +44,18 @@ public class RequestTextTemplateHolder extends BaseViewHolder {
     public void bind(BaseBotMessage baseBotMessage) {
         RestResponse.BotMessage message = ((BotRequest) baseBotMessage).getMessage();
         String msg = message != null ? message.getBody() : "";
-        setRequestText(msg);
+        setRequestText(msg, ((BotRequest) baseBotMessage).getStatus(), baseBotMessage);
     }
 
-    private void setRequestText(String textualContent) {
+    private void setRequestText(String textualContent, BotRequest.MessageStatus status, BaseBotMessage message) {
         LinkifyTextView bubbleText = itemView.findViewById(R.id.bubble_text);
+        TextView tvSendAgain = itemView.findViewById(R.id.tvSendAgain);
+        tvSendAgain.setVisibility(GONE);
+
+        if(status == BotRequest.MessageStatus.FAILED) {
+            tvSendAgain.setVisibility(VISIBLE);
+        }
+
         bubbleText.setText("");
         Context context = bubbleText.getContext();
 
@@ -75,14 +85,14 @@ public class RequestTextTemplateHolder extends BaseViewHolder {
             bubbleText.setTypeface(regular);
             bubbleText.setText(strBuilder);
             bubbleText.setMovementMethod(null);
-            bubbleText.setVisibility(View.VISIBLE);
+            bubbleText.setVisibility(VISIBLE);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    composeFooterInterface.copyMessageToComposer(strBuilder.toString(), true);
-                }
+            itemView.setOnClickListener(v -> composeFooterInterface.copyMessageToComposer(strBuilder.toString(), true));
+
+            tvSendAgain.setOnClickListener(v -> {
+                composeFooterInterface.onSendClick(message, false);
             });
+
         } else {
             bubbleText.setText("");
             bubbleText.setVisibility(View.GONE);

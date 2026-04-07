@@ -89,6 +89,8 @@ public abstract class BaseContentFragment extends Fragment implements BotContent
 
     public abstract void updateContentListOnSend(BotRequest botRequest);
 
+    public abstract void updateMessageStatus(BotRequest botRequest);
+
     public void setComposeFooterInterface(ComposeFooterInterface composeFooterInterface) {
         this.composeFooterInterface = composeFooterInterface;
         if (botsChatAdapter != null)
