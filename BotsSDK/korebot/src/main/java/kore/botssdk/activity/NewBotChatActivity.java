@@ -437,7 +437,6 @@ public class NewBotChatActivity extends BotAppCompactActivity implements BotChat
 
     @Override
     public void onSendClick(BaseBotMessage message, boolean isFromUtterance) {
-        LogUtils.e("Resending text", new Gson().toJson(message));
         botClient.sendMessage(new Gson().toJson(message));
     }
 

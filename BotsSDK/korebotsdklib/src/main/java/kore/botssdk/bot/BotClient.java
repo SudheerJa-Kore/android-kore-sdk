@@ -27,6 +27,7 @@ import kore.botssdk.websocket.SocketWrapper;
 @SuppressWarnings("UnKnownNullness")
 public class BotClient {
     private final Context mContext;
+    Gson gson = new Gson();
 
     public RestResponse.BotCustomData getCustomData() {
         return customData;
@@ -115,7 +116,7 @@ public class BotClient {
         botMessageAckModel.setKey(key);
         botMessageAckModel.setReplyto(timestamp);
 
-        Gson gson = new Gson();
+
         String jsonPayload = gson.toJson(botMessageAckModel);
 
         Log.d("BotClient", "Payload : " + jsonPayload);
@@ -149,7 +150,6 @@ public class BotClient {
         RestResponse.Meta meta = new RestResponse.Meta(TimeZone.getDefault().getID(), Locale.getDefault().getISO3Language());
         botPayLoad.setMeta(meta);
 
-        Gson gson = new Gson();
         String jsonPayload = gson.toJson(botPayLoad);
 
         LogUtils.d("BotClient", "Payload : " + jsonPayload);
@@ -170,7 +170,6 @@ public class BotClient {
         RestResponse.Meta meta = new RestResponse.Meta(TimeZone.getDefault().getID(), Locale.getDefault().getISO3Language());
         botPayLoad.setMeta(meta);
 
-        Gson gson = new Gson();
         String jsonPayload = gson.toJson(botPayLoad);
 
         LogUtils.d("BotClient", "Payload : " + jsonPayload);
