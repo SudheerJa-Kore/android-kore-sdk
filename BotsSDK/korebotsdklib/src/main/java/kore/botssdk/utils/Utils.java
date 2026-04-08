@@ -253,7 +253,7 @@ public class Utils {
         PayloadInner payloadInner = new PayloadInner();
         payloadInner.setTemplate_type(BotResponse.TEMPLATE_TYPE_CONVERSATION_END);
         payloadInner.setText("This conversation has been ended!");
-        payloadInner.setShowComposeBar(true);
+        payloadInner.setHideComposeBar(true);
         pOuter.setPayload(payloadInner);
         cModel.setPayload(pOuter);
         botResponseMessage.setComponent(cModel);

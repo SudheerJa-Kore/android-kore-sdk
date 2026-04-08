@@ -21,8 +21,8 @@
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/text_size_normal"
-            android:textColor="@color/txtFontBlack"/>
+            android:textColor="@color/txtFontBlack"
+            android:textSize="@dimen/text_size_normal" />
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -35,8 +35,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/ic_icons24download"
+                android:contentDescription="@string/button_to_download_the_pdf"
                 android:ellipsize="end"
-                android:contentDescription="@string/app_name"
                 android:maxLines="1"
                 android:visibility="visible" />
 

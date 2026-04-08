@@ -28,4 +28,7 @@
     <string name="attachment_upload_video">Upload Video</string>
     <string name="attachment_upload_document">Upload document</string>
     <string name="choose">Choose</string>
+    <string name="button_to_display_minimize_close_and_cancel_options_before_exiting_from_chat_window"><![CDATA[<string name=\"button_to_display_minimize_close_and_cancel_options_before_exiting_fButton to display minimize, close and cancel options before exiting from chat window]]></string>
+    <string name="icon_to_display_attachment_type">Icon to display attachment type</string>
+    <string name="icon_to_display_the_attachment_type_based_on_extension">Icon to display the attachment type based on extension</string>
 </resources>

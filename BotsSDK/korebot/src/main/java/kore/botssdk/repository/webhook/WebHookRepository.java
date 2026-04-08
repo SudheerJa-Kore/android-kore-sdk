@@ -54,7 +54,7 @@ public class WebHookRepository {
                     botChatView.onConnectionStateChanged(BaseSocketConnectionManager.CONNECTION_STATE.CONNECTED, false);
                     botChatView.enableSendButton();
 
-                    if (webHookResponseDataModel != null && webHookResponseDataModel.getData() != null && webHookResponseDataModel.getData().size() > 0) {
+                    if (webHookResponseDataModel != null && webHookResponseDataModel.getData() != null && !webHookResponseDataModel.getData().isEmpty()) {
                         for (int i = 0; i < webHookResponseDataModel.getData().size(); i++) {
                             if (webHookResponseDataModel.getData().get(i).getVal() instanceof String)
                                 botChatView.displayMessage(webHookResponseDataModel.getData().get(i).getVal().toString(), webHookResponseDataModel.getData().get(i).getType(), webHookResponseDataModel.getData().get(i).getMessageId());
@@ -117,7 +117,7 @@ public class WebHookRepository {
                     botChatView.onConnectionStateChanged(BaseSocketConnectionManager.CONNECTION_STATE.CONNECTED, false);
                     botChatView.enableSendButton();
 
-                    if (webHookResponseDataModel != null && webHookResponseDataModel.getData() != null && webHookResponseDataModel.getData().size() > 0) {
+                    if (webHookResponseDataModel != null && webHookResponseDataModel.getData() != null && !webHookResponseDataModel.getData().isEmpty()) {
                         for (int i = 0; i < webHookResponseDataModel.getData().size(); i++) {
                             if (webHookResponseDataModel.getData().get(i).getVal() instanceof String)
                                 botChatView.displayMessage(webHookResponseDataModel.getData().get(i).getVal().toString(), webHookResponseDataModel.getData().get(i).getType(), webHookResponseDataModel.getData().get(i).getMessageId());
@@ -179,7 +179,7 @@ public class WebHookRepository {
             WebHookRequestModel.Token token = new WebHookRequestModel.Token();
             hsh.put("token", token);
 
-            if (attachments != null && attachments.size() > 0) hsh.put("attachments", attachments);
+            if (attachments != null && !attachments.isEmpty()) hsh.put("attachments", attachments);
         } catch (Exception e) {
             e.printStackTrace();
         }

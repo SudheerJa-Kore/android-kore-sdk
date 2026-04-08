@@ -27,6 +27,6 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         android:layout_marginEnd="@dimen/dimen_20dp"
-        android:contentDescription="@string/app_name"
+        android:contentDescription="@string/button_to_display_minimize_close_and_cancel_options_before_exiting_from_chat_window"
         android:src="@drawable/header_minimis"/>
 </LinearLayout>
