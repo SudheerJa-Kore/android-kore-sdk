@@ -49,11 +49,14 @@ public class RequestTextTemplateHolder extends BaseViewHolder {
 
     private void setRequestText(String textualContent, BotRequest.MessageStatus status, BaseBotMessage message) {
         LinkifyTextView bubbleText = itemView.findViewById(R.id.bubble_text);
-        TextView tvSendAgain = itemView.findViewById(R.id.tvSendAgain);
-        tvSendAgain.setVisibility(GONE);
+        LinearLayoutCompat llSendAgain = itemView.findViewById(R.id.llSendAgain);
+        TextView tvSend = itemView.findViewById(R.id.tvSend);
+        TextView tvDelete = itemView.findViewById(R.id.tvDelete);
+
+        llSendAgain.setVisibility(GONE);
 
         if(status == BotRequest.MessageStatus.FAILED) {
-            tvSendAgain.setVisibility(VISIBLE);
+            llSendAgain.setVisibility(VISIBLE);
         }
 
         bubbleText.setText("");
@@ -87,11 +90,16 @@ public class RequestTextTemplateHolder extends BaseViewHolder {
             bubbleText.setMovementMethod(null);
             bubbleText.setVisibility(VISIBLE);
 
-            itemView.setOnClickListener(v -> composeFooterInterface.copyMessageToComposer(strBuilder.toString(), true));
+            itemView.setOnLongClickListener(v -> {
+                composeFooterInterface.copyMessageToComposer(bubbleText.getText().toString(), false);
+                return false;
+            });
 
-            tvSendAgain.setOnClickListener(v -> {
+            tvSend.setOnClickListener(v -> {
                 composeFooterInterface.onSendClick(message, false);
             });
+
+            tvDelete.setOnClickListener( v -> composeFooterInterface.onDeleteClick(message));
 
         } else {
             bubbleText.setText("");

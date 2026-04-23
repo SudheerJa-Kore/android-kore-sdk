@@ -374,6 +374,7 @@ public class BotSocketConnectionManager extends BaseSocketConnectionManager {
         RestResponse.BotPayLoad botPayLoad = new RestResponse.BotPayLoad();
         RestResponse.BotMessage botMessage = new RestResponse.BotMessage(message, "");
 
+//        customData.putAll(SDKConfiguration.Server.customData);
         customData.put("botToken", getAccessToken());
         botMessage.setCustomData(customData);
         botPayLoad.setMessage(botMessage);

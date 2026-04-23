@@ -289,4 +289,10 @@ public abstract class BaseContentFragment extends Fragment implements BotContent
             botsChatAdapter.notifyItemRangeChanged(0, botsChatAdapter.getItemCount() - 1);
         }
     }
+
+    public void deleteMessage(BaseBotMessage message) {
+        if (botsChatAdapter != null && botsChatAdapter.getItemCount() > 0) {
+            botsChatAdapter.deleteMessage(message);
+        }
+    }
 }

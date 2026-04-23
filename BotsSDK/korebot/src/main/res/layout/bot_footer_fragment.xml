@@ -85,6 +85,7 @@
                         android:background="?android:attr/selectableItemBackground"
                         android:paddingStart="10dp"
                         android:paddingTop="10dp"
+                        android:contentDescription="@string/button_to_show_the_short_cut_menu_items_of_the_bot"
                         android:paddingEnd="5dp"
                         android:paddingBottom="10dp"
                         android:src="@drawable/widget_menu"
@@ -197,8 +198,8 @@
 
                     <LinearLayout
                         android:id="@+id/llSend"
-                        android:layout_width="@dimen/dimen_48dp"
-                        android:layout_height="@dimen/dimen_48dp"
+                        android:layout_width="@dimen/dimen_35dp"
+                        android:layout_height="@dimen/dimen_35dp"
                         android:layout_gravity="center_vertical"
                         android:background="@drawable/ic_send_bg"
                         android:contentDescription="@string/button_to_send_the_message_entered_in_the_text_field"
@@ -233,7 +234,7 @@
 
                     <ImageView
                         android:id="@+id/rec_audio_img"
-                        android:layout_width="@dimen/dimen_25dp"
+                        android:layout_width="@dimen/dimen_35dp"
                         android:layout_height="@dimen/dimen_30dp"
                         android:contentDescription="@string/image_to_change_the_input_mode_to_voice"
                         android:layout_gravity="center_vertical"

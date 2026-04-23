@@ -175,7 +175,13 @@
     <string name="button_to_download_the_pdf">Botón para descargar el PDF</string>
     <string name="title_of_the_table_content">Título del contenido de la tabla</string>
     <string name="sub_title_or_description_of_the_table_content">Subtítulo o descripción del contenido de la tabla</string>
-    <string name="image_icon_of_the_table_content">Icono de imagen del contenido de la tabla</string>
+    <string name="image_icon_of_the_table_content">Botón de imagen del contenido de la tabla</string>
+    <string name="button_to_show_all_the_table_content_at_full_view">Botón para mostrar todo el contenido de la tabla en vista completa</string>
+    <string name="button_to_close_the_full_table_view">Botón para cerrar la vista completa de la tabla</string>
+    <string name="button_to_show_the_short_cut_menu_items_of_the_bot">Botón para mostrar los elementos del menú de acceso rápido del bot</string>
+    <string name="sending_failed">"Sending failed. "</string>
+    <string name="or"> or </string>
+    <string name="delete">Delete</string>
 
     <string-array name="attachments_strings">
         <item>@string/attachment_capture_photo</item>

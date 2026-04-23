@@ -34,7 +34,6 @@ import kore.botssdk.models.PayloadOuter;
 import kore.botssdk.models.QuickReplyTemplate;
 import kore.botssdk.net.SDKConfiguration;
 import kore.botssdk.utils.BundleUtils;
-import kore.botssdk.utils.LogUtils;
 import kore.botssdk.utils.StringUtils;
 import kore.botssdk.view.CircularProfileView;
 import kore.botssdk.view.DotsTextView;
@@ -55,7 +54,6 @@ public class NewBotContentFragment extends BaseContentFragment {
     private final Handler streamingHandler =
             new Handler(Looper.getMainLooper());
     private boolean isStreamingRunning = false;
-    private boolean userAtBottom = true;
     private int appendedWordCount = 0;
 
     @Nullable
@@ -225,7 +223,7 @@ public class NewBotContentFragment extends BaseContentFragment {
 
         botsChatAdapter.addStreamingMessage(builder.toString());
 
-        if (userAtBottom && appendedWordCount % 3 == 0) {
+        if (appendedWordCount % 3 == 0) {
             botsBubblesListView.post(() ->
                     botsBubblesListView.scrollBy(0, 1500));
         }

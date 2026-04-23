@@ -37,6 +37,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import kore.botssdk.R;
 import kore.botssdk.bot.BotClient;
@@ -59,6 +62,7 @@ import kore.botssdk.models.BotResponse;
 import kore.botssdk.models.BrandingModel;
 import kore.botssdk.net.BrandingRestBuilder;
 import kore.botssdk.net.RestBuilder;
+import kore.botssdk.net.RestResponse;
 import kore.botssdk.net.SDKConfig;
 import kore.botssdk.net.SDKConfiguration;
 import kore.botssdk.net.WebHookRestBuilder;
@@ -334,6 +338,7 @@ public class NewBotChatActivity extends BotAppCompactActivity implements BotChat
             case CONNECTED: {
                 taskProgressBar.setVisibility(View.GONE);
                 baseFooterFragment.enableSendButton();
+//                startTimeout();
             }
             break;
             case DISCONNECTED:
@@ -346,6 +351,17 @@ public class NewBotChatActivity extends BotAppCompactActivity implements BotChat
             default:
                 taskProgressBar.setVisibility(View.GONE);
         }
+    }
+
+    private void startTimeout() {
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
+        scheduler.scheduleWithFixedDelay(() -> {
+            RestResponse.BotCustomData customData = new RestResponse.BotCustomData();
+            customData.put("Updated Data", System.currentTimeMillis());
+            SDKConfiguration.Server.customData.putAll(customData);
+
+        }, 0, 30, TimeUnit.SECONDS);
     }
 
     @Override
@@ -456,6 +472,11 @@ public class NewBotChatActivity extends BotAppCompactActivity implements BotChat
 
     @Override
     public void onDeepLinkClicked(String url) {
+    }
+
+    @Override
+    public void onDeleteClick(BaseBotMessage message) {
+        botContentFragment.deleteMessage(message);
     }
 
     @Override
