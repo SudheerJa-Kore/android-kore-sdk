@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import kore.botssdk.models.BrandingModel;
+import kore.botssdk.websocket.BotStatusListener;
 
 /**
  * This class is for defining properties
@@ -85,6 +86,7 @@ public class SDKConfiguration {
         public static HashMap<String, Object> queryParams = new HashMap<>();
 
         public static RestResponse.BotCustomData customData = new RestResponse.BotCustomData();
+        public static BotStatusListener botStatusListener;
 
         public static void setBrandingUrl(String url) {
             Branding_SERVER_URL = url;
@@ -96,6 +98,14 @@ public class SDKConfiguration {
 
         public static void setCustomData(RestResponse.BotCustomData customData) {
             Server.customData = customData;
+        }
+
+        public static void setBotStatusListener(BotStatusListener botStatusListener) {
+            Server.botStatusListener = botStatusListener;
+        }
+
+        public static BotStatusListener getBotStatusListener() {
+            return botStatusListener;
         }
     }
 
@@ -188,6 +198,7 @@ public class SDKConfiguration {
         public static boolean showHamburgerMenu = false;
         public static boolean history_initial_call = false;
         public static boolean disable_action_bar = true;
+        public static boolean update_custom_data_to_user_message = false;
     }
 
     public static boolean isTimeStampsRequired() {

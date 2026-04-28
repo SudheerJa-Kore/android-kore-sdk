@@ -37,9 +37,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import kore.botssdk.R;
 import kore.botssdk.bot.BotClient;
@@ -62,7 +59,6 @@ import kore.botssdk.models.BotResponse;
 import kore.botssdk.models.BrandingModel;
 import kore.botssdk.net.BrandingRestBuilder;
 import kore.botssdk.net.RestBuilder;
-import kore.botssdk.net.RestResponse;
 import kore.botssdk.net.SDKConfig;
 import kore.botssdk.net.SDKConfiguration;
 import kore.botssdk.net.WebHookRestBuilder;
@@ -334,11 +330,17 @@ public class NewBotChatActivity extends BotAppCompactActivity implements BotChat
         switch (state) {
             case CONNECTING:
                 taskProgressBar.setVisibility(VISIBLE);
+
+                if(SDKConfiguration.Server.getBotStatusListener() != null)
+                    SDKConfiguration.Server.getBotStatusListener().onBotConnecting();
+
                 break;
             case CONNECTED: {
                 taskProgressBar.setVisibility(View.GONE);
                 baseFooterFragment.enableSendButton();
-//                startTimeout();
+
+                if(SDKConfiguration.Server.getBotStatusListener() != null)
+                    SDKConfiguration.Server.getBotStatusListener().onBotConnected();
             }
             break;
             case DISCONNECTED:
@@ -346,22 +348,14 @@ public class NewBotChatActivity extends BotAppCompactActivity implements BotChat
                 taskProgressBar.setVisibility(VISIBLE);
                 baseFooterFragment.setDisabled(true);
                 baseFooterFragment.updateUI();
+
+                if(SDKConfiguration.Server.getBotStatusListener() != null)
+                    SDKConfiguration.Server.getBotStatusListener().onBotDisconnected();
             }
             break;
             default:
                 taskProgressBar.setVisibility(View.GONE);
         }
-    }
-
-    private void startTimeout() {
-        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-
-        scheduler.scheduleWithFixedDelay(() -> {
-            RestResponse.BotCustomData customData = new RestResponse.BotCustomData();
-            customData.put("Updated Data", System.currentTimeMillis());
-            SDKConfiguration.Server.customData.putAll(customData);
-
-        }, 0, 30, TimeUnit.SECONDS);
     }
 
     @Override
@@ -375,6 +369,9 @@ public class NewBotChatActivity extends BotAppCompactActivity implements BotChat
 
         AlertDialog.Builder builder = new AlertDialog.Builder(NewBotChatActivity.this);
         builder.setMessage(R.string.bot_not_connected).setCancelable(false).setPositiveButton(R.string.ok, dialogClickListener).show();
+
+        if(SDKConfiguration.Server.getBotStatusListener() != null)
+            SDKConfiguration.Server.getBotStatusListener().onBotConnectionFail("Connection to the bot failed after several retries");
     }
 
     @Override

@@ -12,6 +12,7 @@ import java.util.HashMap;
 import kore.botssdk.fragment.content.BaseContentFragment;
 import kore.botssdk.fragment.footer.BaseFooterFragment;
 import kore.botssdk.fragment.header.BaseHeaderFragment;
+import kore.botssdk.websocket.BotStatusListener;
 import kore.botssdk.models.BotResponse;
 import kore.botssdk.models.BrandingModel;
 
@@ -88,6 +89,10 @@ public class SDKConfig {
 
     public static void showHeaderMinimize(boolean isShowHeaderMinimize) {
         SDKConfig.isShowHeaderMinimize = isShowHeaderMinimize;
+    }
+
+    public static void setBotStatusUpdateListener(BotStatusListener botStatusListener) {
+        SDKConfiguration.Server.setBotStatusListener(botStatusListener);
     }
 
     public static boolean isIsShowHeaderMinimize() {

@@ -176,7 +176,7 @@
     <string name="minimize">Minimize</string>
     <string name="close">Close</string>
     <string name="close_or_minimize">Would you like to close the conversation or minimize.</string>
-    <string name="bot_not_connected">Unable to connect to the bot. Please try again later</string>
+    <string name="bot_not_connected">Connection to the bot failed after several retries. Please verify your internet connection and try again later.</string>
     <string name="colon" translatable="false">:</string>
     <string name="default_click_time" translatable="false">12:00:AM</string>
     <string name="what_can_be_improved" translatable="false">What can be Improved ?</string>
