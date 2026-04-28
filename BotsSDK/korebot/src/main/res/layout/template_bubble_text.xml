@@ -14,18 +14,45 @@
         android:longClickable="false"
         android:textSize="16sp" />
 
-    <kore.botssdk.view.CustomTextView
-        android:id="@+id/tvSendAgain"
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/llSendAgain"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/send_again"
         android:layout_gravity="end"
-        android:drawablePadding="@dimen/dimen_5dp"
+        android:layout_marginEnd="@dimen/dimen_10dp"
         android:gravity="center_vertical"
-        android:drawableStart="@drawable/resource_return"
-        android:drawableTint="@color/color_red"
-        android:layout_marginEnd="@dimen/dimen_20dp"
-        android:textColor="@color/color_red"
-        android:visibility="gone"/>
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <kore.botssdk.view.CustomTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sending_failed"
+            android:textColor="@color/color_red"/>
+
+        <kore.botssdk.view.CustomTextView
+            android:id="@+id/tvSend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/send_again"
+            android:textColor="@color/colorPrimary"/>
+
+        <kore.botssdk.view.CustomTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/or"
+            android:layout_marginEnd="@dimen/dimen_5dp"
+            android:layout_marginStart="@dimen/dimen_5dp"
+            android:textColor="@color/gray_modern"/>
+
+        <kore.botssdk.view.CustomTextView
+            android:id="@+id/tvDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/delete"
+            android:textColor="@color/colorPrimary"/>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
 
 </androidx.appcompat.widget.LinearLayoutCompat>

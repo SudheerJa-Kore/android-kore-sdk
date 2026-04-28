@@ -409,6 +409,11 @@ public class BotChatFragment extends Fragment implements BotChatViewListener, Co
     }
 
     @Override
+    public void onDeleteClick(BaseBotMessage message) {
+        botContentFragment.deleteMessage(message);
+    }
+
+    @Override
     public void invokeGenericWebView(String url) {
         if (url != null && !url.isEmpty()) {
             Intent intent = new Intent(getContext(), GenericWebViewActivity.class);

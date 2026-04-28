@@ -36,7 +36,7 @@ public class PayloadHeaderModel {
         this.payload = payload;
     }
 
-    public class PayloadHeaderInner {
+    public static class PayloadHeaderInner {
 
         public void setTemplate_type(String template_type) {
             this.template_type = template_type;
@@ -64,7 +64,6 @@ public class PayloadHeaderModel {
         private String direction;
         private boolean stacked;
         private String layout;
-        private PayloadInner.Skill skill;
         private String composeText;
         private String focus;
         private String heading;
@@ -995,10 +994,6 @@ public class PayloadHeaderModel {
 
         public void setPickerTemplateModels(ArrayList<QuickReplyTemplate> pickerTemplateModels) {
             this.pickerTemplateModels = pickerTemplateModels;
-        }
-
-        public PayloadInner.Skill getSkill() {
-            return skill;
         }
 
         public ArrayList<ContactInfoModel> getContactInfoModels() {

@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="@dimen/dimen_10dp"
+        android:contentDescription="@string/button_to_close_the_full_table_view"
         android:layout_marginBottom="@dimen/dimen_15dp"
         android:src="@drawable/cancel_widget" />
 

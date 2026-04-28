@@ -508,4 +508,14 @@ public class ChatAdapter extends RecyclerView.Adapter<BaseViewHolder> implements
             }
         }
     }
+
+    public void deleteMessage(BaseBotMessage message) {
+        int position = baseBotMessageArrayList.indexOf(message);
+
+        if (position != -1) {
+            baseBotMessageArrayList.remove(position);
+            notifyItemRemoved(position);
+            notifyItemRangeChanged(position, baseBotMessageArrayList.size());
+        }
+    }
 }

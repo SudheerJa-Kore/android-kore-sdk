@@ -182,6 +182,43 @@ public class BotSocketConnectionManager extends BaseSocketConnectionManager {
 
     }
 
+    public interface JwtCallback {
+        void onSuccess(String token);
+        void onError(String error);
+    }
+
+    public void getJwtTokenWithConfig(JwtCallback callback) {
+
+        Call<JWTTokenResponse> call =
+                BotJWTRestBuilder.getBotJWTRestAPI().getJWTToken(getRequestObject());
+
+        call.enqueue(new Callback<JWTTokenResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<JWTTokenResponse> call,
+                                   @NonNull Response<JWTTokenResponse> response) {
+
+                if (response.isSuccessful() && response.body() != null) {
+                    try {
+                        String token = response.body().getJwt();
+                        callback.onSuccess(token);
+                    } catch (Exception e) {
+                        LogUtils.e("JWT_ERROR", e.toString());
+                        callback.onError("Parsing error");
+                    }
+                } else {
+                    callback.onError("Response not successful");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JWTTokenResponse> call,
+                                  @NonNull Throwable t) {
+                LogUtils.e("JWT_ERROR", t.getMessage());
+                callback.onError(t.getMessage());
+            }
+        });
+    }
+
     private void makeJwtGrantCall(String jwtToken, boolean isRefresh) {
         try {
             botName = SDKConfiguration.Client.bot_name;
@@ -193,6 +230,10 @@ public class BotSocketConnectionManager extends BaseSocketConnectionManager {
             }
         } catch (Exception e) {
             LogUtils.e("Error at makeJwtGrantCall", e+"");
+
+            if(SDKConfiguration.Server.getBotStatusListener() != null)
+                SDKConfiguration.Server.getBotStatusListener().onBotConnectionFail("Error at makeJwtGrantCall"+e);
+
             Toast.makeText(mContext, "Something went wrong in fetching JWT", Toast.LENGTH_SHORT).show();
             connection_state = isRefresh ? CONNECTION_STATE.CONNECTED_BUT_DISCONNECTED : DISCONNECTED;
             if (chatListener != null) chatListener.onConnectionStateChanged(connection_state, false);
@@ -373,6 +414,9 @@ public class BotSocketConnectionManager extends BaseSocketConnectionManager {
         //Update the bot content list with the send message
         RestResponse.BotPayLoad botPayLoad = new RestResponse.BotPayLoad();
         RestResponse.BotMessage botMessage = new RestResponse.BotMessage(message, "");
+
+        if(SDKConfiguration.OverrideKoreConfig.update_custom_data_to_user_message)
+            customData.putAll(SDKConfiguration.Server.customData);
 
         customData.put("botToken", getAccessToken());
         botMessage.setCustomData(customData);

@@ -28,6 +28,7 @@
             android:layout_marginTop="4dp"
             android:paddingHorizontal="6dp"
             android:paddingVertical="10dp"
+            android:contentDescription="@string/button_to_show_all_the_table_content_at_full_view"
             android:text="@string/show_more"
             android:textColor="@color/left_bubble_text_color"
             android:textSize="@dimen/text_size_sub_header" />

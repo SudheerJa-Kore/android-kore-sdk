@@ -27,4 +27,8 @@ public interface ComposeFooterInterface {
     void copyMessageToComposer(String text, boolean isForOnboard);
 
     void onDeepLinkClicked(String url);
+
+    void onDeleteClick(BaseBotMessage message);
+
+
 }

@@ -330,10 +330,17 @@ public class NewBotChatActivity extends BotAppCompactActivity implements BotChat
         switch (state) {
             case CONNECTING:
                 taskProgressBar.setVisibility(VISIBLE);
+
+                if(SDKConfiguration.Server.getBotStatusListener() != null)
+                    SDKConfiguration.Server.getBotStatusListener().onBotConnecting();
+
                 break;
             case CONNECTED: {
                 taskProgressBar.setVisibility(View.GONE);
                 baseFooterFragment.enableSendButton();
+
+                if(SDKConfiguration.Server.getBotStatusListener() != null)
+                    SDKConfiguration.Server.getBotStatusListener().onBotConnected();
             }
             break;
             case DISCONNECTED:
@@ -341,6 +348,9 @@ public class NewBotChatActivity extends BotAppCompactActivity implements BotChat
                 taskProgressBar.setVisibility(VISIBLE);
                 baseFooterFragment.setDisabled(true);
                 baseFooterFragment.updateUI();
+
+                if(SDKConfiguration.Server.getBotStatusListener() != null)
+                    SDKConfiguration.Server.getBotStatusListener().onBotDisconnected();
             }
             break;
             default:
@@ -359,6 +369,9 @@ public class NewBotChatActivity extends BotAppCompactActivity implements BotChat
 
         AlertDialog.Builder builder = new AlertDialog.Builder(NewBotChatActivity.this);
         builder.setMessage(R.string.bot_not_connected).setCancelable(false).setPositiveButton(R.string.ok, dialogClickListener).show();
+
+        if(SDKConfiguration.Server.getBotStatusListener() != null)
+            SDKConfiguration.Server.getBotStatusListener().onBotConnectionFail("Connection to the bot failed after several retries");
     }
 
     @Override
@@ -456,6 +469,11 @@ public class NewBotChatActivity extends BotAppCompactActivity implements BotChat
 
     @Override
     public void onDeepLinkClicked(String url) {
+    }
+
+    @Override
+    public void onDeleteClick(BaseBotMessage message) {
+        botContentFragment.deleteMessage(message);
     }
 
     @Override
