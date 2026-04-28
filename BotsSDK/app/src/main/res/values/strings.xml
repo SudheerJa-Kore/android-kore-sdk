@@ -26,6 +26,9 @@
         <item quantity="one">1 Attachment </item>
         <item quantity="other">%d  Attachments</item>
     </plurals>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="tomorrow">Tomorrow</string>
     <string name="sortable_indicator_content_description">Sortable Indicator</string>
     <string name="default_header">Header %1$d</string>
     <string name="default_cell">Data [%1$d:%2$d]</string>
