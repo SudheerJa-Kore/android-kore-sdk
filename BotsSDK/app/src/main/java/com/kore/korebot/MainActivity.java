@@ -1,22 +1,14 @@
 package com.kore.korebot;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.kore.korebot.customtemplates.LinkTemplateHolder;
 
@@ -147,15 +139,6 @@ public class MainActivity extends AppCompatActivity implements BotStatusListener
 
         Button launchBotBtn = findViewById(R.id.launchBotBtn);
         launchBotBtn.setOnClickListener(view -> launchBotChatActivity());
-
-        if (Build.VERSION.SDK_INT >= 33) {
-            if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.POST_NOTIFICATIONS)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
-                return;
-            }
-        }
     }
 
     private void startTimeout() {
@@ -164,49 +147,43 @@ public class MainActivity extends AppCompatActivity implements BotStatusListener
         isSchedulerStarted = true;
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
-        scheduler.scheduleWithFixedDelay(() -> {
-            BotSocketConnectionManager.getInstance().getJwtTokenWithConfig(new BotSocketConnectionManager.JwtCallback() {
-                @Override
-                public void onSuccess(String token) {
-                    LogUtils.e("JWT Updated", token);
+        scheduler.scheduleWithFixedDelay(() -> BotSocketConnectionManager.getInstance().getJwtTokenWithConfig(new BotSocketConnectionManager.JwtCallback() {
+            @Override
+            public void onSuccess(String token) {
+                LogUtils.e("JWT Updated", token);
 
-                    //Getting the Jwt Token from out side SDK
-                    RestResponse.BotCustomData customData = new RestResponse.BotCustomData();
-                    customData.put("jwt_token", token);
-                    SDKConfiguration.Server.customData.putAll(customData);
+                //Getting the Jwt Token from out side SDK
+                RestResponse.BotCustomData customData = new RestResponse.BotCustomData();
+                customData.put("jwt_token", token);
+                SDKConfiguration.Server.customData.putAll(customData);
 
-                    //To kill the Bot from out side the SDK
-                    BotSocketConnectionManager.killInstance();
+                //To kill the Bot from out side the SDK
+                BotSocketConnectionManager.killInstance();
 
-                    //Set the JWT Token to reuse in connecting to the Bot
-                    SDKConfiguration.JWTServer.setJwt_token(token);
+                //Set the JWT Token to reuse in connecting to the Bot
+                SDKConfiguration.JWTServer.setJwt_token(token);
 
-                    //BroadCast to call the Bot Connect from out side of the SDK
-                    Intent intent = new Intent(BundleConstants.BOT_RECONNECT);
-                    sendBroadcast(intent);
-                }
+                //BroadCast to call the Bot Connect from out side of the SDK
+                Intent intent = new Intent(BundleConstants.BOT_RECONNECT);
+                sendBroadcast(intent);
+            }
 
-                @Override
-                public void onError(String error) {
-                    LogUtils.e("JWT", error);
-                }
-            });
-
-        }, 5, 5, TimeUnit.MINUTES);
+            @Override
+            public void onError(String error) {
+                LogUtils.e("JWT", error);
+            }
+        }), 5, 5, TimeUnit.MINUTES);
     }
 
     // You can do the assignment inside onAttach or onCreate, i.e, before the activity is displayed
     ActivityResultLauncher<Intent> chatActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        // There are no request codes
-                        Intent data = result.getData();
-                        if (data != null && data.hasExtra(BundleUtils.CHAT_BOT_CLOSE_OR_MINIMIZED)) {
-                            LogUtils.e("ChatBot is", Objects.requireNonNull(data.getStringExtra(BundleUtils.CHAT_BOT_CLOSE_OR_MINIMIZED)));
-                        }
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    // There are no request codes
+                    Intent data = result.getData();
+                    if (data != null && data.hasExtra(BundleUtils.CHAT_BOT_CLOSE_OR_MINIMIZED)) {
+                        LogUtils.e("ChatBot is", Objects.requireNonNull(data.getStringExtra(BundleUtils.CHAT_BOT_CLOSE_OR_MINIMIZED)));
                     }
                 }
             });
@@ -238,14 +215,6 @@ public class MainActivity extends AppCompatActivity implements BotStatusListener
         customData.put("jwt_token", jwtToken);
         return customData;
     }
-
-    // Declare the launcher at the top of your Activity/Fragment:
-    private final ActivityResultLauncher<String> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (!isGranted) {
-                    Toast.makeText(this, "Permission needed to send push notifications", Toast.LENGTH_SHORT).show();
-                }
-            });
 
     private BrandingModel getLocalBrandingModel() {
         BrandingModel brandingModel = new BrandingModel();
