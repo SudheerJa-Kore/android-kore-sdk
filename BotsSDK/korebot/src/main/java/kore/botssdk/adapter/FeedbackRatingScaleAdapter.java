@@ -6,9 +6,11 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -18,7 +20,6 @@ import kore.botssdk.listener.ChatContentStateListener;
 import kore.botssdk.listener.ComposeFooterInterface;
 import kore.botssdk.models.BotResponse;
 import kore.botssdk.models.FeedbackRatingModel;
-import kore.botssdk.view.CustomTextView;
 
 public class FeedbackRatingScaleAdapter extends RecyclerView.Adapter<FeedbackRatingScaleAdapter.ViewHolder> {
     private final List<FeedbackRatingModel> items;
@@ -60,7 +61,8 @@ public class FeedbackRatingScaleAdapter extends RecyclerView.Adapter<FeedbackRat
             holder.tvRating.setTextColor(ContextCompat.getColor(context, R.color.white));
             holder.tvRating.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.primary)));
         } else {
-            holder.tvRating.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(ratingModel.getColor())));
+            int colorWithAlpha = ColorUtils.setAlphaComponent(Color.parseColor(ratingModel.getColor()), 128);
+            holder.tvRating.setBackgroundTintList(ColorStateList.valueOf(colorWithAlpha));
             holder.tvRating.setTextColor(ContextCompat.getColor(context, R.color.gray_modern));
         }
         holder.tvRating.setOnClickListener(view -> {
@@ -74,11 +76,11 @@ public class FeedbackRatingScaleAdapter extends RecyclerView.Adapter<FeedbackRat
 
     @Override
     public int getItemCount() {
-        return 0;
+        return items.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        CustomTextView tvRating;
+        TextView tvRating;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

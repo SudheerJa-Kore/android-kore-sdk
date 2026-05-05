@@ -118,7 +118,7 @@ public class FeedbackTemplateHolder extends BaseViewHolder implements View.OnCli
                 adapter.setListener(contentStateListener);
                 rvRatingScale.setAdapter(adapter);
             }
-
+            break;
             case VIEW_CSAT: {
                 resetAll();
                 int selectedFeedback = contentState != null ? (int) contentState.get(BotResponse.SELECTED_FEEDBACK) : -1;
@@ -141,7 +141,7 @@ public class FeedbackTemplateHolder extends BaseViewHolder implements View.OnCli
                 thumbsUpDown.addItemDecoration(new VerticalSpaceItemDecoration(20));
 
                 List<FeedbackThumbsModel> arrFeedbackThumbsModels = payloadInner.getThumpsUpDownArrays();
-                if (arrFeedbackThumbsModels != null && arrFeedbackThumbsModels.size() > 0) {
+                if (arrFeedbackThumbsModels != null && !arrFeedbackThumbsModels.isEmpty()) {
                     FeedbackThumbsAdapter adapter = new FeedbackThumbsAdapter(msgId, arrFeedbackThumbsModels, selectedItem, isLastItem(), contentStateListener);
                     adapter.setComposeFooterInterface(composeFooterInterface);
                     thumbsUpDown.setAdapter(adapter);

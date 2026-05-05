@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.gson.Gson;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -28,7 +27,6 @@ import kore.botssdk.models.PayloadInner;
 import kore.botssdk.models.PayloadOuter;
 import kore.botssdk.net.SDKConfiguration;
 import kore.botssdk.utils.BundleConstants;
-import kore.botssdk.utils.LogUtils;
 import kore.botssdk.utils.StringUtils;
 import kore.botssdk.viewholders.AdvanceMultiSelectTemplateHolder;
 import kore.botssdk.viewholders.AdvancedListTemplateHolder;
@@ -248,6 +246,8 @@ public class ChatAdapter extends RecyclerView.Adapter<BaseViewHolder> implements
                             return TEMPLATE_RESULTS;
                         case BotResponse.COMPONENT_TYPE_LINK:
                             return TEMPLATE_LINK;
+                        case BotResponse.TEMPLATE_BUTTON_LINK:
+                            return TEMPLATE_BUTTON_LINK;
                         default:
                             return TEMPLATE_BUBBLE_RESPONSE;
                     }
@@ -371,11 +371,7 @@ public class ChatAdapter extends RecyclerView.Adapter<BaseViewHolder> implements
         holder.setBottomSheetDialog(bottomSheetDialog);
         holder.setMsgTime(baseBotMessage.getTimeStamp(), baseBotMessage instanceof BotRequest, getItemViewType(position));
         if (baseBotMessage instanceof BotResponse) {
-            if (StringUtils.isNotEmpty(((BotResponse) baseBotMessage).getIcon()))
-                holder.setBotIcon(((BotResponse) baseBotMessage).getIcon());
-            else if (StringUtils.isNotEmpty(SDKConfiguration.BubbleColors.getIcon_url()))
-                holder.setBotIcon(SDKConfiguration.BubbleColors.getIcon_url());
-            else holder.setBotIcon(null);
+            applyBotIcon(holder, (BotResponse) baseBotMessage);
         }
         Integer headerPosition = headersMap.get(baseBotMessage.getFormattedDate());
         holder.setTimeStamp(headerPosition != null && headerPosition == position ? baseBotMessage.getFormattedDate() : null);
@@ -383,6 +379,19 @@ public class ChatAdapter extends RecyclerView.Adapter<BaseViewHolder> implements
         holder.setComposeFooterInterface(composeFooterInterface);
         holder.setInvokeGenericWebViewInterface(invokeGenericWebViewInterface);
         holder.bind(getItem(position));
+    }
+
+    private void applyBotIcon(BaseViewHolder holder, BotResponse response) {
+        if (response.isFromAgent()) {
+            holder.setAgentBotIcon();
+            return;
+        }
+
+        String icon = StringUtils.isNotEmpty(response.getIcon())
+                ? response.getIcon()
+                : SDKConfiguration.BubbleColors.getIcon_url();
+
+        holder.setBotIcon(icon);
     }
 
     @Override

@@ -449,6 +449,7 @@ public class BotSocketConnectionManager extends BaseSocketConnectionManager {
     public void sendAttachmentMessage(String message, ArrayList<HashMap<String, String>> attachments) {
         stopTextToSpeech();
         final RestResponse.BotPayLoad botPayLoad = getBotPayLoad(message, attachments, botName, streamId);
+
         Gson gson = new Gson();
         String jsonPayload = gson.toJson(botPayLoad);
 
@@ -473,6 +474,10 @@ public class BotSocketConnectionManager extends BaseSocketConnectionManager {
         RestResponse.BotPayLoad botPayLoad = new RestResponse.BotPayLoad();
 
         customData = new RestResponse.BotCustomData();
+
+        if(SDKConfiguration.OverrideKoreConfig.update_custom_data_to_user_message)
+            customData.putAll(SDKConfiguration.Server.customData);
+
         customData.put("botToken", getAccessToken());
 
         if (message != null) {
@@ -502,6 +507,10 @@ public class BotSocketConnectionManager extends BaseSocketConnectionManager {
     public void sendPayload(String message, String payLoad) {
         stopTextToSpeech();
         RestResponse.BotPayLoad botPayLoad = new RestResponse.BotPayLoad();
+        customData = new RestResponse.BotCustomData();
+
+        if(SDKConfiguration.OverrideKoreConfig.update_custom_data_to_user_message)
+            customData.putAll(SDKConfiguration.Server.customData);
 
         //Update the bot content list with the send message
         RestResponse.BotMessage botMessage = new RestResponse.BotMessage(payLoad, message);

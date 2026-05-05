@@ -25,7 +25,7 @@
         android:text="@string/select"
         android:maxLines="2"
         android:textColor="#2e6fc5"
-        android:textSize="@dimen/text_size_small" />
+        android:textSize="@dimen/text_size_normal" />
 
 </LinearLayout>
 

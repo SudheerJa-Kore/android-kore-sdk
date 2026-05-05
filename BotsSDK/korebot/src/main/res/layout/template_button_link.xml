@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/dimen_15dp"
-    android:background="@drawable/cancel_action_back"
+    android:background="@drawable/button_link_bg"
     android:orientation="vertical">
 
     <kore.botssdk.view.CustomTextView
