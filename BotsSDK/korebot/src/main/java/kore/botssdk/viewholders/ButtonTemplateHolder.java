@@ -1,20 +1,22 @@
 package kore.botssdk.viewholders;
 
-import static kore.botssdk.viewUtils.DimensionUtil.dp1;
-
+import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.LinearLayoutCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexWrap;
+import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.flexbox.JustifyContent;
 
 import java.util.ArrayList;
 
 import kore.botssdk.R;
 import kore.botssdk.adapter.ButtonTemplateAdapter;
-import kore.botssdk.itemdecoration.VerticalSpaceItemDecoration;
 import kore.botssdk.models.BaseBotMessage;
 import kore.botssdk.models.BotButtonModel;
 import kore.botssdk.models.PayloadInner;
@@ -39,11 +41,14 @@ public class ButtonTemplateHolder extends BaseViewHolder {
         ArrayList<BotButtonModel> botButtonModels = payloadInner.getButtons();
         final ButtonTemplateAdapter buttonTypeAdapter;
         RecyclerView buttonsList = itemView.findViewById(R.id.buttonsList);
-        buttonsList.setLayoutManager(new LinearLayoutManager(buttonsList.getContext()));
+        FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(itemView.getContext());
+        layoutManager.setFlexDirection(FlexDirection.ROW);
+        layoutManager.setJustifyContent(JustifyContent.FLEX_START);
+        layoutManager.setFlexWrap(FlexWrap.WRAP);
+        buttonsList.setLayoutManager(layoutManager);
 
-        if (buttonsList.getItemDecorationCount() == 0) {
-            buttonsList.addItemDecoration(new VerticalSpaceItemDecoration((int) (5 * dp1)));
-        }
+        if(buttonsList.getItemDecorationCount() == 0)
+            buttonsList.addItemDecoration(new SpaceItemDecoration(15));
 
         if(botButtonModels != null && !botButtonModels.isEmpty()) {
             buttonTypeAdapter = new ButtonTemplateAdapter(buttonsList.getContext());
@@ -51,6 +56,21 @@ public class ButtonTemplateHolder extends BaseViewHolder {
             buttonTypeAdapter.setComposeFooterInterface(composeFooterInterface);
             buttonTypeAdapter.setInvokeGenericWebViewInterface(invokeGenericWebViewInterface);
             buttonTypeAdapter.populateData(botButtonModels, isLastItem());
+        }
+    }
+
+    public static class SpaceItemDecoration extends RecyclerView.ItemDecoration {
+
+        private final int space;
+
+        public SpaceItemDecoration(int space) {
+            this.space = space;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            outRect.right = space;   // horizontal gap
+            outRect.top = space;  // vertical gap
         }
     }
 }

@@ -1,6 +1,7 @@
 package kore.botssdk.adapter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -28,6 +29,7 @@ public class FeedbackRatingScaleAdapter extends RecyclerView.Adapter<FeedbackRat
     private ComposeFooterInterface composeFooterInterface;
     private ChatContentStateListener listener;
     private final String msgId;
+    private String highlightedColor, highlightedTextColor;
 
     public void setComposeFooterInterface(ComposeFooterInterface composeFooterInterface) {
         this.composeFooterInterface = composeFooterInterface;
@@ -37,11 +39,19 @@ public class FeedbackRatingScaleAdapter extends RecyclerView.Adapter<FeedbackRat
         this.listener = listener;
     }
 
-    public FeedbackRatingScaleAdapter(String msgId, List<FeedbackRatingModel> items, boolean isEnabled, int selectedPos) {
+    public FeedbackRatingScaleAdapter(Context context, String msgId, List<FeedbackRatingModel> items, boolean isEnabled, int selectedPos) {
         this.msgId = msgId;
         this.selectedPos = selectedPos;
         this.items = items;
         this.isEnabled = isEnabled;
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences(BotResponse.THEME_NAME, Context.MODE_PRIVATE);
+
+        highlightedColor = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.primary));
+        highlightedTextColor = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.white));
+
+        highlightedColor = sharedPreferences.getString(BotResponse.BUBBLE_RIGHT_BG_COLOR, highlightedColor);
+        highlightedTextColor = sharedPreferences.getString(BotResponse.BUBBLE_RIGHT_TEXT_COLOR, highlightedTextColor);
     }
 
     @NonNull
@@ -58,8 +68,8 @@ public class FeedbackRatingScaleAdapter extends RecyclerView.Adapter<FeedbackRat
         Context context = holder.tvRating.getContext();
         holder.tvRating.setText(String.valueOf(ratingModel.getNumberId()));
         if (selectedPos == position) {
-            holder.tvRating.setTextColor(ContextCompat.getColor(context, R.color.white));
-            holder.tvRating.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.primary)));
+            holder.tvRating.setTextColor(Color.parseColor(highlightedTextColor));
+            holder.tvRating.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(highlightedColor)));
         } else {
             int colorWithAlpha = ColorUtils.setAlphaComponent(Color.parseColor(ratingModel.getColor()), 128);
             holder.tvRating.setBackgroundTintList(ColorStateList.valueOf(colorWithAlpha));

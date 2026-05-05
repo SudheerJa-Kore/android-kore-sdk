@@ -155,7 +155,7 @@
         android:layout_marginTop="@dimen/dimen_5dp"
         android:layout_marginBottom="@dimen/dimen_5dp"
         android:visibility="gone"
-        android:padding="@dimen/dimen_3dp">
+        android:padding="@dimen/dimen_5dp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvRatingScale"

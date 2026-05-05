@@ -113,7 +113,7 @@ public class FeedbackTemplateHolder extends BaseViewHolder implements View.OnCli
                 rvRatingScale.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.HORIZONTAL, false));
                 List<FeedbackRatingModel> array = payloadInner.getNumbersArrays();
                 String msgId = ((BotResponse) baseBotMessage).getMessageId();
-                FeedbackRatingScaleAdapter adapter = new FeedbackRatingScaleAdapter(msgId, array, isLastItem(), selectedFeedback);
+                FeedbackRatingScaleAdapter adapter = new FeedbackRatingScaleAdapter(itemView.getContext(), msgId, array, isLastItem(), selectedFeedback);
                 adapter.setComposeFooterInterface(composeFooterInterface);
                 adapter.setListener(contentStateListener);
                 rvRatingScale.setAdapter(adapter);
