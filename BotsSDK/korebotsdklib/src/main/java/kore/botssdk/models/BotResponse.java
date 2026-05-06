@@ -114,7 +114,11 @@ public class BotResponse extends BaseBotMessage {
     public static final String SELECTED_TIME = "selected_time";
     public static final String IS_VIEW_MORE = "is_view_more";
     public static final String DATE_FORMAT = "dd/MM/yyyy";
-
+    public static final String PLAIN = "plain";
+    public static final String BACKGROUND_INVERTED = "backgroundInverted";
+    public static final String STACKED_BUTTONS = "stackedButtons";
+    public static final String TEXT_INVERTED = "textInverted";
+    public static final String DIGITAL_FORM = "digitalForm";
     private String type;
     private BotInfoModel botInfo;
     private ArrayList<BotResponseMessage> message;
