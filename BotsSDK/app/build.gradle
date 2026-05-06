@@ -59,7 +59,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-basement:18.9.0'
     implementation 'com.google.android.gms:play-services-base:18.9.0'
 
-//    implementation 'com.github.Koredotcom:android-kore-sdk:10.24.1'
+//    implementation 'com.github.Koredotcom:android-kore-sdk:10.25.0'
 
     implementation(project(':korebot')) {
         exclude module: 'support-v4'

@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -75,6 +76,28 @@ public class ButtonLinkTemplateAdapter extends RecyclerView.Adapter<ButtonLinkTe
                 }
             }
         });
+
+        holder.bot_options_more.setOnClickListener(v -> {
+            if (composeFooterInterface != null && invokeGenericWebViewInterface != null && isEnabled) {
+                if (BundleConstants.BUTTON_TYPE_WEB_URL.equalsIgnoreCase(buttonTemplate.getType())) {
+
+                    if (!StringUtils.isNullOrEmpty(buttonTemplate.getUrl())) {
+                        if (buttonTemplate.isSamePageNavigation())
+                            composeFooterInterface.onDeepLinkClicked(buttonTemplate.getUrl());
+                        else
+                            invokeGenericWebViewInterface.invokeGenericWebView(buttonTemplate.getUrl());
+                    }
+                } else if (BundleConstants.BUTTON_TYPE_URL.equalsIgnoreCase(buttonTemplate.getType())) {
+                    invokeGenericWebViewInterface.invokeGenericWebView(buttonTemplate.getUrl());
+                } else if (BundleConstants.BUTTON_TYPE_USER_INTENT.equalsIgnoreCase(buttonTemplate.getType())) {
+                    invokeGenericWebViewInterface.handleUserActions(buttonTemplate.getAction(), buttonTemplate.getCustomData());
+                } else {
+                    String title = buttonTemplate.getTitle();
+                    String payload = buttonTemplate.getPayload();
+                    composeFooterInterface.onSendClick(title, payload, false);
+                }
+            }
+        });
     }
 
     private BotButtonModel getItem(int position) {
@@ -97,11 +120,13 @@ public class ButtonLinkTemplateAdapter extends RecyclerView.Adapter<ButtonLinkTe
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView button;
         ImageView ivDeepLink;
+        LinearLayout bot_options_more;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             button = itemView.findViewById(R.id.more_txt_view);
             ivDeepLink = itemView.findViewById(R.id.ivDeepLink);
+            bot_options_more = itemView.findViewById(R.id.bot_options_more);
             button.setTextColor(Color.parseColor("#2e6fc5"));
         }
     }
