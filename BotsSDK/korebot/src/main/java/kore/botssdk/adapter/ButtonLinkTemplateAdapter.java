@@ -1,5 +1,7 @@
 package kore.botssdk.adapter;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -16,6 +19,7 @@ import kore.botssdk.R;
 import kore.botssdk.listener.ComposeFooterInterface;
 import kore.botssdk.listener.InvokeGenericWebViewInterface;
 import kore.botssdk.models.BotButtonModel;
+import kore.botssdk.models.BotResponse;
 import kore.botssdk.utils.BundleConstants;
 import kore.botssdk.utils.StringUtils;
 
@@ -24,16 +28,21 @@ public class ButtonLinkTemplateAdapter extends RecyclerView.Adapter<ButtonLinkTe
     private final boolean isEnabled;
     private ComposeFooterInterface composeFooterInterface;
     private InvokeGenericWebViewInterface invokeGenericWebViewInterface;
+    String textColor;
 
-    public ButtonLinkTemplateAdapter(ArrayList<BotButtonModel> buttons, boolean isEnabled) {
+    public ButtonLinkTemplateAdapter(Context context, ArrayList<BotButtonModel> buttons, boolean isEnabled) {
         this.buttons = buttons;
         this.isEnabled = isEnabled;
+        SharedPreferences sharedPreferences = context.getSharedPreferences(BotResponse.THEME_NAME, Context.MODE_PRIVATE);
+
+        textColor = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.white));
+        textColor = sharedPreferences.getString(BotResponse.BUTTON_ACTIVE_TXT_COLOR, textColor);
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.meeting_slot_button, parent, false));
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.bot_button_link_item_cell, parent, false));
     }
 
     @Override
@@ -43,7 +52,7 @@ public class ButtonLinkTemplateAdapter extends RecyclerView.Adapter<ButtonLinkTe
         holder.button.setText(buttonTemplate.getTitle());
         holder.ivDeepLink.setVisibility(View.GONE);
 
-        holder.button.setTextColor(Color.parseColor("#2e6fc5"));
+        holder.button.setTextColor(Color.parseColor(textColor));
 
         holder.button.setOnClickListener(v -> {
             if (composeFooterInterface != null && invokeGenericWebViewInterface != null && isEnabled) {

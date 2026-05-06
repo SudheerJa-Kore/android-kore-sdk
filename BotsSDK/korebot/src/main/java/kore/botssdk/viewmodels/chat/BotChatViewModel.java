@@ -351,7 +351,7 @@ public class BotChatViewModel extends ViewModel {
                 chatView.addMessageToAdapter(botResponse);
             } else chatView.stopTypingStatus();
 
-            if (!isActivityResumed) {
+            if (!isActivityResumed && SDKConfiguration.OverrideKoreConfig.showLocalNotification) {
                 postNotification("Kore Message", "Received new message.");
             }
 

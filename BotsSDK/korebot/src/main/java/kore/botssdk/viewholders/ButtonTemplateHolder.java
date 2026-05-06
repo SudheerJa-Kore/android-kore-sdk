@@ -1,5 +1,6 @@
 package kore.botssdk.viewholders;
 
+import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -8,12 +9,18 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexWrap;
+import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.flexbox.JustifyContent;
+
 import java.util.ArrayList;
 
 import kore.botssdk.R;
 import kore.botssdk.adapter.ButtonTemplateAdapter;
 import kore.botssdk.models.BaseBotMessage;
 import kore.botssdk.models.BotButtonModel;
+import kore.botssdk.models.BotResponse;
 import kore.botssdk.models.PayloadInner;
 
 public class ButtonTemplateHolder extends BaseViewHolder {
@@ -36,14 +43,45 @@ public class ButtonTemplateHolder extends BaseViewHolder {
         ArrayList<BotButtonModel> botButtonModels = payloadInner.getButtons();
         final ButtonTemplateAdapter buttonTypeAdapter;
         RecyclerView buttonsList = itemView.findViewById(R.id.buttonsList);
-        buttonsList.setLayoutManager(new LinearLayoutManager(buttonsList.getContext()));
+        String variation = payloadInner.getVariation() != null ? payloadInner.getVariation() : "";
 
-        if(botButtonModels != null && !botButtonModels.isEmpty()) {
-            buttonTypeAdapter = new ButtonTemplateAdapter(buttonsList.getContext());
+        switch (variation) {
+            case BotResponse.PLAIN:
+            case BotResponse.TEXT_INVERTED:
+            case BotResponse.BACKGROUND_INVERTED:
+                FlexboxLayoutManager flayoutManager = new FlexboxLayoutManager(itemView.getContext());
+                flayoutManager.setJustifyContent(JustifyContent.FLEX_START);
+                flayoutManager.setFlexDirection(FlexDirection.ROW);
+                buttonsList.setLayoutManager(flayoutManager);
+                break;
+            case BotResponse.STACKED_BUTTONS:
+                FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(itemView.getContext());
+                layoutManager.setJustifyContent(JustifyContent.FLEX_START);
+                layoutManager.setFlexDirection(FlexDirection.COLUMN);
+                buttonsList.setLayoutManager(layoutManager);
+                break;
+            default:
+                buttonsList.setLayoutManager(new LinearLayoutManager(buttonsList.getContext(), LinearLayoutManager.VERTICAL, false));
+        }
+
+        if (payloadInner.isFullWidth()) {
+            buttonsList.setLayoutManager(new LinearLayoutManager(buttonsList.getContext(), LinearLayoutManager.VERTICAL, false));
+        }
+
+        if (payloadInner.isStackedButtons()) {
+            FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(itemView.getContext());
+            layoutManager.setJustifyContent(JustifyContent.FLEX_START);
+            layoutManager.setFlexDirection(FlexDirection.COLUMN);
+            buttonsList.setLayoutManager(layoutManager);
+        }
+
+        if (botButtonModels != null && !botButtonModels.isEmpty()) {
+            buttonTypeAdapter = new ButtonTemplateAdapter(
+                    buttonsList.getContext(), botButtonModels, isLastItem(), payloadInner.isFullWidth(), payloadInner.isStackedButtons(), payloadInner.getVariation()
+            );
             buttonsList.setAdapter(buttonTypeAdapter);
             buttonTypeAdapter.setComposeFooterInterface(composeFooterInterface);
             buttonTypeAdapter.setInvokeGenericWebViewInterface(invokeGenericWebViewInterface);
-            buttonTypeAdapter.populateData(botButtonModels, isLastItem());
         }
     }
 }

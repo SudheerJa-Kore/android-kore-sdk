@@ -3,7 +3,7 @@ package kore.botssdk.models;
 public class FeedbackSmileyModel
 {
     private int smileyId;
-    private int value;
+    private Object value;
 
     public int getSmileyId() {
         return smileyId;
@@ -13,7 +13,7 @@ public class FeedbackSmileyModel
         this.smileyId = smileyId;
     }
 
-    public int getValue() {
+    public Object getValue() {
         return value;
     }
 

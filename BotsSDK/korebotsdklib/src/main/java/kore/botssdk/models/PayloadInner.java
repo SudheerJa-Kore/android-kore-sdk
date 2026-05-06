@@ -90,6 +90,9 @@ public class PayloadInner {
     private ArrayList<BotPieChartElementModel> pieChartElements;
     private BotTableDataModel data;
     private ArrayList<BotMiniTableModel> miniTableDataModels;
+    private boolean fullWidth;
+    private boolean stackedButtons;
+    private String variation;
 
     public void setTemplate_type(String template_type) {
         this.template_type = template_type;
@@ -377,6 +380,18 @@ public class PayloadInner {
 
     public String getText() {
         return text;
+    }
+
+    public boolean isFullWidth() {
+        return fullWidth;
+    }
+
+    public boolean isStackedButtons() {
+        return stackedButtons;
+    }
+
+    public String getVariation() {
+        return variation;
     }
 
     public ArrayList<PdfDownloadModel> getPdfDownloadModels() {

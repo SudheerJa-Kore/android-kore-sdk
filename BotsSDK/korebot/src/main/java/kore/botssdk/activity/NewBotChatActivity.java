@@ -3,6 +3,7 @@ package kore.botssdk.activity;
 import static android.view.View.VISIBLE;
 import static kore.botssdk.activity.GenericWebViewActivity.EXTRA_HEADER;
 import static kore.botssdk.activity.GenericWebViewActivity.EXTRA_URL;
+import static kore.botssdk.utils.BundleConstants.BOT_RECONNECT;
 import static kore.botssdk.utils.BundleConstants.CLOSE_CHAT_BOT_EVENT;
 import static kore.botssdk.utils.BundleConstants.MINIMIZE_CHAT_BOT_EVENT;
 
@@ -122,6 +123,8 @@ public class NewBotChatActivity extends BotAppCompactActivity implements BotChat
                 editor.putInt(BotResponse.HISTORY_COUNT, 0);
                 editor.apply();
                 finish();
+            } else if (Objects.equals(intent.getAction(), BundleConstants.BOT_RECONNECT)) {
+                mViewModel.connectToBot(true);
             }
         }
     };
@@ -173,9 +176,11 @@ public class NewBotChatActivity extends BotAppCompactActivity implements BotChat
         LocalBroadcastManager.getInstance(this).registerReceiver(onDestroyReceiver, new IntentFilter(BundleConstants.DESTROY_EVENT));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(closeBotChatReceiver, new IntentFilter(CLOSE_CHAT_BOT_EVENT), RECEIVER_EXPORTED);
+            registerReceiver(closeBotChatReceiver, new IntentFilter(BOT_RECONNECT), RECEIVER_EXPORTED);
             registerReceiver(minimizeBotChatReceiver, new IntentFilter(MINIMIZE_CHAT_BOT_EVENT), RECEIVER_EXPORTED);
         } else {
             registerReceiver(closeBotChatReceiver, new IntentFilter(CLOSE_CHAT_BOT_EVENT));
+            registerReceiver(closeBotChatReceiver, new IntentFilter(BOT_RECONNECT));
             registerReceiver(minimizeBotChatReceiver, new IntentFilter(MINIMIZE_CHAT_BOT_EVENT));
         }
 

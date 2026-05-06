@@ -13,10 +13,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.text.HtmlCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.Objects;
 
 import kore.botssdk.R;
 import kore.botssdk.adapter.ButtonLinkTemplateAdapter;
@@ -43,16 +47,44 @@ public class ButtonLinkTemplateHolder extends BaseViewHolder {
         context = itemView.getContext();
         recyclerView = itemView.findViewById(R.id.botCustomButtonList);
         recyclerView.setLayoutManager(new LinearLayoutManager(itemView.getContext()));
-        recyclerView.addItemDecoration(new VerticalSpaceItemDecoration((int) (1 * dp1)));
         tvButtonLinkTitle = itemView.findViewById(R.id.tvButtonLinkTitle);
+
         SharedPreferences sharedPreferences = context.getSharedPreferences(BotResponse.THEME_NAME, Context.MODE_PRIVATE);
         String leftBgColor = sharedPreferences.getString(BotResponse.BUBBLE_LEFT_BG_COLOR, "#FFFFFF");
+        String textColor = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.colorPrimary));
+        String dividerColor = sharedPreferences.getString(BotResponse.BUTTON_ACTIVE_TXT_COLOR, "#FFFFFF");
+        String titleColor = sharedPreferences.getString(BotResponse.BUBBLE_LEFT_TEXT_COLOR, "#000000");
+        String listBgColor = sharedPreferences.getString(BotResponse.BUBBLE_RIGHT_BG_COLOR, textColor);
+
+
+
         GradientDrawable leftDrawable = (GradientDrawable) ResourcesCompat.getDrawable(context.getResources(), R.drawable.theme1_left_bubble_bg, context.getTheme());
+        GradientDrawable dividerDrawable = (GradientDrawable) ResourcesCompat.getDrawable(context.getResources(), R.drawable.divider_white, context.getTheme());
+        GradientDrawable listDrawable = (GradientDrawable) ResourcesCompat.getDrawable(context.getResources(), R.drawable.button_link_bg, context.getTheme());
+
         if (leftDrawable != null) {
             leftDrawable.setColor(Color.parseColor(leftBgColor));
             leftDrawable.setStroke((int) (1 * dp1), Color.parseColor(leftBgColor));
             tvButtonLinkTitle.setBackground(leftDrawable);
+            tvButtonLinkTitle.setTextColor(Color.parseColor(titleColor));
         }
+
+            DividerItemDecoration divider = new DividerItemDecoration(
+                recyclerView.getContext(),
+                DividerItemDecoration.VERTICAL
+        );
+
+        if(dividerDrawable != null) {
+            dividerDrawable.setColor(Color.parseColor(dividerColor));
+            divider.setDrawable(dividerDrawable);
+        }
+
+        if(listDrawable != null) {
+            listDrawable.setColor(Color.parseColor(listBgColor));
+            recyclerView.setBackground(listDrawable);
+        }
+
+        recyclerView.addItemDecoration(divider);
     }
 
     @Override
@@ -76,7 +108,7 @@ public class ButtonLinkTemplateHolder extends BaseViewHolder {
             tvButtonLinkTitle.setVisibility(View.GONE);
         }
 
-        ButtonLinkTemplateAdapter buttonTypeAdapter = new ButtonLinkTemplateAdapter(payloadInner.getButtons(), isLastItem());
+        ButtonLinkTemplateAdapter buttonTypeAdapter = new ButtonLinkTemplateAdapter(recyclerView.getContext(), payloadInner.getButtons(), isLastItem());
         recyclerView.setAdapter(buttonTypeAdapter);
         buttonTypeAdapter.setComposeFooterInterface(composeFooterInterface);
         buttonTypeAdapter.setInvokeGenericWebViewInterface(invokeGenericWebViewInterface);

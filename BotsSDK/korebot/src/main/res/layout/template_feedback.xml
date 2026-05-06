@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/table_list_bg"
     android:orientation="vertical"
-    android:padding="@dimen/dimen_5dp">
+    android:padding="@dimen/dimen_3dp">
 
     <include
         layout="@layout/template_bubble_text"
@@ -20,7 +20,7 @@
         android:gravity="center_vertical"
         android:padding="@dimen/dimen_10dp"
         android:visibility="gone"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <kore.botssdk.view.CustomTextViewBold
             android:id="@+id/tvOptionsTitle"
@@ -53,6 +53,7 @@
         layout="@layout/include_emojis_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:layout_marginTop="@dimen/dimen_5dp" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -64,7 +65,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:visibility="gone"
-        tools:visibility="visible" />
+        tools:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/llRbFeedback"
@@ -76,8 +77,7 @@
         android:gravity="center"
         android:orientation="horizontal"
         android:paddingVertical="10dp"
-        android:visibility="gone"
-        tools:visibility="visible">
+        android:visibility="gone">
 
         <androidx.appcompat.widget.AppCompatRatingBar
             android:id="@+id/rbFeedback"
@@ -97,8 +97,7 @@
         android:layout_marginBottom="@dimen/dimen_20dp"
         android:text="@string/app_name"
         android:textSize="@dimen/text_size_header"
-        android:visibility="gone"
-        tools:visibility="visible" />
+        android:visibility="gone"/>
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/llFeedbackComment"
@@ -106,7 +105,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:visibility="gone"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <kore.botssdk.view.CustomTextView
             android:id="@+id/tvCommentTitle"
@@ -153,8 +152,9 @@
         android:id="@+id/rlViewNPS"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dimen_8dp"
-        android:layout_marginBottom="@dimen/dimen_8dp"
+        android:layout_marginTop="@dimen/dimen_5dp"
+        android:layout_marginBottom="@dimen/dimen_5dp"
+        android:visibility="gone"
         android:padding="@dimen/dimen_5dp">
 
         <androidx.recyclerview.widget.RecyclerView
