@@ -45,23 +45,16 @@ public class ButtonTemplateHolder extends BaseViewHolder {
         RecyclerView buttonsList = itemView.findViewById(R.id.buttonsList);
         String variation = payloadInner.getVariation() != null ? payloadInner.getVariation() : "";
 
-        switch (variation) {
-            case BotResponse.PLAIN:
-            case BotResponse.TEXT_INVERTED:
-            case BotResponse.BACKGROUND_INVERTED:
-                FlexboxLayoutManager flayoutManager = new FlexboxLayoutManager(itemView.getContext());
-                flayoutManager.setJustifyContent(JustifyContent.FLEX_START);
-                flayoutManager.setFlexDirection(FlexDirection.ROW);
-                buttonsList.setLayoutManager(flayoutManager);
-                break;
-            case BotResponse.STACKED_BUTTONS:
-                FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(itemView.getContext());
-                layoutManager.setJustifyContent(JustifyContent.FLEX_START);
-                layoutManager.setFlexDirection(FlexDirection.COLUMN);
-                buttonsList.setLayoutManager(layoutManager);
-                break;
-            default:
-                buttonsList.setLayoutManager(new LinearLayoutManager(buttonsList.getContext(), LinearLayoutManager.VERTICAL, false));
+        if (variation.equals(BotResponse.STACKED_BUTTONS)) {
+            FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(itemView.getContext());
+            layoutManager.setJustifyContent(JustifyContent.FLEX_START);
+            layoutManager.setFlexDirection(FlexDirection.COLUMN);
+            buttonsList.setLayoutManager(layoutManager);
+        } else {
+            FlexboxLayoutManager flayoutManager = new FlexboxLayoutManager(itemView.getContext());
+            flayoutManager.setJustifyContent(JustifyContent.FLEX_START);
+            flayoutManager.setFlexDirection(FlexDirection.ROW);
+            buttonsList.setLayoutManager(flayoutManager);
         }
 
         if (payloadInner.isFullWidth()) {
@@ -75,6 +68,9 @@ public class ButtonTemplateHolder extends BaseViewHolder {
             buttonsList.setLayoutManager(layoutManager);
         }
 
+        if(buttonsList.getItemDecorationCount() == 0)
+            buttonsList.addItemDecoration(new SpaceItemDecoration(20));
+
         if (botButtonModels != null && !botButtonModels.isEmpty()) {
             buttonTypeAdapter = new ButtonTemplateAdapter(
                     buttonsList.getContext(), botButtonModels, isLastItem(), payloadInner.isFullWidth(), payloadInner.isStackedButtons(), payloadInner.getVariation()
@@ -82,6 +78,21 @@ public class ButtonTemplateHolder extends BaseViewHolder {
             buttonsList.setAdapter(buttonTypeAdapter);
             buttonTypeAdapter.setComposeFooterInterface(composeFooterInterface);
             buttonTypeAdapter.setInvokeGenericWebViewInterface(invokeGenericWebViewInterface);
+        }
+    }
+
+    public static class SpaceItemDecoration extends RecyclerView.ItemDecoration {
+
+        private final int space;
+
+        public SpaceItemDecoration(int space) {
+            this.space = space;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            outRect.right = space;   // horizontal gap
+            outRect.top = space;  // vertical gap
         }
     }
 }

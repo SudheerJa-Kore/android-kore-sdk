@@ -53,8 +53,9 @@
         layout="@layout/include_emojis_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:layout_marginTop="@dimen/dimen_5dp" />
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dimen_5dp"
+        android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/thumbs_up_down"
@@ -97,7 +98,7 @@
         android:layout_marginBottom="@dimen/dimen_20dp"
         android:text="@string/app_name"
         android:textSize="@dimen/text_size_header"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/llFeedbackComment"
@@ -152,10 +153,12 @@
         android:id="@+id/rlViewNPS"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_centerInParent="true"
         android:layout_marginTop="@dimen/dimen_5dp"
         android:layout_marginBottom="@dimen/dimen_5dp"
-        android:visibility="gone"
-        android:padding="@dimen/dimen_5dp">
+        android:padding="@dimen/dimen_5dp"
+        android:visibility="gone">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvRatingScale"
