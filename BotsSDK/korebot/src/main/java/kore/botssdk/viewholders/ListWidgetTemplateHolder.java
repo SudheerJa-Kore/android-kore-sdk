@@ -9,7 +9,6 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.text.SpannableString;
@@ -28,8 +27,8 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
-import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 
@@ -39,14 +38,13 @@ import kore.botssdk.dialogs.WidgetActionSheetFragment;
 import kore.botssdk.event.KoreEventCenter;
 import kore.botssdk.events.EntityEditEvent;
 import kore.botssdk.models.BaseBotMessage;
-import kore.botssdk.models.BotResponse;
 import kore.botssdk.models.HeaderOptionsModel;
 import kore.botssdk.models.PayloadInner;
 import kore.botssdk.utils.StringUtils;
 
 public class ListWidgetTemplateHolder extends BaseViewHolder {
     private final RecyclerView botCustomListView;
-    private ListWidgetAdapter listWidgetAdapter = null;
+    private final ListWidgetAdapter listWidgetAdapter;
 //    private final TextView botCustomListViewButton;
     private PayloadInner payloadInner;
     private final ImageView iconImageLoad;
@@ -57,7 +55,6 @@ public class ListWidgetTemplateHolder extends BaseViewHolder {
     private final ImageView imgMenu;
     private final TextView widgetHeader;
     private final TextView meetingDesc;
-    private final SharedPreferences sharedPreferences;
 
     public static ListWidgetTemplateHolder getInstance(ViewGroup parent) {
         return new ListWidgetTemplateHolder(createView(R.layout.template_list_widget, parent));
@@ -67,7 +64,6 @@ public class ListWidgetTemplateHolder extends BaseViewHolder {
         super(itemView, itemView.getContext());
         LinearLayoutCompat layoutBubble = itemView.findViewById(R.id.layoutBubble);
         initBubbleText(layoutBubble, false);
-        sharedPreferences = itemView.getContext().getSharedPreferences(BotResponse.THEME_NAME, Context.MODE_PRIVATE);
 
         botCustomListView = itemView.findViewById(R.id.botCustomListView);
         botCustomListView.setLayoutManager(new LinearLayoutManager(itemView.getContext()));
@@ -193,7 +189,10 @@ public class ListWidgetTemplateHolder extends BaseViewHolder {
                 case "image":
                     iconImageLoad.setVisibility(VISIBLE);
                     if (headerOptionsModel.getImage() != null && headerOptionsModel.getImage().getImage_src() != null) {
-                        Picasso.get().load(headerOptionsModel.getImage().getImage_src()).into(iconImageLoad);
+                        Glide.with(context)
+                                .load(headerOptionsModel.getImage().getImage_src())
+                                .into(iconImageLoad);
+
                         iconImageLoad.setOnClickListener(v -> {
                             if (payloadInner.getHeaderOptions() != null && headerOptionsModel.getImage() != null && headerOptionsModel.getImage().getPayload() != null) {
                                 buttonAction(headerOptionsModel.getImage().getPayload());

@@ -10,6 +10,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.text.SpannableStringBuilder;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -37,6 +38,7 @@ public class ButtonLinkTemplateHolder extends BaseViewHolder {
     private final RecyclerView recyclerView;
     private final TextView tvButtonLinkTitle;
     private final Context context;
+    private final LinearLayout llButtonLinkRoot;
 
     public static ButtonLinkTemplateHolder getInstance(ViewGroup parent) {
         return new ButtonLinkTemplateHolder(createView(R.layout.template_button_link, parent));
@@ -48,6 +50,7 @@ public class ButtonLinkTemplateHolder extends BaseViewHolder {
         recyclerView = itemView.findViewById(R.id.botCustomButtonList);
         recyclerView.setLayoutManager(new LinearLayoutManager(itemView.getContext()));
         tvButtonLinkTitle = itemView.findViewById(R.id.tvButtonLinkTitle);
+        llButtonLinkRoot = itemView.findViewById(R.id.llButtonLinkRoot);
 
         SharedPreferences sharedPreferences = context.getSharedPreferences(BotResponse.THEME_NAME, Context.MODE_PRIVATE);
         String leftBgColor = sharedPreferences.getString(BotResponse.BUBBLE_LEFT_BG_COLOR, "#FFFFFF");
@@ -56,9 +59,7 @@ public class ButtonLinkTemplateHolder extends BaseViewHolder {
         String titleColor = sharedPreferences.getString(BotResponse.BUBBLE_LEFT_TEXT_COLOR, "#000000");
         String listBgColor = sharedPreferences.getString(BotResponse.BUBBLE_RIGHT_BG_COLOR, textColor);
 
-
-
-        GradientDrawable leftDrawable = (GradientDrawable) ResourcesCompat.getDrawable(context.getResources(), R.drawable.theme1_left_bubble_bg, context.getTheme());
+        GradientDrawable leftDrawable = (GradientDrawable) ResourcesCompat.getDrawable(context.getResources(), R.drawable.button_link_bg, context.getTheme());
         GradientDrawable dividerDrawable = (GradientDrawable) ResourcesCompat.getDrawable(context.getResources(), R.drawable.divider_white, context.getTheme());
         GradientDrawable listDrawable = (GradientDrawable) ResourcesCompat.getDrawable(context.getResources(), R.drawable.button_link_bg, context.getTheme());
 
@@ -81,7 +82,7 @@ public class ButtonLinkTemplateHolder extends BaseViewHolder {
 
         if(listDrawable != null) {
             listDrawable.setColor(Color.parseColor(listBgColor));
-            recyclerView.setBackground(listDrawable);
+            llButtonLinkRoot.setBackground(listDrawable);
         }
 
         recyclerView.addItemDecoration(divider);

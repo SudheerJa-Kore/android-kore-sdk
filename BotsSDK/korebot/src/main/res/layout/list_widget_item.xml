@@ -41,11 +41,9 @@
                 android:id="@+id/view_in"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
                 android:layout_alignParentStart="true"
                 android:layout_gravity="center_vertical"
-                android:layout_marginLeft="15dp"
-
+                android:layout_marginStart="15dp"
                 android:layout_marginEnd="5dp"
                 android:layout_toStartOf="@+id/view_out"
                 android:orientation="vertical"
@@ -87,27 +85,28 @@
                     android:id="@+id/icon_image_load"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:contentDescription="@string/app_name"
+                    android:focusable="true"
                     android:minWidth="24dp"
                     android:minHeight="24dp"
                     android:padding="5dp"
-                    android:clickable="true"
-                    android:visibility="gone"
-                    android:contentDescription="@string/app_name"
-                    android:focusable="true" />
+                    android:visibility="gone" />
+
                 <ImageView
                     android:id="@+id/icon_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:contentDescription="@string/app_name"
+                    android:focusable="true"
                     android:minWidth="24dp"
                     android:minHeight="24dp"
+                    android:padding="5dp"
                     android:src="@mipmap/ic_more_vert_black_24dp"
                     android:textColor="@color/color_7a799a"
                     android:textSize="18sp"
-                    android:padding="5dp"
-                    android:clickable="true"
-                    android:visibility="gone"
-                    android:contentDescription="@string/app_name"
-                    android:focusable="true" />
+                    android:visibility="gone" />
 
                 <LinearLayout
                     android:id="@+id/tv_values_layout"
@@ -115,9 +114,9 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/list_button_background"
                     android:gravity="center_vertical"
+                    android:maxWidth="80dp"
                     android:minWidth="60dp"
                     android:minHeight="32dp"
-                    android:maxWidth="80dp"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:visibility="gone">
@@ -126,12 +125,12 @@
                         android:id="@+id/tv_button"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:ellipsize="end"
                         android:fontFamily="@font/latoregular"
                         android:gravity="center"
                         android:maxWidth="80dp"
                         android:maxLines="1"
                         android:singleLine="true"
-                        android:ellipsize="end"
                         android:textColor="#4741fa"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -140,13 +139,14 @@
                     android:id="@+id/tv_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/latoregular"
-                    android:maxLines="1"
                     android:ellipsize="end"
+                    android:fontFamily="@font/latoregular"
                     android:gravity="center"
-                    android:singleLine="true"
-                    android:paddingEnd="5dp"
                     android:maxWidth="80dp"
+                    android:maxLines="1"
+                    android:paddingEnd="5dp"
+                    android:paddingStart="@dimen/dimen_0"
+                    android:singleLine="true"
                     android:textColor="@color/black"
                     android:textSize="14sp"
                     android:visibility="gone" />
@@ -155,12 +155,12 @@
                     android:id="@+id/tv_url"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:ellipsize="end"
                     android:fontFamily="@font/latoregular"
                     android:gravity="center"
+                    android:maxWidth="100dp"
                     android:maxLines="1"
                     android:singleLine="true"
-                    android:ellipsize="end"
-                    android:maxWidth="100dp"
                     android:textColor="#4741fa"
                     android:textSize="14sp"
                     android:visibility="gone" />
@@ -186,8 +186,8 @@
             android:layout_gravity="end|bottom"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="5dp"
-            app:srcCompat="@drawable/ic_arrow_drop_up_24px"
-            android:contentDescription="@string/app_name" />
+            android:contentDescription="@string/app_name"
+            app:srcCompat="@drawable/ic_arrow_drop_up_24px" />
     </LinearLayout>
 
 
@@ -204,9 +204,9 @@
             android:id="@+id/buttonsList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"
             android:layout_marginStart="10dp"
-            android:layout_marginBottom="10dp" />
+            android:layout_marginBottom="10dp"
+            android:nestedScrollingEnabled="false" />
     </net.cachapa.expandablelayout.ExpandableLayout>
 
     <View

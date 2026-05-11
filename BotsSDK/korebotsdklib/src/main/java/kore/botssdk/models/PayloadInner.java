@@ -791,6 +791,11 @@ public class PayloadInner {
                         }.getType();
                         advancedMultiSelectModels = gson.fromJson(elementsAsString, listType);
                     }
+                    else if (BotResponse.TEMPLATE_BUTTON_LINK.equals(template_type)) {
+                        Type listType = new TypeToken<ArrayList<BotButtonModel>>() {
+                        }.getType();
+                        buttons = gson.fromJson(elementsAsString, listType);
+                    }
                 } else {
                     //Special case where we are getting multiple types of template responses in a single template(knowledge retrieval or universal search)
                     Type listType = new TypeToken<ArrayList<KoraUniversalSearchModel>>() {
