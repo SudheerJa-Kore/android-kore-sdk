@@ -6,12 +6,16 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -36,8 +40,8 @@ public class ButtonLinkTemplateAdapter extends RecyclerView.Adapter<ButtonLinkTe
         this.isEnabled = isEnabled;
         SharedPreferences sharedPreferences = context.getSharedPreferences(BotResponse.THEME_NAME, Context.MODE_PRIVATE);
 
-        textColor = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.white));
-        textColor = sharedPreferences.getString(BotResponse.BUTTON_ACTIVE_TXT_COLOR, textColor);
+        int defaultColor = ContextCompat.getColor(context, R.color.white);
+        textColor = sharedPreferences.getString(BotResponse.BUTTON_ACTIVE_TXT_COLOR, "#" + Integer.toHexString(defaultColor));
     }
 
     @NonNull
@@ -50,37 +54,37 @@ public class ButtonLinkTemplateAdapter extends RecyclerView.Adapter<ButtonLinkTe
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         BotButtonModel buttonTemplate = getItem(position);
         if (buttonTemplate == null) return;
-        holder.button.setText(buttonTemplate.getTitle());
+
+        String title = buttonTemplate.getTitle();
+        holder.button.setText(title);
         holder.ivDeepLink.setVisibility(View.GONE);
 
-        holder.button.setTextColor(Color.parseColor(textColor));
+        try {
+            holder.button.setTextColor(Color.parseColor(textColor));
+        } catch (Exception e) {
+            holder.button.setTextColor(Color.parseColor("#2e6fc5"));
+        }
 
-        holder.button.setOnClickListener(v -> {
-            if (composeFooterInterface != null && invokeGenericWebViewInterface != null && isEnabled) {
-                if (BundleConstants.BUTTON_TYPE_WEB_URL.equalsIgnoreCase(buttonTemplate.getType())) {
+        // WCAG Compliance:
+        // 1. Set content description on the clickable container
+        holder.bot_options_more.setContentDescription(title);
+        holder.bot_options_more.setEnabled(isEnabled);
+        holder.bot_options_more.setAlpha(isEnabled ? 1.0f : 0.5f);
 
-                    if (!StringUtils.isNullOrEmpty(buttonTemplate.getUrl())) {
-                        if (buttonTemplate.isSamePageNavigation())
-                            composeFooterInterface.onDeepLinkClicked(buttonTemplate.getUrl());
-                        else
-                            invokeGenericWebViewInterface.invokeGenericWebView(buttonTemplate.getUrl());
-                    }
-                } else if (BundleConstants.BUTTON_TYPE_URL.equalsIgnoreCase(buttonTemplate.getType())) {
-                    invokeGenericWebViewInterface.invokeGenericWebView(buttonTemplate.getUrl());
-                } else if (BundleConstants.BUTTON_TYPE_USER_INTENT.equalsIgnoreCase(buttonTemplate.getType())) {
-                    invokeGenericWebViewInterface.handleUserActions(buttonTemplate.getAction(), buttonTemplate.getCustomData());
-                } else {
-                    String title = buttonTemplate.getTitle();
-                    String payload = buttonTemplate.getPayload();
-                    composeFooterInterface.onSendClick(title, payload, false);
-                }
+        // 2. Use AccessibilityDelegate to announce the container as a Button role
+        ViewCompat.setAccessibilityDelegate(holder.bot_options_more, new AccessibilityDelegateCompat() {
+            @Override
+            public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
+                super.onInitializeAccessibilityNodeInfo(host, info);
+                info.setClassName(Button.class.getName());
+                info.setClickable(isEnabled);
             }
         });
 
+        // 3. Singular click listener on the parent container (removes redundant focus points)
         holder.bot_options_more.setOnClickListener(v -> {
             if (composeFooterInterface != null && invokeGenericWebViewInterface != null && isEnabled) {
                 if (BundleConstants.BUTTON_TYPE_WEB_URL.equalsIgnoreCase(buttonTemplate.getType())) {
-
                     if (!StringUtils.isNullOrEmpty(buttonTemplate.getUrl())) {
                         if (buttonTemplate.isSamePageNavigation())
                             composeFooterInterface.onDeepLinkClicked(buttonTemplate.getUrl());
@@ -92,7 +96,6 @@ public class ButtonLinkTemplateAdapter extends RecyclerView.Adapter<ButtonLinkTe
                 } else if (BundleConstants.BUTTON_TYPE_USER_INTENT.equalsIgnoreCase(buttonTemplate.getType())) {
                     invokeGenericWebViewInterface.handleUserActions(buttonTemplate.getAction(), buttonTemplate.getCustomData());
                 } else {
-                    String title = buttonTemplate.getTitle();
                     String payload = buttonTemplate.getPayload();
                     composeFooterInterface.onSendClick(title, payload, false);
                 }
@@ -101,12 +104,12 @@ public class ButtonLinkTemplateAdapter extends RecyclerView.Adapter<ButtonLinkTe
     }
 
     private BotButtonModel getItem(int position) {
-        return buttons != null ? buttons.get(position) : null;
+        return (buttons != null && position >= 0 && position < buttons.size()) ? buttons.get(position) : null;
     }
 
     @Override
     public int getItemCount() {
-        return buttons.size();
+        return buttons != null ? buttons.size() : 0;
     }
 
     public void setComposeFooterInterface(ComposeFooterInterface composeFooterInterface) {
@@ -127,7 +130,10 @@ public class ButtonLinkTemplateAdapter extends RecyclerView.Adapter<ButtonLinkTe
             button = itemView.findViewById(R.id.more_txt_view);
             ivDeepLink = itemView.findViewById(R.id.ivDeepLink);
             bot_options_more = itemView.findViewById(R.id.bot_options_more);
-            button.setTextColor(Color.parseColor("#2e6fc5"));
+            
+            // WCAG: Group focus on the parent container, prevent sub-views from being focused separately
+            button.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+            ivDeepLink.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         }
     }
 }

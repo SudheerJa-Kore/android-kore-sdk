@@ -2,6 +2,7 @@ package kore.botssdk.adapter;
 
 import static kore.botssdk.viewUtils.DimensionUtil.dp1;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,10 +26,12 @@ public class TableListTemplateAdapter extends RecyclerView.Adapter<TableListTemp
     private final boolean isEnabled;
     private ComposeFooterInterface composeFooterInterface;
     private InvokeGenericWebViewInterface invokeGenericWebViewInterface;
+    private Context context;
 
-    public TableListTemplateAdapter(List<BotTableListModel> botTableListModels, boolean isEnabled) {
+    public TableListTemplateAdapter(Context context, List<BotTableListModel> botTableListModels, boolean isEnabled) {
         this.botTableListModels = botTableListModels;
         this.isEnabled = isEnabled;
+        this.context = context;
     }
 
     @NonNull
@@ -54,7 +57,7 @@ public class TableListTemplateAdapter extends RecyclerView.Adapter<TableListTemp
         }
 
         if (botTableListModel.getRowItems() != null && !botTableListModel.getRowItems().isEmpty()) {
-            TableListInnerAdapter botTableListInnerAdapter = new TableListInnerAdapter(botTableListModel.getRowItems(), isEnabled);
+            TableListInnerAdapter botTableListInnerAdapter = new TableListInnerAdapter(context, botTableListModel.getRowItems(), isEnabled);
             botTableListInnerAdapter.setComposeFooterInterface(composeFooterInterface);
             botTableListInnerAdapter.setInvokeGenericWebViewInterface(invokeGenericWebViewInterface);
             holder.recyclerView.setAdapter(botTableListInnerAdapter);

@@ -131,10 +131,13 @@ public class MainActivity extends AppCompatActivity implements BotStatusListener
         //Flag to opt to add custom data to every user message sent to bot
         SDKConfiguration.OverrideKoreConfig.update_custom_data_to_user_message = true;
 
+        //Flag to opt to add custom data to every user message sent to bot
+        SDKConfiguration.OverrideKoreConfig.disable_alert_on_max_reconnection = true;
+
         //Flag to opt local notification when application went to background on receive of new bot message
         SDKConfiguration.OverrideKoreConfig.showLocalNotification = false;
 
-        //Enable the flag if the bot needs to support Emoji short cuts decryption
+        //Enable the flag if the bot needs to support Emoji shortcuts decryption
         SDKConfiguration.OverrideKoreConfig.isEmojiShortcutEnable = false;
 
         Button launchBotBtn = findViewById(R.id.launchBotBtn);
@@ -152,18 +155,18 @@ public class MainActivity extends AppCompatActivity implements BotStatusListener
             public void onSuccess(String token) {
                 LogUtils.e("JWT Updated", token);
 
-                //Getting the Jwt Token from out side SDK
+                //Getting the Jwt Token from outside SDK
                 RestResponse.BotCustomData customData = new RestResponse.BotCustomData();
                 customData.put("jwt_token", token);
                 SDKConfiguration.Server.customData.putAll(customData);
 
-                //To kill the Bot from out side the SDK
-                BotSocketConnectionManager.killInstance();
+                //To kill the Bot from outside the SDK
+                BotSocketConnectionManager.killInstanceToReconnect();
 
                 //Set the JWT Token to reuse in connecting to the Bot
                 SDKConfiguration.JWTServer.setJwt_token(token);
 
-                //BroadCast to call the Bot Connect from out side of the SDK
+                //BroadCast to call the Bot Connect from outside the SDK
                 Intent intent = new Intent(BundleConstants.BOT_RECONNECT);
                 sendBroadcast(intent);
             }
@@ -247,22 +250,12 @@ public class MainActivity extends AppCompatActivity implements BotStatusListener
     }
 
     @Override
-    public void onBotDisconnected() {
-        LogUtils.e("Bot Current Status", "Bot Disconnected");
+    public void onBotDisconnected(String event_code, String event_message) {
+        LogUtils.e(event_code, event_message);
     }
 
     @Override
-    public void onBotConnecting() {
-        LogUtils.e("Bot Current Status", "Bot Connecting");
-    }
-
-    @Override
-    public void onBotReconnected() {
-        LogUtils.e("Bot Current Status", "Bot Re-connected");
-    }
-
-    @Override
-    public void onBotConnectionFail(String strReason) {
-        LogUtils.e("Bot Current Status", strReason);
+    public void onBotConnectionFail(String event_code, String event_message) {
+        LogUtils.e(event_code, event_message);
     }
 }

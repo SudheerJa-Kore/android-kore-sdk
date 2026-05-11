@@ -1,5 +1,6 @@
 package kore.botssdk.adapter;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -12,21 +13,22 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
 import kore.botssdk.R;
 import kore.botssdk.models.ContactTemplateModel;
+import kore.botssdk.utils.LogUtils;
 import kore.botssdk.utils.StringUtils;
-import kore.botssdk.viewUtils.CircleTransform;
 
 public class ContactCardItemAdapter extends RecyclerView.Adapter<ContactCardItemAdapter.ViewHolder> {
     private final ArrayList<ContactTemplateModel> models;
-    final CircleTransform roundedCornersTransform = new CircleTransform();
+    private final Context context;
 
-    public ContactCardItemAdapter(ArrayList<ContactTemplateModel> models) {
+    public ContactCardItemAdapter(Context context, ArrayList<ContactTemplateModel> models) {
         this.models = models;
+        this.context = context;
     }
 
     @NonNull
@@ -39,11 +41,14 @@ public class ContactCardItemAdapter extends RecyclerView.Adapter<ContactCardItem
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ContactTemplateModel botListModel = getItem(position);
-        if(botListModel != null)
-        {
+        if (botListModel != null) {
             if (!StringUtils.isNullOrEmpty(botListModel.getUserIcon())) {
                 holder.botListItemImage.setVisibility(View.VISIBLE);
-                Picasso.get().load(botListModel.getUserIcon()).transform(roundedCornersTransform).into(holder.botListItemImage);
+
+                Glide.with(context)
+                        .load(botListModel.getUserIcon())
+                        .circleCrop()
+                        .into(holder.botListItemImage);
             }
 
             holder.botListItemTitle.setTag(botListModel);
@@ -58,7 +63,7 @@ public class ContactCardItemAdapter extends RecyclerView.Adapter<ContactCardItem
                         intent.setData(Uri.parse("tel:" + botListModel.getUserContactNumber()));
                         holder.botListItemSubtitle.getContext().startActivity(intent);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LogUtils.e("Error at activity not found", e+"");
                     }
                 });
             }

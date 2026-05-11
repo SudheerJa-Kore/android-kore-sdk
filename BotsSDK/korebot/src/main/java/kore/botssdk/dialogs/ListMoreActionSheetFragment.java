@@ -79,15 +79,12 @@ public class ListMoreActionSheetFragment extends BottomSheetDialogFragment {
         if(sharedPreferences != null)
             llBottomLayout.setBackgroundColor(Color.parseColor(sharedPreferences.getString(BotResponse.WIDGET_BG_COLOR, "#FFFFFF")));
 
-        ListViewMoreAdapter listViewMoreAdapter = new ListViewMoreAdapter(model);
+        ListViewMoreAdapter listViewMoreAdapter = new ListViewMoreAdapter(getContext(), model);
         rvViewMore.setAdapter(listViewMoreAdapter);
 
-        llCloseBottomSheet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(bottomSheetDialog != null)
-                    bottomSheetDialog.dismiss();
-            }
+        llCloseBottomSheet.setOnClickListener(v -> {
+            if(bottomSheetDialog != null)
+                bottomSheetDialog.dismiss();
         });
         return view;
 

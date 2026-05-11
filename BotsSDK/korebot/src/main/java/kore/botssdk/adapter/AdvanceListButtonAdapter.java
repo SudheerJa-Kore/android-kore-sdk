@@ -20,7 +20,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.MultiTransformation;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import java.util.ArrayList;
 
@@ -33,7 +36,6 @@ import kore.botssdk.models.Widget;
 import kore.botssdk.net.SDKConfiguration;
 import kore.botssdk.utils.BundleConstants;
 import kore.botssdk.utils.StringUtils;
-import kore.botssdk.viewUtils.RoundedCornersTransform;
 
 @SuppressLint("UnknownNullness")
 public class AdvanceListButtonAdapter extends RecyclerView.Adapter<AdvanceListButtonAdapter.ButtonViewHolder> {
@@ -48,12 +50,14 @@ public class AdvanceListButtonAdapter extends RecyclerView.Adapter<AdvanceListBu
     private int count;
     private final boolean isOptions;
     private final SharedPreferences sharedPreferences;
+    private final Context context;
 
     public AdvanceListButtonAdapter(Context context, ArrayList<Widget.Button> buttons, String type, AdvanceButtonClickListner advanceButtonClickListner, ComposeFooterInterface composeFooterInterface, InvokeGenericWebViewInterface invokeGenericWebViewInterface, boolean isOptions) {
         this.buttons = buttons;
         this.inflater = LayoutInflater.from(context);
         this.type = type;
         this.isOptions = isOptions;
+        this.context = context;
         this.advanceButtonClickListner = advanceButtonClickListner;
         this.composeFooterInterface = composeFooterInterface;
         this.invokeGenericWebViewInterface = invokeGenericWebViewInterface;
@@ -104,7 +108,15 @@ public class AdvanceListButtonAdapter extends RecyclerView.Adapter<AdvanceListBu
                     Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                     holder.ivBtnImage.setImageBitmap(decodedByte);
                 } else {
-                    Picasso.get().load(btn.getIcon()).transform(new RoundedCornersTransform()).into(holder.ivBtnImage);
+                    Glide.with(context)
+                            .load(btn.getIcon())
+                            .transform(
+                                    new MultiTransformation<>(
+                                            new CenterCrop(),
+                                            new RoundedCorners(20)
+                                    )
+                            )
+                            .into(holder.ivBtnImage);
                 }
             } catch (Exception e) {
                 holder.ivBtnImage.setVisibility(GONE);

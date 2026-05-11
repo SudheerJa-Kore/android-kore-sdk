@@ -3,9 +3,13 @@
     android:id="@+id/bot_options_more"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:minHeight="@dimen/button_min_height"
     android:padding="@dimen/dimen_5dp"
     android:gravity="center"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:focusable="true"
+    android:clickable="true"
+    android:background="?attr/selectableItemBackground">
 
     <ImageView
         android:id="@+id/ivDeepLink"
@@ -25,9 +29,7 @@
         android:text="@string/select"
         android:maxLines="2"
         android:textColor="#2e6fc5"
-        android:textSize="@dimen/text_size_normal" />
+        android:textSize="@dimen/text_size_normal"
+        android:importantForAccessibility="no" />
 
 </LinearLayout>
-
-
-

@@ -22,7 +22,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -37,6 +37,7 @@ import kore.botssdk.models.BotListDefaultModel;
 import kore.botssdk.models.BotResponse;
 import kore.botssdk.net.SDKConfiguration;
 import kore.botssdk.utils.BundleConstants;
+import kore.botssdk.utils.LogUtils;
 import kore.botssdk.utils.StringUtils;
 import kore.botssdk.utils.Utils;
 
@@ -46,11 +47,12 @@ public class CarouselTemplateAdapter extends RecyclerView.Adapter<CarouselTempla
     private ComposeFooterInterface composeFooterInterface;
     private InvokeGenericWebViewInterface invokeGenericWebViewInterface;
     private final LayoutInflater layoutInflater;
-
+    private final Context context;
     private String type;
 
     public CarouselTemplateAdapter(Context context) {
-        layoutInflater = LayoutInflater.from(context);
+        this.layoutInflater = LayoutInflater.from(context);
+        this.context = context;
     }
 
     @NonNull
@@ -74,13 +76,16 @@ public class CarouselTemplateAdapter extends RecyclerView.Adapter<CarouselTempla
         }
         try {
             if (botCarouselModel.getImage_url() != null && !botCarouselModel.getImage_url().isEmpty()) {
-                Picasso.get().load(botCarouselModel.getImage_url()).into(holder.carouselItemImage);
                 holder.carouselItemImage.setVisibility(VISIBLE);
+
+                Glide.with(context)
+                        .load(botCarouselModel.getImage_url())
+                        .into(holder.carouselItemImage);
             } else {
                 holder.carouselItemImage.setVisibility(GONE);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtils.e("Error at CarouselTemplateAdapter", e+"");
         }
         if (botCarouselModel.getButtons() != null) {
             CarouselItemButtonAdapter botCarouselItemButtonAdapter = new CarouselItemButtonAdapter(holder.itemView.getContext());
@@ -196,7 +201,7 @@ public class CarouselTemplateAdapter extends RecyclerView.Adapter<CarouselTempla
         this.type = type;
         this.botCarouselModels = botCarouselModels;
         this.isEnabled = isEnabled;
-        notifyDataSetChanged();
+        notifyItemChanged(0, (botCarouselModels.size()-1));
     }
 
     public void setComposeFooterInterface(ComposeFooterInterface composeFooterInterface) {
