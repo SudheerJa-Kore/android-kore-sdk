@@ -252,6 +252,16 @@ public class MainActivity extends AppCompatActivity implements BotStatusListener
     @Override
     public void onBotDisconnected(String event_code, String event_message) {
         LogUtils.e(event_code, event_message);
+        if (event_code.equals("DeepLinkClicked")) {
+            try {
+                Class<?> clazz = Class.forName(event_message);
+                Intent intent = new Intent(MainActivity.this, clazz);
+                startActivity(intent);
+
+            } catch (ClassNotFoundException e) {
+                LogUtils.e("MainActivity ClassNotFoundException", e+"");
+            }
+        }
     }
 
     @Override
