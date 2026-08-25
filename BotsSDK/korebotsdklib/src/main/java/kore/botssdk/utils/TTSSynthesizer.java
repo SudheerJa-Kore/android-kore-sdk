@@ -2,11 +2,9 @@ package kore.botssdk.utils;
 
 import android.content.Context;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.util.Base64;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,20 +29,12 @@ public class TTSSynthesizer {
         if (!Constants.ENABLE_SDK) {
             initNative(context);
         } else {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    initializeWebSocket();
-                }
-            }, 400);
+            new Handler().postDelayed(this::initializeWebSocket, 400);
             mediaPlayer.setOnPreparedListener(mediaPlayerOnPreparedListener);
-            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    que.remove(0);
-                    if (!que.isEmpty()) {
-                        PlayAudio(que.get(0));
-                    }
+            mediaPlayer.setOnCompletionListener(mp -> {
+                que.remove(0);
+                if (!que.isEmpty()) {
+                    PlayAudio(que.get(0));
                 }
             });
         }
@@ -75,12 +65,9 @@ public class TTSSynthesizer {
         TtsWebSocketWrapper.getInstance(context).sendMessage(textualMessage, accessToken);
     }
 
-    final MediaPlayer.OnPreparedListener mediaPlayerOnPreparedListener = new MediaPlayer.OnPreparedListener() {
-        @Override
-        public void onPrepared(MediaPlayer mp) {
-            if (mp != null) {
-                mp.start();
-            }
+    final MediaPlayer.OnPreparedListener mediaPlayerOnPreparedListener = mp -> {
+        if (mp != null) {
+            mp.start();
         }
     };
 

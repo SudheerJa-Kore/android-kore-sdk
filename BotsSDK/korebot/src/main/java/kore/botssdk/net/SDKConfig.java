@@ -1,7 +1,5 @@
 package kore.botssdk.net;
 
-import android.view.View;
-
 import androidx.annotation.NonNull;
 
 import java.util.HashMap;

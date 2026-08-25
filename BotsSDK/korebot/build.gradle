@@ -14,7 +14,7 @@ publishing {
 }
 
 android {
-    compileSdk 37
+    compileSdk 36
 
     buildFeatures {
         buildConfig true
@@ -51,10 +51,10 @@ android {
     }
     namespace 'kore.botssdk'
     lint {
-        targetSdk 37
+        targetSdk 36
     }
     testOptions {
-        targetSdk 37
+        targetSdk 36
     }
 }
 
@@ -67,7 +67,7 @@ dependencies {
 
     implementation 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
     implementation 'com.squareup.retrofit2:retrofit:3.0.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:5.5.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:5.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:3.0.0'
     implementation 'de.greenrobot:eventbus:2.4.1'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
@@ -85,7 +85,7 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.4.0'
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.2.0"
-    implementation 'com.github.bumptech.glide:glide:5.0.9'
+    implementation 'com.github.bumptech.glide:glide:5.0.0-rc01'
     implementation 'com.github.cachapa:ExpandableLayout:2.9.2'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
 

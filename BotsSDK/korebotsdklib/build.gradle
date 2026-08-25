@@ -14,7 +14,7 @@ publishing {
 }
 
 android {
-    compileSdk 37
+    compileSdk 36
 
     publishing {
         singleVariant('release') {
@@ -47,9 +47,9 @@ android {
         api 'de.greenrobot:eventbus:2.4.1'
 
         api 'com.squareup.retrofit2:retrofit:3.0.0'
-        api 'com.squareup.okhttp3:logging-interceptor:5.5.0'
+        api 'com.squareup.okhttp3:logging-interceptor:5.4.0'
         api 'com.google.code.gson:gson:2.14.0'
-        api "com.squareup.okhttp3:okhttp:5.5.0"
+        api "com.squareup.okhttp3:okhttp:5.4.0"
         api 'com.squareup.retrofit2:converter-gson:3.0.0'
         api 'io.reactivex.rxjava2:rxandroid:2.1.1'
         api 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
@@ -57,9 +57,9 @@ android {
     }
     namespace 'kore.korebotsdklib'
     lint {
-        targetSdk 37
+        targetSdk 36
     }
     testOptions {
-        targetSdk 37
+        targetSdk 36
     }
 }
