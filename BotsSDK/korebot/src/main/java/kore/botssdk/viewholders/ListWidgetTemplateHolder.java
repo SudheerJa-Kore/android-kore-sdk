@@ -30,7 +30,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.util.HashMap;
 
@@ -47,7 +47,7 @@ import kore.botssdk.utils.StringUtils;
 
 public class ListWidgetTemplateHolder extends BaseViewHolder {
     private final RecyclerView botCustomListView;
-    private ListWidgetAdapter listWidgetAdapter = null;
+    private ListWidgetAdapter listWidgetAdapter;
     //    private final TextView botCustomListViewButton;
     private PayloadInner payloadInner;
     private final ImageView iconImageLoad;
@@ -121,8 +121,7 @@ public class ListWidgetTemplateHolder extends BaseViewHolder {
                 meetingDesc.setTextColor(Color.parseColor(sharedPreferences.getString(BotResponse.BUTTON_ACTIVE_TXT_COLOR, "#000000")));
         }
 
-        if (payloadInner.getHeaderOptions() != null && payloadInner.getHeaderOptions() instanceof HeaderOptionsModel && ((HeaderOptionsModel) payloadInner.getHeaderOptions()).getType() != null) {
-            HeaderOptionsModel headerOptionsModel = ((HeaderOptionsModel) payloadInner.getHeaderOptions());
+        if (payloadInner.getHeaderOptions() != null && payloadInner.getHeaderOptions() instanceof HeaderOptionsModel headerOptionsModel && ((HeaderOptionsModel) payloadInner.getHeaderOptions()).getType() != null) {
             switch (headerOptionsModel.getType()) {
                 case "button":
                     iconImageLoad.setVisibility(GONE);
@@ -130,7 +129,7 @@ public class ListWidgetTemplateHolder extends BaseViewHolder {
                     tvText.setVisibility(GONE);
                     tvUrl.setVisibility(GONE);
                     tvButtonParent.setVisibility(VISIBLE);
-                    String btnTitle = "";
+                    String btnTitle;
                     if (headerOptionsModel.getButton() != null && headerOptionsModel.getButton().getTitle() != null)
                         btnTitle = headerOptionsModel.getButton().getTitle();
                     else
@@ -195,7 +194,7 @@ public class ListWidgetTemplateHolder extends BaseViewHolder {
                 case "image":
                     iconImageLoad.setVisibility(VISIBLE);
                     if (headerOptionsModel.getImage() != null && headerOptionsModel.getImage().getImage_src() != null) {
-                        Picasso.get().load(headerOptionsModel.getImage().getImage_src()).into(iconImageLoad);
+                        Glide.with(itemView.getContext()).load(headerOptionsModel.getImage().getImage_src()).into(iconImageLoad);
                         iconImageLoad.setOnClickListener(v -> {
                             if (payloadInner.getHeaderOptions() != null && headerOptionsModel.getImage() != null && headerOptionsModel.getImage().getPayload() != null) {
                                 buttonAction(headerOptionsModel.getImage().getPayload());
@@ -259,7 +258,7 @@ public class ListWidgetTemplateHolder extends BaseViewHolder {
     }
 
     public void buttonAction(String utt) {
-        String utterance = null;
+        String utterance;
         utterance = utt;
 
         if (utterance == null) return;

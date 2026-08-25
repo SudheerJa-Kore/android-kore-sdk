@@ -18,7 +18,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -61,7 +61,7 @@ public class ListViewTemplateAdapter extends RecyclerView.Adapter<ListViewTempla
 
         if (!StringUtils.isNullOrEmpty(botListModel.getImage_url())) {
             holder.botListItemImage.setVisibility(View.VISIBLE);
-            Picasso.get().load(botListModel.getImage_url()).transform(roundedCornersTransform).into(holder.botListItemImage);
+            Glide.with(holder.botListItemImage.getContext()).load(botListModel.getImage_url()).transform(roundedCornersTransform).into(holder.botListItemImage);
         }
 
         holder.botListItemTitle.setTag(botListModel);

@@ -28,7 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
@@ -116,7 +116,7 @@ public class AdvanceListButtonAdapter extends RecyclerView.Adapter<AdvanceListBu
                     Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                     holder.ivBtnImage.setImageBitmap(decodedByte);
                 } else {
-                    Picasso.get().load(btn.getIcon()).transform(new RoundedCornersTransform()).into(holder.ivBtnImage);
+                    Glide.with(mContext).load(btn.getIcon()).transform(new RoundedCornersTransform()).into(holder.ivBtnImage);
                 }
             } catch (Exception e) {
                 holder.ivBtnImage.setVisibility(GONE);

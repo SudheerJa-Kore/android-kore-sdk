@@ -18,7 +18,7 @@ import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -92,7 +92,7 @@ public class CarouselItemViewHelper {
             }
             try {
                 if (botCarouselModel.getImage_url() != null && !botCarouselModel.getImage_url().isEmpty()) {
-                    Picasso.get().load(botCarouselModel.getImage_url()).into(carouselViewHolder.carouselItemImage);
+                    Glide.with(activityContext).load(botCarouselModel.getImage_url()).into(carouselViewHolder.carouselItemImage);
                     carouselViewHolder.carouselItemImage.setVisibility(View.VISIBLE);
                 } else {
                     carouselViewHolder.carouselItemImage.setVisibility(GONE);

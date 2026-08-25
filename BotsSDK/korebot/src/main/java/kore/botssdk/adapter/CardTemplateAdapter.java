@@ -25,7 +25,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
@@ -123,7 +123,7 @@ public class CardTemplateAdapter extends RecyclerView.Adapter<CardTemplateAdapte
                             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                             holder.bot_list_item_image.setImageBitmap(decodedByte);
                         } else {
-                            Picasso.get().load(cardTemplateModel.getCardHeading().getIcon()).transform(new RoundedCornersTransform()).into(holder.bot_list_item_image);
+                            Glide.with(context).load(cardTemplateModel.getCardHeading().getIcon()).transform(new RoundedCornersTransform()).into(holder.bot_list_item_image);
                         }
                     } catch (Exception e) {
                         holder.bot_list_item_image.setVisibility(GONE);
@@ -173,7 +173,7 @@ public class CardTemplateAdapter extends RecyclerView.Adapter<CardTemplateAdapte
                                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                                 holder.ivHeaderExtra.setImageBitmap(decodedByte);
                             } else {
-                                Picasso.get().load(headerOptions.getIcon()).transform(new RoundedCornersTransform()).into(holder.ivHeaderExtra);
+                                Glide.with(context).load(headerOptions.getIcon()).transform(new RoundedCornersTransform()).into(holder.ivHeaderExtra);
                             }
                         } catch (Exception e) {
                             holder.ivHeaderExtra.setVisibility(GONE);

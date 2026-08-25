@@ -10,10 +10,15 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Shader;
 
-import com.squareup.picasso.Transformation;
+import androidx.annotation.NonNull;
+
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
+
+import java.security.MessageDigest;
 
 
-public class RoundedCornersTransform implements Transformation {
+public class RoundedCornersTransform extends BitmapTransformation {
     public void setRadius(float radius) {
         this.radius = radius;
     }
@@ -21,7 +26,7 @@ public class RoundedCornersTransform implements Transformation {
     private float radius = 0;
 
     @Override
-    public Bitmap transform(Bitmap source) {
+    protected Bitmap transform(@NonNull BitmapPool pool, @NonNull Bitmap source, int outWidth, int outHeight) {
         try {
             int size = Math.min(source.getWidth(), source.getHeight());
 
@@ -30,15 +35,12 @@ public class RoundedCornersTransform implements Transformation {
 
             // Crop the image to a square
             Bitmap squaredBitmap = Bitmap.createBitmap(source, x, y, size, size);
-            if (squaredBitmap != source) {
-                source.recycle();
-            }
 
             // Ensure the config is valid
             Bitmap.Config config = source.getConfig() != null ? source.getConfig() : Bitmap.Config.ARGB_8888;
 
-            // Create the output bitmap
-            Bitmap bitmap = Bitmap.createBitmap(size, size, config);
+            // Create the output bitmap from pool if possible
+            Bitmap bitmap = pool.get(size, size, config);
 
             // Set up canvas and paint
             Canvas canvas = new Canvas(bitmap);
@@ -50,20 +52,28 @@ public class RoundedCornersTransform implements Transformation {
             paint.setShader(shader);
 
             // Corner radius
-            radius = size / 8f; // Or set a fixed value like 10f
-            canvas.drawRoundRect(new RectF(0f, 0f, size, size), radius, radius, paint);
+            float r = radius > 0 ? radius : size / 8f;
+            canvas.drawRoundRect(new RectF(0f, 0f, size, size), r, r, paint);
 
-            // Clean up
-            squaredBitmap.recycle();
             return bitmap;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        return source;
     }
 
     @Override
-    public String key() {
-        return "rounded_corners";
+    public void updateDiskCacheKey(@NonNull MessageDigest messageDigest) {
+        messageDigest.update(("rounded_corners" + radius).getBytes(CHARSET));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof RoundedCornersTransform && ((RoundedCornersTransform) o).radius == radius;
+    }
+
+    @Override
+    public int hashCode() {
+        return ("rounded_corners" + radius).hashCode();
     }
 }

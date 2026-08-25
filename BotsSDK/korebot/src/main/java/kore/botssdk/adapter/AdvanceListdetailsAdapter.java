@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
@@ -82,7 +82,7 @@ public class AdvanceListdetailsAdapter extends BaseAdapter {
                     Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                     holder.ivListBtnIcon.setImageBitmap(decodedByte);
                 } else {
-                    Picasso.get().load(dataObj.getIcon()).transform(new RoundedCornersTransform()).into(holder.ivListBtnIcon);
+                    Glide.with(context).load(dataObj.getIcon()).transform(new RoundedCornersTransform()).into(holder.ivListBtnIcon);
                 }
             } catch (Exception ex) {
                 holder.ivListBtnIcon.setVisibility(GONE);

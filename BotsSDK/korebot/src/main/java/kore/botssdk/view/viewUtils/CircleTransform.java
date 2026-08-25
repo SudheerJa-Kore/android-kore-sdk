@@ -6,22 +6,24 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Shader;
 
-import com.squareup.picasso.Transformation;
+import androidx.annotation.NonNull;
 
-public class CircleTransform implements Transformation {
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
+
+import java.security.MessageDigest;
+
+public class CircleTransform extends BitmapTransformation {
     @Override
-    public Bitmap transform(Bitmap source) {
+    protected Bitmap transform(@NonNull BitmapPool pool, @NonNull Bitmap source, int outWidth, int outHeight) {
         int size = Math.min(source.getWidth(), source.getHeight());
 
         int x = (source.getWidth() - size) / 2;
         int y = (source.getHeight() - size) / 2;
 
         Bitmap squaredBitmap = Bitmap.createBitmap(source, x, y, size, size);
-        if (squaredBitmap != source) {
-            source.recycle();
-        }
 
-        Bitmap bitmap = Bitmap.createBitmap(size, size, source.getConfig());
+        Bitmap bitmap = pool.get(size, size, source.getConfig() != null ? source.getConfig() : Bitmap.Config.ARGB_8888);
 
         Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint();
@@ -33,12 +35,21 @@ public class CircleTransform implements Transformation {
         float r = size / 2f;
         canvas.drawCircle(r, r, r, paint);
 
-        squaredBitmap.recycle();
         return bitmap;
     }
 
     @Override
-    public String key() {
-        return "circle";
+    public void updateDiskCacheKey(@NonNull MessageDigest messageDigest) {
+        messageDigest.update("circle".getBytes(CHARSET));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof CircleTransform;
+    }
+
+    @Override
+    public int hashCode() {
+        return "circle".hashCode();
     }
 }

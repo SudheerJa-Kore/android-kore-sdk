@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import kore.botssdk.R;
 import kore.botssdk.adapter.AgentQuickOptionsTemplateAdapter;
@@ -56,7 +56,7 @@ public class AgentTransferTemplateHolder extends BaseViewHolder {
     public void bind(BaseBotMessage baseBotMessage) {
         PayloadInner payloadInner = getPayloadInner(baseBotMessage);
         if (payloadInner == null) return;
-        if (payloadInner.getButtons() != null && payloadInner.getButtons().size() > 0) {
+        if (payloadInner.getButtons() != null && !payloadInner.getButtons().isEmpty()) {
             rvAgentButtons.setVisibility(View.VISIBLE);
             llAgentDetails.setVisibility(GONE);
 
@@ -80,7 +80,7 @@ public class AgentTransferTemplateHolder extends BaseViewHolder {
 
             if (!StringUtils.isNullOrEmpty(payloadInner.getImage_url())) {
                 ivAgentImage.setVisibility(View.VISIBLE);
-                Picasso.get().load(payloadInner.getImage_url()).transform(circleTransform).into(ivAgentImage);
+                Glide.with(itemView.getContext()).load(payloadInner.getImage_url()).transform(circleTransform).into(ivAgentImage);
             }
         }
     }

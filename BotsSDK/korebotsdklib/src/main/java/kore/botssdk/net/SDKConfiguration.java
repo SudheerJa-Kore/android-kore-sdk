@@ -71,8 +71,6 @@ public class SDKConfiguration {
     }
 
     public static class Client {
-
-        public static boolean enablePanel = false;
         public static boolean timeStampBottom = false;
 
         public static void setClient_id(String client_id) {
@@ -109,58 +107,10 @@ public class SDKConfiguration {
     }
 
     public static class BubbleColors {
-        public static String rightBubbleSelected = APP_REQ_COLOR;
-
-        public static void setRightBubbleSelected(String rightBubbleSelected) {
-            BubbleColors.rightBubbleSelected = rightBubbleSelected;
-        }
-
-        public static void setRightBubbleUnSelected(String rightBubbleUnSelected) {
-            BubbleColors.rightBubbleUnSelected = rightBubbleUnSelected;
-        }
-
-        public static void setLeftBubbleSelected(String leftBubbleSelected) {
-            BubbleColors.leftBubbleSelected = leftBubbleSelected;
-        }
-
-        public static void setLeftBubbleUnSelected(String leftBubbleUnSelected) {
-            BubbleColors.leftBubbleUnSelected = leftBubbleUnSelected;
-        }
-
-        public static void setLeftBubbleTextColor(String leftBubbleTextColor) {
-            BubbleColors.leftBubbleTextColor = leftBubbleTextColor;
-        }
-
-        public static void setRightBubbleTextColor(String rightBubbleTextColor) {
-            BubbleColors.rightBubbleTextColor = rightBubbleTextColor;
-        }
-
-        public static void setWhiteColor(String whiteColor) {
-            BubbleColors.whiteColor = whiteColor;
-        }
-
-        public static void setLeftBubbleBorderColor(String leftBubbleBorderColor) {
-            BubbleColors.leftBubbleBorderColor = leftBubbleBorderColor;
-        }
-
-        public static void setRightLinkColor(String rightLinkColor) {
-            BubbleColors.rightLinkColor = rightLinkColor;
-        }
-
-        public static void setLeftLinkColor(String leftLinkColor) {
-            BubbleColors.leftLinkColor = leftLinkColor;
-        }
-
         public static String rightBubbleUnSelected = APP_REQ_COLOR;
         public static String leftBubbleSelected = "#D3D3D3";
-        public static String leftBubbleUnSelected = "#f8f9f8";
-        public static String leftBubbleTextColor = "#404051";
-        public static String rightBubbleTextColor = "#161628";//"#757587";
-        public static String whiteColor = "#FFFFFF";
-        public static String leftBubbleBorderColor = "#eeeef2";
         public static String rightLinkColor = APP_REQ_COLOR;
         public static String leftLinkColor = APP_REQ_COLOR;
-        public static final boolean BubbleUI = false;
         public static boolean showIcon = false;
 
         public static int getIcon() {
@@ -182,11 +132,6 @@ public class SDKConfiguration {
         private static int icon = -1;
         private static String icon_url = "";
 
-        public static String getProfileColor() {
-            return profileColor;
-        }
-
-        static String profileColor = APP_REQ_COLOR;
         public static String quickReplyColor = "#EEEEF0";
         public static String quickReplyTextColor = "#000000";
         public static String quickBorderColor = "#000000";

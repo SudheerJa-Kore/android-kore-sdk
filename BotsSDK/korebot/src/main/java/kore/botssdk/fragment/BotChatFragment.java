@@ -1,6 +1,8 @@
 package kore.botssdk.fragment;
 
+import static android.content.Context.RECEIVER_EXPORTED;
 import static android.view.View.VISIBLE;
+import static androidx.core.content.ContextCompat.registerReceiver;
 import static kore.botssdk.activity.GenericWebViewActivity.EXTRA_HEADER;
 import static kore.botssdk.activity.GenericWebViewActivity.EXTRA_URL;
 import static kore.botssdk.models.BotResponse.HEADER_SIZE_COMPACT;
@@ -20,6 +22,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -29,7 +32,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -38,15 +40,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.gson.Gson;
-import com.kore.ai.widgetsdk.fragments.BottomPanelFragment;
-import com.kore.ai.widgetsdk.listeners.WidgetComposeFooterInterface;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -102,7 +102,7 @@ import kore.botssdk.viewmodels.chat.BotChatViewModelFactory;
 import kore.botssdk.websocket.SocketWrapper;
 
 @SuppressWarnings("UnKnownNullness")
-public class BotChatFragment extends Fragment implements BotChatViewListener, ComposeFooterInterface, TTSUpdate, InvokeGenericWebViewInterface, WidgetComposeFooterInterface {
+public class BotChatFragment extends Fragment implements BotChatViewListener, ComposeFooterInterface, TTSUpdate, InvokeGenericWebViewInterface {
     private final Gson gson = new Gson();
     private final Handler messageHandler = new Handler();
     private ProgressBar taskProgressBar;
@@ -159,7 +159,6 @@ public class BotChatFragment extends Fragment implements BotChatViewListener, Co
     };
     private TTSSynthesizer ttsSynthesizer;
     private RelativeLayout rlChatWindow;
-    private FrameLayout composerView;
     private SharedPreferences sharedPreferences;
     private String fileUrl;
     private Dialog progressBar;
@@ -199,7 +198,11 @@ public class BotChatFragment extends Fragment implements BotChatViewListener, Co
         findViews(view);
         getBundleInfo();
 
-        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(onDestroyReceiver, new IntentFilter(BundleConstants.DESTROY_EVENT));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requireActivity().registerReceiver(onDestroyReceiver, new IntentFilter(BundleConstants.DESTROY_EVENT), RECEIVER_EXPORTED);
+        } else {
+            registerReceiver(requireActivity(), onDestroyReceiver, new IntentFilter(BundleConstants.DESTROY_EVENT), ContextCompat.RECEIVER_NOT_EXPORTED);
+        }
 
         viewModel.connectToBot(isMinimized());
         requireContext().startService(new Intent(requireContext(), ClosingService.class));
@@ -238,7 +241,6 @@ public class BotChatFragment extends Fragment implements BotChatViewListener, Co
     }
 
     private void findViews(View view) {
-        composerView = view.findViewById(R.id.chatLayoutPanelContainer);
         rlChatWindow = view.findViewById(R.id.rlChatWindow);
         taskProgressBar = view.findViewById(R.id.taskProgressBar);
         sharedPreferences = requireContext().getSharedPreferences(BotResponse.THEME_NAME, Context.MODE_PRIVATE);
@@ -267,7 +269,6 @@ public class BotChatFragment extends Fragment implements BotChatViewListener, Co
         ttsSynthesizer = new TTSSynthesizer(requireContext());
         setupTextToSpeech();
         KoreEventCenter.register(this);
-        attachFragments();
     }
 
     @Override
@@ -587,35 +588,6 @@ public class BotChatFragment extends Fragment implements BotChatViewListener, Co
             ttsSynthesizer.stopTextToSpeech();
         } catch (IllegalArgumentException exception) {
             LogUtils.i("stopTextToSpeech error", String.valueOf(exception));
-        }
-    }
-
-    private void attachFragments() {
-        if (SDKConfiguration.Client.enablePanel) {
-            //Fragment Approach
-            composerView.setVisibility(VISIBLE);
-            BottomPanelFragment composerFragment = new BottomPanelFragment();
-            Bundle bundle = getArguments();
-            if (bundle != null)
-                bundle.putString("bgColor", sharedPreferences.getString(BotResponse.BUTTON_INACTIVE_BG_COLOR, "#ffffff"));
-
-            composerFragment.setArguments(bundle);
-            getChildFragmentManager().beginTransaction().replace(R.id.chatLayoutPanelContainer, composerFragment).commit();
-            composerFragment.setPanelComposeFooterInterface(BotChatFragment.this, SDKConfiguration.Client.identity);
-        }
-    }
-
-    @Override
-    public void onPanelSendClick(String message, boolean isFromUtterance) {
-        BotSocketConnectionManager.getInstance().sendMessage(message, null);
-    }
-
-    @Override
-    public void onPanelSendClick(String message, String payload, boolean isFromUtterance) {
-        if (payload != null) {
-            BotSocketConnectionManager.getInstance().sendPayload(message, payload);
-        } else {
-            BotSocketConnectionManager.getInstance().sendMessage(message, null);
         }
     }
 

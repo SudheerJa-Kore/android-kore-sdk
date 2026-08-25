@@ -103,7 +103,7 @@
         android:layout_centerVertical="true"
         android:layout_marginStart="@dimen/dimen_10dp"
         android:layout_marginEnd="@dimen/dimen_10dp"
-        android:background="@drawable/ic_close"
+        android:background="@mipmap/ic_close_black_24dp"
         android:contentDescription="@string/start_conversation" />
 
 </RelativeLayout>

@@ -22,7 +22,7 @@
             android:layout_gravity="end"
             android:layout_margin="14dp"
             android:padding="6dp"
-            android:src="@drawable/ic_close_black_24dp" />
+            android:src="@mipmap/ic_close_black_24dp" />
 
         <kore.botssdk.view.CustomTextViewBold
             android:id="@+id/advance_multi_select_title"

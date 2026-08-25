@@ -40,7 +40,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import net.cachapa.expandablelayout.ExpandableLayout;
 
@@ -89,6 +89,10 @@ public class ListWidgetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private final PopupWindow popupWindow;
     private final View popUpView;
     private boolean isEnable = true;
+
+    public void setLoginNeeded(boolean loginNeeded) {
+        isLoginNeeded = loginNeeded;
+    }
 
     public ListWidgetAdapter(Context mContext, String trigger) {
         this.mContext = mContext;
@@ -157,7 +161,7 @@ public class ListWidgetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         } else {
 
             final ViewHolder holder = (ViewHolder) holderData;
-            final WidgetListElementModel model = items.get(position);
+            final WidgetListElementModel model = items.get(holderData.getBindingAdapterPosition());
             holder.viewMore.setTextColor(Color.parseColor(SDKConfiguration.BubbleColors.quickReplyColor));
 
             if (StringUtils.isNullOrEmpty(model.getTitle())) {
@@ -192,7 +196,7 @@ public class ListWidgetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (model.getImage() != null && !StringUtils.isNullOrEmpty(model.getImage().getImage_src()) && Patterns.WEB_URL.matcher(model.getImage().getImage_src()).matches()) {
                 String url = model.getImage().getImage_src().trim();
                 url = url.replace("http://", "https://");
-                Picasso.get().load(url).error(R.drawable.ic_image_photo).transform(new RoundedCornersTransform()).into(holder.imageIcon);
+                Glide.with(mContext).load(url).error(R.drawable.ic_image_photo).transform(new RoundedCornersTransform()).into(holder.imageIcon);
             } else {
                 holder.imageIcon.setVisibility(GONE);
             }
@@ -275,7 +279,7 @@ public class ListWidgetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         holder.tvButtonParent.setVisibility(GONE);
                         holder.tvUrl.setVisibility(GONE);
                         if (model.getValue().getImage() != null && !StringUtils.isNullOrEmpty(model.getValue().getImage().getImage_src())) {
-                            Picasso.get().load(model.getValue().getImage().getImage_src()).into(holder.icon_image_load);
+                            Glide.with(mContext).load(model.getValue().getImage().getImage_src()).into(holder.icon_image_load);
                             holder.icon_image_load.setOnClickListener(v -> defaultAction(model.getValue().getImage().getUtterance() != null ? model.getValue().getImage().getUtterance() : model.getValue().getImage().getPayload() != null ? model.getValue().getImage().getPayload() : "", Constants.SKILL_SELECTION.equalsIgnoreCase(Constants.SKILL_HOME) || TextUtils.isEmpty(Constants.SKILL_SELECTION) || (!StringUtils.isNullOrEmpty(skillName) && !skillName.equalsIgnoreCase(Constants.SKILL_SELECTION))));
                         }
                         break;
@@ -334,7 +338,7 @@ public class ListWidgetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     defaultAction(model.getDefault_action().getPayload(), TextUtils.isEmpty(Constants.SKILL_SELECTION) || !StringUtils.isNullOrEmpty(skillName) && !skillName.equalsIgnoreCase(Constants.SKILL_SELECTION));
                 }
             });
-            holder.divider.setVisibility(position == items.size() - 1 ? View.GONE : VISIBLE);
+            holder.divider.setVisibility(holderData.getBindingAdapterPosition() == items.size() - 1 ? View.GONE : VISIBLE);
         }
     }
 

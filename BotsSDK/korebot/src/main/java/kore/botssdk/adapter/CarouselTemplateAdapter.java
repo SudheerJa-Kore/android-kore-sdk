@@ -3,9 +3,7 @@ package kore.botssdk.adapter;
 import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-
 import static kore.botssdk.models.BotResponse.BUBBLE_RIGHT_BG_COLOR;
-import static kore.botssdk.models.BotResponse.BUBBLE_RIGHT_TEXT_COLOR;
 import static kore.botssdk.models.BotResponse.THEME_NAME;
 
 import android.content.Context;
@@ -28,7 +26,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -41,7 +39,6 @@ import kore.botssdk.listener.InvokeGenericWebViewInterface;
 import kore.botssdk.models.BotCarouselModel;
 import kore.botssdk.models.BotListDefaultModel;
 import kore.botssdk.models.BotResponse;
-import kore.botssdk.net.SDKConfiguration;
 import kore.botssdk.utils.BundleConstants;
 import kore.botssdk.utils.StringUtils;
 import kore.botssdk.utils.Utils;
@@ -82,7 +79,7 @@ public class CarouselTemplateAdapter extends RecyclerView.Adapter<CarouselTempla
         }
         try {
             if (botCarouselModel.getImage_url() != null && !botCarouselModel.getImage_url().isEmpty()) {
-                Picasso.get().load(botCarouselModel.getImage_url()).into(holder.carouselItemImage);
+                Glide.with(holder.carouselItemImage.getContext()).load(botCarouselModel.getImage_url()).into(holder.carouselItemImage);
                 holder.carouselItemImage.setVisibility(VISIBLE);
             } else {
                 holder.carouselItemImage.setVisibility(GONE);

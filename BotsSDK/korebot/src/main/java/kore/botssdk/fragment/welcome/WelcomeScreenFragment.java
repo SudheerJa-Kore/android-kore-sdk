@@ -33,7 +33,6 @@ import com.bumptech.glide.request.transition.Transition;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
-import com.squareup.picasso.Picasso;
 
 import kore.botssdk.R;
 import kore.botssdk.adapter.PromotionsAdapter;
@@ -151,13 +150,13 @@ public class WelcomeScreenFragment extends DialogFragment {
                 }
 
                 if (welcomeModel.getLogo() != null && !StringUtils.isNullOrEmpty(welcomeModel.getLogo().getLogo_url())) {
-                    Picasso.get().load(welcomeModel.getLogo().getLogo_url()).transform(new RoundedCornersTransform()).into(ivWelcomeLogo);
+                    Glide.with(requireContext()).load(welcomeModel.getLogo().getLogo_url()).transform(new RoundedCornersTransform()).into(ivWelcomeLogo);
                 }
 
                 if (botBrandingModel.getHeader() != null && botBrandingModel.getHeader().getIcon() != null) {
                     if (botBrandingModel.getHeader().getIcon().getType().equalsIgnoreCase(BundleUtils.CUSTOM)) {
                         llStarterLogo.setBackgroundResource(0);
-                        Picasso.get().load(botBrandingModel.getHeader().getIcon().getIcon_url()).transform(new RoundedCornersTransform()).into(ivStarterLogo);
+                        Glide.with(requireContext()).load(botBrandingModel.getHeader().getIcon().getIcon_url()).transform(new RoundedCornersTransform()).into(ivStarterLogo);
                         ivStarterLogo.setLayoutParams(new LinearLayout.LayoutParams((int) (40 * dp1), (int) (40 * dp1)));
                     } else {
                         switch (botBrandingModel.getHeader().getIcon().getIcon_url()) {

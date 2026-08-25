@@ -15,7 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -55,7 +55,7 @@ public class TableListInnerAdapter extends RecyclerView.Adapter<TableListInnerAd
         if (botListModel.getTitle() != null && botListModel.getTitle().getImage() != null) {
             if (!StringUtils.isNullOrEmpty(botListModel.getTitle().getImage().getImage_src())) {
                 holder.botListItemImage.setVisibility(View.VISIBLE);
-                Picasso.get().load(botListModel.getTitle().getImage().getImage_src()).transform(roundedCornersTransform).into(holder.botListItemImage);
+                Glide.with(holder.itemView.getContext()).load(botListModel.getTitle().getImage().getImage_src()).transform(roundedCornersTransform).into(holder.botListItemImage);
 
                 if (botListModel.getTitle().getImage().getRadius() > 0) {
                     holder.botListItemImage.getLayoutParams().height = (int) (botListModel.getTitle().getImage().getRadius() * 2 * dp1);

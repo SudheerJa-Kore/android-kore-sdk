@@ -18,8 +18,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -98,7 +98,7 @@ public class BotListViewTemplateAdapter extends BaseAdapter {
 
         if (!StringUtils.isNullOrEmpty(botListModel.getImage_url())) {
             holder.botListItemImage.setVisibility(View.VISIBLE);
-            Picasso.get().load(botListModel.getImage_url()).transform(roundedCornersTransform).into(holder.botListItemImage);
+            Glide.with(context).load(botListModel.getImage_url()).transform(roundedCornersTransform).into(holder.botListItemImage);
         }
 
         holder.botListItemTitle.setTag(botListModel);

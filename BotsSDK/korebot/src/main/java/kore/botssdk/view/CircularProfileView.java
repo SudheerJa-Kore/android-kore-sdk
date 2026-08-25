@@ -11,11 +11,14 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.makeramen.roundedimageview.RoundedImageView;
-import com.makeramen.roundedimageview.RoundedTransformationBuilder;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
-import com.squareup.picasso.Transformation;
 
 import java.io.File;
 
@@ -126,33 +129,31 @@ public class CircularProfileView extends RoundedImageView {
         setBackgroundDrawable(profileDrawable);
     }
 
-    private Transformation getRoundTransformation() {
-        return new RoundedTransformationBuilder()
-                .oval(true)
-                .build();
-    }
-
     public void setProfileImageUrl(String url, boolean applyRoundTransform) {
         if (applyRoundTransform) {
             if (url.startsWith(StringConstants.HTTP_SCHEME)) {
-                Picasso.get()
+                Glide.with(getContext())
+                        .asBitmap()
                         .load(url)
-                        .transform(getRoundTransformation())
+                        .transform(new CircleCrop())
                         .into(viewTarget);
             } else {
-                Picasso.get()
+                Glide.with(getContext())
+                        .asBitmap()
                         .load(new File(url))
-                        .transform(getRoundTransformation())
+                        .transform(new CircleCrop())
                         .into(viewTarget);
             }
 
         } else {
             if (url.startsWith(StringConstants.HTTP_SCHEME)) {
-                Picasso.get()
+                Glide.with(getContext())
+                        .asBitmap()
                         .load(url)
                         .into(viewTarget);
             } else {
-                Picasso.get()
+                Glide.with(getContext())
+                        .asBitmap()
                         .load(new File(url))
                         .into(viewTarget);
             }
@@ -174,7 +175,7 @@ public class CircularProfileView extends RoundedImageView {
 
         this.profileColor = color;
 
-        Picasso.get().cancelRequest(viewTarget);
+        Glide.with(getContext()).clear(viewTarget);
         if (nameInitials != null) {
             nameInitials = nameInitials.toUpperCase();
         }
@@ -248,24 +249,22 @@ public class CircularProfileView extends RoundedImageView {
         this.borderColor = borderColor;
     }
 
-    final Target viewTarget = new Target() {
+    final CustomTarget<Bitmap> viewTarget = new CustomTarget<Bitmap>() {
         @Override
-        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom loadedFrom) {
+        public void onResourceReady(@NonNull Bitmap resource, Transition<? super Bitmap> transition) {
             setImageDrawable(null);
-            updateWithPic(bitmap);
+            updateWithPic(resource);
             setBackgroundResource(0);
         }
 
         @Override
-        public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+        public void onLoadCleared(Drawable placeholder) {
             setImageDrawable(null);
             setBackgroundResource(0);
-            setDefaultBackground(profileColor, initials);
         }
 
-
         @Override
-        public void onPrepareLoad(Drawable drawable) {
+        public void onLoadFailed(Drawable errorDrawable) {
             setImageDrawable(null);
             setBackgroundResource(0);
             setDefaultBackground(profileColor, initials);

@@ -18,7 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
@@ -71,7 +71,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 holder.botListItemImage.setImageBitmap(decodedByte);
             } else {
-                Picasso.get().load(articleModel.getIcon()).transform(new RoundedCornersTransform()).into(holder.botListItemImage);
+                Glide.with(holder.botListItemImage.getContext()).load(articleModel.getIcon()).transform(new RoundedCornersTransform()).into(holder.botListItemImage);
             }
         }
 

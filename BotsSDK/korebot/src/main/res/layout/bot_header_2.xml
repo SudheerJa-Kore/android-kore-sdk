@@ -97,7 +97,7 @@
         android:layout_height="@dimen/dimen_20dp"
         android:layout_alignParentEnd="true"
         android:layout_margin="@dimen/dimen_5dp"
-        android:background="@drawable/ic_close"
+        android:background="@mipmap/ic_close_black_24dp"
         android:contentDescription="@string/start_conversation" />
 
     <ImageView

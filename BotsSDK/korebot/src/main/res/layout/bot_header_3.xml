@@ -96,7 +96,7 @@
         android:layout_marginTop="@dimen/dimen_5dp"
         android:layout_marginEnd="@dimen/dimen_15dp"
         android:layout_marginBottom="@dimen/dimen_5dp"
-        android:background="@drawable/ic_close"
+        android:background="@mipmap/ic_close_black_24dp"
         android:backgroundTint="@color/white"
         android:contentDescription="@string/start_conversation" />
 

@@ -15,7 +15,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
@@ -64,7 +64,7 @@ public class CardTemplateListAdapter extends RecyclerView.Adapter<CardTemplateLi
                     Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                     holder.ivListBtnIcon.setImageBitmap(decodedByte);
                 } else {
-                    Picasso.get().load(btn.getIcon()).transform(new RoundedCornersTransform()).into(holder.ivListBtnIcon);
+                    Glide.with(holder.ivListBtnIcon.getContext()).load(btn.getIcon()).transform(new RoundedCornersTransform()).into(holder.ivListBtnIcon);
                 }
             } catch (Exception ex) {
                 holder.ivListBtnIcon.setVisibility(GONE);

@@ -94,13 +94,11 @@ public class BotFooterViewModel extends BaseViewModel<ComposeFooterUpdate> {
         } else {
             try {
                 DocumentFile pickFile = DocumentFile.fromSingleUri(context.get(), selectedImage);
-                String name = null;
-                String type = null;
+                String name;
+                String type;
 
-                if (pickFile != null) {
-                    name = pickFile.getName();
-                    type = pickFile.getType();
-                }
+                name = pickFile.getName();
+                type = pickFile.getType();
 
                 if (type != null && type.contains("video")) {
                     KaMediaUtils.setupAppDir(context.get(), BundleConstants.MEDIA_TYPE_VIDEO);

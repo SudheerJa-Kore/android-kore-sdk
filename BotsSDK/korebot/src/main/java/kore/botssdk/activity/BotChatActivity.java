@@ -34,7 +34,6 @@ import android.os.Messenger;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -46,11 +45,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.gson.Gson;
-import com.kore.ai.widgetsdk.fragments.BottomPanelFragment;
-import com.kore.ai.widgetsdk.listeners.WidgetComposeFooterInterface;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -106,7 +102,7 @@ import kore.botssdk.viewmodels.chat.BotChatViewModelFactory;
 import kore.botssdk.websocket.SocketWrapper;
 
 @SuppressWarnings("UnKnownNullness")
-public class BotChatActivity extends BotAppCompactActivity implements BotChatViewListener, ComposeFooterInterface, TTSUpdate, InvokeGenericWebViewInterface, WidgetComposeFooterInterface {
+public class BotChatActivity extends BotAppCompactActivity implements BotChatViewListener, ComposeFooterInterface, TTSUpdate, InvokeGenericWebViewInterface {
     private final Gson gson = new Gson();
     private final Handler messageHandler = new Handler();
     boolean isAgentTransfer = false;
@@ -245,11 +241,13 @@ public class BotChatActivity extends BotAppCompactActivity implements BotChatVie
             }
         });
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(onDestroyReceiver, new IntentFilter(BundleConstants.DESTROY_EVENT));
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(closeBotChatReceiver, new IntentFilter(CLOSE_CHAT_BOT_EVENT), RECEIVER_EXPORTED);
             registerReceiver(minimizeBotChatReceiver, new IntentFilter(MINIMIZE_CHAT_BOT_EVENT), RECEIVER_EXPORTED);
+            registerReceiver(onDestroyReceiver, new IntentFilter(BundleConstants.DESTROY_EVENT), RECEIVER_EXPORTED);
         } else {
+            registerReceiver(onDestroyReceiver, new IntentFilter(BundleConstants.DESTROY_EVENT));
             registerReceiver(closeBotChatReceiver, new IntentFilter(CLOSE_CHAT_BOT_EVENT));
             registerReceiver(minimizeBotChatReceiver, new IntentFilter(MINIMIZE_CHAT_BOT_EVENT));
         }
@@ -319,7 +317,6 @@ public class BotChatActivity extends BotAppCompactActivity implements BotChatVie
         ttsSynthesizer = new TTSSynthesizer(this);
         setupTextToSpeech();
         KoreEventCenter.register(this);
-        attachFragments();
     }
 
     @Override
@@ -706,36 +703,6 @@ public class BotChatActivity extends BotAppCompactActivity implements BotChatVie
         if (nw == null) return false;
         NetworkCapabilities actNw = connectivityManager.getNetworkCapabilities(nw);
         return actNw != null && (actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) || actNw.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH));
-    }
-
-    private void attachFragments() {
-        if (SDKConfiguration.Client.enablePanel) {
-            //Fragment Approach
-            FrameLayout composerView = findViewById(R.id.chatLayoutPanelContainer);
-            composerView.setVisibility(VISIBLE);
-            BottomPanelFragment composerFragment = new BottomPanelFragment();
-            Bundle bundle = getIntent().getExtras();
-            if (bundle != null)
-                bundle.putString("bgColor", sharedPreferences.getString(BotResponse.BUTTON_INACTIVE_BG_COLOR, "#ffffff"));
-
-            composerFragment.setArguments(bundle);
-            getSupportFragmentManager().beginTransaction().replace(R.id.chatLayoutPanelContainer, composerFragment).commit();
-            composerFragment.setPanelComposeFooterInterface(BotChatActivity.this, SDKConfiguration.Client.identity);
-        }
-    }
-
-    @Override
-    public void onPanelSendClick(String message, boolean isFromUtterance) {
-        BotSocketConnectionManager.getInstance().sendMessage(message, null);
-    }
-
-    @Override
-    public void onPanelSendClick(String message, String payload, boolean isFromUtterance) {
-        if (payload != null) {
-            BotSocketConnectionManager.getInstance().sendPayload(message, payload);
-        } else {
-            BotSocketConnectionManager.getInstance().sendMessage(message, payload);
-        }
     }
 
     public void sendImage(String fP, String fN, String fPT) {

@@ -9,7 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
@@ -77,7 +77,7 @@ public class ListWidgetDetailsAdapter extends BaseAdapter {
             holder.ivListBtnIcon.setVisibility(View.VISIBLE);
             String url = dataObj.getImage().getImage_src().trim();
             url = url.replace("http://", "https://");
-            Picasso.get().load(url).transform(new RoundedCornersTransform()).into(holder.ivListBtnIcon);
+            Glide.with(context).load(url).transform(new RoundedCornersTransform()).into(holder.ivListBtnIcon);
         }
     }
 
