@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+
+    <ImageView
+        android:id="@+id/ivChaseBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:contentDescription="@string/app_name"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/ivChaseLogo"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/ic_launcher"
+        android:contentDescription="@string/app_name"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:id="@+id/rlChatWindow"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/chatLayoutPanelContainer"
+        android:visibility="gone">
+
+        <!-- For the header -->
+        <FrameLayout
+            android:id="@+id/header_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:background="@color/gray_modern" />
+        <!-- For the footer -->
+        <FrameLayout
+            android:id="@+id/chatLayoutFooterContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:minHeight="50dp" />
+
+        <!-- For the content -->
+        <FrameLayout
+            android:id="@+id/chatLayoutContentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/chatLayoutFooterContainer"
+            android:layout_below="@+id/header_container" />
+
+        <!-- Progress bar representing loading -->
+        <ProgressBar
+            android:id="@+id/taskProgressBar"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="-7dp"
+            android:indeterminate="true" />
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/chatLayoutPanelContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/readReceiptGrey"
+        android:minHeight="50dp"
+        android:visibility="gone" />
+
+
+</RelativeLayout>

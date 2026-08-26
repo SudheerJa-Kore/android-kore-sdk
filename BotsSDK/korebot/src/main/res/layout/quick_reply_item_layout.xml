@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/quick_reply_item_root"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="beforeDescendants"
+    android:orientation="horizontal"
+    android:paddingStart="0dp"
+    android:paddingEnd="8dp"
+    android:paddingTop="3dp">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_rect_feedback"
+        android:descendantFocusability="beforeDescendants"
+        android:orientation="horizontal"
+        android:layout_gravity="center_vertical"
+        android:id="@+id/quick_reply_view"
+        tools:ignore="UselessParent">
+
+        <ImageView
+            android:id="@+id/quick_reply_item_image"
+            android:layout_width="@dimen/quick_reply_image_width"
+            android:layout_height="@dimen/quick_reply_image_height"
+            android:contentDescription="@string/app_name"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/round_rect_image"
+            android:layout_marginEnd="5dp"/>
+
+        <kore.botssdk.view.CustomTextView
+            android:id="@+id/quick_reply_item_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color_465360"
+            android:text="@string/hello"
+            android:singleLine="true"
+            android:textSize="@dimen/text_size_sub_header"
+            android:layout_gravity="center_vertical" />
+    </LinearLayout>
+
+</LinearLayout>

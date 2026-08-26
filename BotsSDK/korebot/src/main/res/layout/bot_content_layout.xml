@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rvChatContent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent">
+
+    <RelativeLayout
+        android:id="@+id/rlBody"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/llBotHeader">
+
+        <include
+            layout="@layout/kora_timestamps_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/header_layout"
+            android:visibility="gone" />
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeContainerChat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/quick_reply_view">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/chatContentListView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="start"
+                android:divider="@android:color/transparent"
+                android:listSelector="@color/white"
+                android:accessibilityLiveRegion="polite"
+                android:nestedScrollingEnabled="false"
+                android:orientation="vertical"
+                android:visibility="visible"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <kore.botssdk.view.QuickReplyView
+            android:id="@+id/quick_reply_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true" />
+
+
+        <LinearLayout xmlns:cpv="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/botTypingStatus"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/typing_layout_height"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="@dimen/typing_layout_margin_right"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+
+            <!-- Typer Image -->
+            <kore.botssdk.view.CircularProfileView
+                android:id="@+id/typing_status_item_cpv"
+                android:layout_width="@dimen/typing_layout_cpv_width"
+                android:layout_height="@dimen/typing_layout_cpv_height"
+                android:layout_gravity="center_vertical"
+                android:adjustViewBounds="true"
+                android:visibility="gone"
+                cpv:font_style="roboto_regular"
+                cpv:text_size="12dp" />
+
+            <!-- Presence Dots -->
+            <kore.botssdk.view.LoadingDots
+                android:id="@+id/ldDots"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="@dimen/dimen_2dp"
+                android:layout_marginStart="@dimen/dimen_5dp"
+                app:LoadingDots_auto_play="true"
+                app:LoadingDots_dots_color="@color/bgBlueSignup"
+                app:LoadingDots_dots_count="3"
+                app:LoadingDots_dots_size="@dimen/dimen_7dp"
+                app:LoadingDots_dots_space="5dp"
+                app:LoadingDots_jump_duration="300"
+                app:LoadingDots_jump_height="4dp"
+                app:LoadingDots_loop_duration="800"
+                app:LoadingDots_loop_start_delay="100" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

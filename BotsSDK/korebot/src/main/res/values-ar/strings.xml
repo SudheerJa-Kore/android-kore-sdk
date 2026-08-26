@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="message">رسالة</string>
+    <string name="online">متوفر</string>
+    <string name="cancel">إلغاء</string>
+    <string name="minimize">تصغير</string>
+    <string name="close">إغلاق</string>
+    <string name="close_or_minimize">هل ترغب في إغلاق المحادثة أم تصغيرها؟</string>
+    <string name="please_wait">يرجى الانتظار…</string>
+    <string name="loading_data">يرجى الانتظار…</string>
+</resources>

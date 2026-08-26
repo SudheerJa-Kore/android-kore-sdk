@@ -1,0 +1,144 @@
+package kore.botssdk.net;
+
+import android.graphics.Typeface;
+import android.view.View;
+
+import androidx.annotation.NonNull;
+
+import java.util.HashMap;
+
+import kore.botssdk.fragment.content.BaseContentFragment;
+import kore.botssdk.fragment.footer.BaseFooterFragment;
+import kore.botssdk.fragment.header.BaseHeaderFragment;
+import kore.botssdk.models.BotBrandingModel;
+import kore.botssdk.websocket.BotStatusListener;
+
+public class SDKConfig {
+    private static boolean isMinimized = false;
+    private static final HashMap<String, BaseHeaderFragment> customHeaders = new HashMap<>();
+    private static BaseFooterFragment customFooterFragment = null;
+    private static BaseContentFragment customContentFragment = null;
+    private static boolean isShowActionBar = true;
+    private static boolean isUpdateStatusBarColor = false;
+    private static BotBrandingModel botBrandingModel;
+
+    public static void setBotStatusUpdateListener(BotStatusListener botStatusListener) {
+        SDKConfiguration.Server.setBotStatusListener(botStatusListener);
+    }
+
+    public static void setFontFamily(Typeface regularTf, Typeface semiBoldTf, Typeface boldTf) {
+        SDKConfiguration.setFontFamily(regularTf, semiBoldTf, boldTf);
+    }
+
+    public static void setCustomTemplateView(@NonNull String templateName, @NonNull View templateView) {
+        SDKConfiguration.setCustomTemplateView(templateName, templateView);
+    }
+
+    public static void setCustomTemplateViewHolder(@NonNull String templateName, @NonNull Class<?> templateViewHolder) {
+        SDKConfiguration.setCustomTemplateViewHolder(templateName, templateViewHolder);
+    }
+
+    public static void initialize(String botId, String botName, String clientId, String clientName, String identity, String jwtToken, String serverUrl, String brandingUrl, String jwtServerUrl) {
+        SDKConfiguration.Client.setBot_id(botId);
+        SDKConfiguration.Client.setBot_name(botName);
+        SDKConfiguration.Client.setClient_id(clientId);
+        SDKConfiguration.Client.setClient_secret(clientName);
+        SDKConfiguration.Client.setIdentity(identity);
+        SDKConfiguration.JWTServer.setJwt_token(jwtToken);
+        SDKConfiguration.Server.setServerUrl(serverUrl);
+        SDKConfiguration.Server.setBrandingUrl(brandingUrl);
+        SDKConfiguration.JWTServer.setJwtServerUrl(jwtServerUrl);
+    }
+
+    public static void isWebHook(boolean isWebHook) {
+        SDKConfiguration.Client.isWebHook = isWebHook;
+    }
+
+    public static void setUseMoeJwt(boolean useMoeJwt) {
+        SDKConfiguration.JWTServer.setUseMoeJwt(useMoeJwt);
+    }
+
+    public static void setMoeJwtServerUrl(String moeJwtServerUrl) {
+        SDKConfiguration.JWTServer.setMoeJwtServerUrl(moeJwtServerUrl);
+    }
+
+    public static void setCustomHeaders(HashMap<String, String> customHeaders) {
+        SDKConfiguration.JWTServer.setCustomHeaders(customHeaders);
+    }
+
+    public static void setIsMinimized(boolean isMinimize) {
+        isMinimized = isMinimize;
+    }
+
+    public static boolean isMinimized() {
+        return isMinimized;
+    }
+
+    public static BaseHeaderFragment getCustomHeaderFragment(String size) {
+        return customHeaders.get(size);
+    }
+
+    public static void setCustomHeaderFragment(String size, BaseHeaderFragment fragment) {
+        customHeaders.put(size, fragment);
+    }
+
+    public static void setCustomFooterFragment(BaseFooterFragment fragment) {
+        customFooterFragment = fragment;
+    }
+
+    public static BaseFooterFragment getCustomFooterFragment() {
+        return customFooterFragment;
+    }
+
+    public static BaseContentFragment getCustomContentFragment() {
+        return customContentFragment;
+    }
+
+    public static void setCustomContentFragment(BaseContentFragment customContentFragment) {
+        SDKConfig.customContentFragment = customContentFragment;
+    }
+
+    public static void setIsShowIcon(boolean isShow) {
+        SDKConfiguration.BubbleColors.showIcon = isShow;
+    }
+
+    public static void setIsShowIconTop(boolean isShow) {
+        SDKConfiguration.OverrideKoreConfig.showIconTop = isShow;
+    }
+
+    public static void setIsTimeStampsRequired(boolean isRequired) {
+        SDKConfiguration.setTimeStampsRequired(isRequired);
+    }
+
+    public static void setQueryParams(HashMap<String, Object> queryParams) {
+        SDKConfiguration.Server.queryParams = queryParams;
+    }
+
+    public static void setCustomData(RestResponse.BotCustomData customData) {
+        SDKConfiguration.Server.customData = customData;
+    }
+
+    public static boolean isIsShowActionBar() {
+        return isShowActionBar;
+    }
+
+    public static void setIsShowActionBar(boolean isShow) {
+        isShowActionBar = isShow;
+    }
+
+    public static void setIsUpdateStatusBarColor(boolean isUpdate) {
+        isUpdateStatusBarColor = isUpdate;
+    }
+
+    public static boolean isUpdateStatusBarColor() {
+        return isUpdateStatusBarColor;
+    }
+
+    public static BotBrandingModel getBotBrandingConfigModel() {
+        return botBrandingModel;
+    }
+
+    public static void setBotBrandingConfigModel(BotBrandingModel botBrandingModel) {
+        SDKConfig.botBrandingModel = botBrandingModel;
+    }
+}
