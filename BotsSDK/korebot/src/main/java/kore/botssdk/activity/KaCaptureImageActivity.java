@@ -449,7 +449,7 @@ public class KaCaptureImageActivity extends KaAppCompatActivity implements KoreM
         String filepath = "";
         File file;
         if (Objects.requireNonNull(uri.getScheme()).compareTo("content") == 0) {
-            Cursor cursor = context.getContentResolver().query(uri, new String[]{android.provider.MediaStore.Images.ImageColumns.DATA, MediaStore.Images.Media.ORIENTATION}, null, null, null);
+            Cursor cursor = context.getContentResolver().query(uri, new String[]{MediaStore.Images.ImageColumns.DATA, MediaStore.Images.Media.ORIENTATION}, null, null, null);
             if (cursor != null) {
                 int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
                 cursor.moveToFirst();

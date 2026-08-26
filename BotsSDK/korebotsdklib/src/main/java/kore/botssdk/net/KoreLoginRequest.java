@@ -1,4 +1,4 @@
-/*
+package kore.botssdk.net;/*
 package kore.botssdk.net;
 
 import android.content.Context;

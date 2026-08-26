@@ -25,13 +25,10 @@ import androidx.core.view.WindowInsetsCompat;
 import java.util.Objects;
 
 import kore.botssdk.R;
-import kore.botssdk.audiocodes.webrtcclient.db.MySQLiteHelper;
 import kore.botssdk.models.BotResponse;
-import kore.botssdk.net.SDKConfig;
 import kore.botssdk.utils.BundleConstants;
 
 public class BotAppCompactActivity extends AppCompatActivity {
-    private MySQLiteHelper dataBase;
     protected final String LOG_TAG = getClass().getSimpleName();
     private FrameLayout contentContainer;
     private View statusBarLayout;
@@ -65,8 +62,6 @@ public class BotAppCompactActivity extends AppCompatActivity {
             }
             return WindowInsetsCompat.CONSUMED;
         });
-
-        initDataBase();
     }
 
     // Method for child activities to set their layout inside the base layout
@@ -106,13 +101,5 @@ public class BotAppCompactActivity extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(ContextCompat.getColor(BotAppCompactActivity.this, R.color.black));
         }
-    }
-
-    public void initDataBase() {
-        dataBase = new MySQLiteHelper(this);
-    }
-
-    public MySQLiteHelper getDataBase() {
-        return dataBase;
     }
 }

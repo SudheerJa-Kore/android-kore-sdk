@@ -24,9 +24,6 @@ import android.os.Looper;
 import androidx.core.app.NotificationCompat;
 import androidx.lifecycle.ViewModel;
 
-import com.audiocodes.mv.webrtcsdk.audio.WebRTCAudioManager;
-import com.audiocodes.mv.webrtcsdk.sip.enums.Transport;
-import com.audiocodes.mv.webrtcsdk.useragent.AudioCodesUA;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
@@ -44,10 +41,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import kore.botssdk.R;
 import kore.botssdk.activity.BotChatActivity;
-import kore.botssdk.audiocodes.webrtcclient.Activities.CallActivity;
-import kore.botssdk.audiocodes.webrtcclient.General.ACManager;
-import kore.botssdk.audiocodes.webrtcclient.General.Prefs;
-import kore.botssdk.audiocodes.webrtcclient.Structure.SipAccount;
 import kore.botssdk.bot.BotClient;
 import kore.botssdk.events.SocketDataTransferModel;
 import kore.botssdk.listener.BaseSocketConnectionManager;
@@ -65,8 +58,6 @@ import kore.botssdk.models.BotResponseMessage;
 import kore.botssdk.models.BotResponsePayLoadText;
 import kore.botssdk.models.ComponentModel;
 import kore.botssdk.models.ComponentModelPayloadText;
-import kore.botssdk.models.EventMessageModel;
-import kore.botssdk.models.EventModel;
 import kore.botssdk.models.PayloadInner;
 import kore.botssdk.models.PayloadOuter;
 import kore.botssdk.net.RestResponse;
@@ -195,7 +186,7 @@ public class BotChatViewModel extends ViewModel {
         this.chatView = chatView;
         this.webHookRepository = new WebHookRepository(context, chatView);
         this.botClient = botClient;
-        ACManager.getInstance().startLogout();
+//        ACManager.getInstance().startLogout();
         sharedPreferences = context.getSharedPreferences(BotResponse.THEME_NAME, Context.MODE_PRIVATE);
     }
 
@@ -357,61 +348,26 @@ public class BotChatViewModel extends ViewModel {
             LogUtils.d(LOG_TAG, String.valueOf(e));
             if (e instanceof JsonSyntaxException) {
                 try {
-                    EventModel eventModel = gson.fromJson(payload, EventModel.class);
-                    if (eventModel != null && eventModel.getMessage() != null) {
-                        if (!StringUtils.isNullOrEmpty(eventModel.getMessage().getSipURI()) && eventModel.getMessage().getType().equalsIgnoreCase(BundleConstants.CALL_AGENT_WEBRTC)) {
-                            EventMessageModel eventMessageModel = eventModel.getMessage();
-                            if (eventMessageModel != null) {
-                                SipAccount sipAccount = new SipAccount(context);
-                                sipAccount.setUsername(botClient.getUserId());
-                                sipAccount.setDisplayName(botClient.getUserId());
-                                sipAccount.setDomain(eventMessageModel.getDomain());
-                                sipAccount.setProxy(getProxyUrl(eventMessageModel.getAddresses().get(0)));
-                                sipAccount.setPort(5060);
-                                sipAccount.setTransport(Transport.UDP);
-                                sipAccount.setIceServers(eventMessageModel.getIceServer());
-
-                                Prefs.setSipAccount(context, sipAccount);
-                                Prefs.setAutoRedirect(context, true);
-
-                                chatView.showAlertDialog(eventModel);
-                            }
-                        } else if (eventModel.getMessage().getType().equalsIgnoreCase(BundleConstants.TERMINATE_AGENT_WEBRTC)) {
-
-                            chatView.hideAlertDialog();
-
-                            if (ACManager.getInstance().getActiveSession() != null) {
-                                int sessionIndex = ACManager.getInstance().getActiveSession().getSessionID();
-                                if (AudioCodesUA.getInstance().getSession(sessionIndex) != null) {
-                                    AudioCodesUA.getInstance().getSession(sessionIndex).terminate();
-                                    WebRTCAudioManager.getInstance().setWebRTcAudioRouteListener(null);
-                                    Intent intent = new Intent(CallActivity.ACTION_CALL_TERMINATED);
-                                    context.sendBroadcast(intent);
-                                }
-                            }
-                        }
+                    BotRequest botRequest = gson.fromJson(payload, BotRequest.class);
+                    if (botRequest != null && botRequest.getMessage() != null && botRequest.getMessage().getBody() != null) {
+                        botRequest.setCreatedOn(DateUtils.isoFormatter.format(new Date()));
+                        chatView.updateContentListOnSend(botRequest);
                     } else {
-                        BotRequest botRequest = gson.fromJson(payload, BotRequest.class);
-                        if (botRequest != null && botRequest.getMessage() != null && botRequest.getMessage().getBody() != null) {
-                            botRequest.setCreatedOn(DateUtils.isoFormatter.format(new Date()));
-                            chatView.updateContentListOnSend(botRequest);
-                        } else {
-                            final AgentInfoModel botResponse = gson.fromJson(payload, AgentInfoModel.class);
+                        final AgentInfoModel botResponse = gson.fromJson(payload, AgentInfoModel.class);
 
-                            if (botResponse == null || botResponse.getMessage() == null || StringUtils.isNullOrEmpty(botResponse.getMessage().getType())) {
-                                return;
-                            }
+                        if (botResponse == null || botResponse.getMessage() == null || StringUtils.isNullOrEmpty(botResponse.getMessage().getType())) {
+                            return;
+                        }
 
-                            if (botResponse.getMessage().getType().equalsIgnoreCase("agent_connected")) {
-                                setPreferenceObject(botResponse.getMessage().getAgentInfo(), BotResponse.AGENT_INFO_KEY);
-                            } else if (botResponse.getMessage().getType().equalsIgnoreCase("agent_disconnected")) {
-                                setPreferenceObject("", BotResponse.AGENT_INFO_KEY);
-                            }
+                        if (botResponse.getMessage().getType().equalsIgnoreCase("agent_connected")) {
+                            setPreferenceObject(botResponse.getMessage().getAgentInfo(), BotResponse.AGENT_INFO_KEY);
+                        } else if (botResponse.getMessage().getType().equalsIgnoreCase("agent_disconnected")) {
+                            setPreferenceObject("", BotResponse.AGENT_INFO_KEY);
+                        }
 
-                            if (botResponse.getCustomEvent().equalsIgnoreCase(BotResponse.EVENT)) {
-                                if (botResponse.getMessage() != null && !StringUtils.isNullOrEmpty(botResponse.getMessage().getType()) && botResponse.getMessage().getType().equalsIgnoreCase(BundleConstants.TYPING))
-                                    chatView.showTypingStatus();
-                            }
+                        if (botResponse.getCustomEvent().equalsIgnoreCase(BotResponse.EVENT)) {
+                            if (botResponse.getMessage() != null && !StringUtils.isNullOrEmpty(botResponse.getMessage().getType()) && botResponse.getMessage().getType().equalsIgnoreCase(BundleConstants.TYPING))
+                                chatView.showTypingStatus();
                         }
                     }
                 } catch (Exception ex) {

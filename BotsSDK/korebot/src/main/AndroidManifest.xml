@@ -10,18 +10,21 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
-    <application android:allowBackup="true"
-        tools:replace="android:allowBackup"
-        tools:targetApi="tiramisu">
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+
+    <!-- <uses-permission android:name="android.permission.READ_CONTACTS" /> -->
+
+    <application tools:targetApi="tiramisu">
 
         <activity android:name=".activity.GenericWebViewActivity" android:label="Kora" android:screenOrientation="portrait" android:theme="@style/Theme.AppCompat.NoActionBar" android:windowSoftInputMode="adjustResize" />
 
@@ -33,21 +36,12 @@
 
         <activity android:name=".activity.VideoFullScreenActivity" android:configChanges="orientation|screenSize" android:theme="@style/AppTheme" />
 
-        <activity android:name=".audiocodes.webrtcclient.Activities.PermissionDeniedActivity" android:configChanges="orientation|screenSize" android:theme="@style/AppTheme" />
-
-        <activity android:name=".audiocodes.webrtcclient.Activities.CallActivity" android:configChanges="keyboard|keyboardHidden" android:screenOrientation="locked" android:theme="@style/AppTheme" android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity android:name=".audiocodes.webrtcclient.Activities.IncomingCallActivity" android:configChanges="keyboard|keyboardHidden" android:screenOrientation="locked" android:theme="@style/AppTheme" android:windowSoftInputMode="stateAlwaysHidden" />
-
         <provider android:name="kore.botssdk.fileupload.KoreBotFileProvider" android:authorities="${applicationId}.korebotsdk.provider" android:exported="false" android:grantUriPermissions="true">
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/image_path" />
         </provider>
 
         <uses-library android:name="org.apache.http.legacy" android:required="false" />
 
-        <service
-            android:name=".utils.ClosingService"
-            android:enabled="true"
-            android:exported="false"
-            android:stopWithTask="false" />
+        <service android:name=".utils.ClosingService" android:enabled="true" android:exported="false" android:stopWithTask="false" />
     </application>
 </manifest>

@@ -60,8 +60,8 @@ public class BrandedDayViewDecorator extends DayViewDecorator {
         destination.writeInt(selectedTextColor);
     }
 
-    public static final Parcelable.Creator<BrandedDayViewDecorator> CREATOR =
-            new Parcelable.Creator<>() {
+    public static final Creator<BrandedDayViewDecorator> CREATOR =
+            new Creator<>() {
                 @Override
                 public BrandedDayViewDecorator createFromParcel(Parcel source) {
                     return new BrandedDayViewDecorator(source);

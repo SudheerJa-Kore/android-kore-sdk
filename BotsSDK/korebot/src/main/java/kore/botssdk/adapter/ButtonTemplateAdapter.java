@@ -63,13 +63,13 @@ public class ButtonTemplateAdapter extends RecyclerView.Adapter<ButtonTemplateAd
 
     @NonNull
     @Override
-    public ButtonTemplateAdapter.BotButtonViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public BotButtonViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View convertView = LayoutInflater.from(context).inflate(R.layout.meeting_slot_button, parent, false);
-        return new ButtonTemplateAdapter.BotButtonViewHolder(convertView);
+        return new BotButtonViewHolder(convertView);
     }
 
     @Override
-    public void onBindViewHolder(ButtonTemplateAdapter.BotButtonViewHolder holder, int position) {
+    public void onBindViewHolder(BotButtonViewHolder holder, int position) {
         BotButtonModel buttonMap = buttons.get(position);
         holder.buttonTitle.setText(buttonMap.getTitle());
         applyButtonStyle(holder, position == selectedIndex);

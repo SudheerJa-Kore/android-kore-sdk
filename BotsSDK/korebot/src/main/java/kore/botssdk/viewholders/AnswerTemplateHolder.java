@@ -2,20 +2,16 @@ package kore.botssdk.viewholders;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
-import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.core.text.HtmlCompat;
-import androidx.core.text.TextUtilsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import kore.botssdk.R;
 import kore.botssdk.adapter.AnswerSourceAdapter;
@@ -25,7 +21,6 @@ import kore.botssdk.models.DataModel;
 import kore.botssdk.models.PayloadInner;
 import kore.botssdk.models.SnippetContentModel;
 import kore.botssdk.models.SourceModel;
-import kore.botssdk.net.SDKConfiguration;
 import kore.botssdk.utils.markdown.MarkdownUtil;
 
 public class AnswerTemplateHolder extends BaseViewHolder {
@@ -44,7 +39,6 @@ public class AnswerTemplateHolder extends BaseViewHolder {
         TextView tvAnswerContent = itemView.findViewById(R.id.answer_content);
         TextView answeredByAiText = itemView.findViewById(R.id.answered_by_ai_text);
         AppCompatImageView answeredByAiIcon = itemView.findViewById(R.id.answered_by_ai_icon);
-        View answeredByAiRow = itemView.findViewById(R.id.answered_by_ai_row);
         RecyclerView sourceRecycler = itemView.findViewById(R.id.linksRecycler);
         int attributionColor;
         try {
@@ -58,21 +52,6 @@ public class AnswerTemplateHolder extends BaseViewHolder {
         }
         answeredByAiText.setTextColor(attributionColor);
         answeredByAiIcon.setImageTintList(ColorStateList.valueOf(attributionColor));
-        if (answeredByAiRow != null) {
-            Locale preferredLocale = SDKConfiguration.getDeviceLocale();
-            if (preferredLocale == null) preferredLocale = Locale.getDefault();
-            boolean isRtl = "ar".equalsIgnoreCase(preferredLocale.getLanguage())
-                    || TextUtilsCompat.getLayoutDirectionFromLocale(preferredLocale)
-                    == View.LAYOUT_DIRECTION_RTL;
-            LinearLayoutCompat.LayoutParams rowParams =
-                    (LinearLayoutCompat.LayoutParams) answeredByAiRow.getLayoutParams();
-            rowParams.gravity = isRtl ? Gravity.END : Gravity.START;
-            answeredByAiRow.setLayoutParams(rowParams);
-            // RTL layout puts first child (icon) on the right → visual order: text then icon.
-            answeredByAiRow.setLayoutDirection(
-                    isRtl ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR
-            );
-        }
         String answer = payloadInner.getAnswer();
         if (answer != null) {
             String formattedAnswer = MarkdownUtil.processMarkDown(answer);

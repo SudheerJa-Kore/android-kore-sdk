@@ -1,18 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven-publish'
-
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
-                groupId 'kore.botsdk'
-                artifactId 'korebotsdklib'
-                version project.findProperty('VERSION_NAME') ?: '1.0.0'
-            }
-        }
-    }
-}
 
 repositories {
     google()
@@ -23,16 +9,12 @@ repositories {
 android {
     compileSdk 36
 
-    publishing {
-        singleVariant('release')
-    }
-
     dataBinding{
         enabled = true
     }
 
     defaultConfig {
-        minSdkVersion 28
+        minSdkVersion 26
         targetSdkVersion 36
     }
     buildTypes {

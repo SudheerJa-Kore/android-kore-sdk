@@ -3,7 +3,6 @@ package kore.botssdk.listener;
 import kore.botssdk.models.BotBrandingModel;
 import kore.botssdk.models.BotRequest;
 import kore.botssdk.models.BotResponse;
-import kore.botssdk.models.EventModel;
 
 @SuppressWarnings("UnKnownNullness")
 public interface BotChatViewListener extends BaseView {
@@ -35,7 +34,7 @@ public interface BotChatViewListener extends BaseView {
 
     void uploadBulkFile(String fileName, String filePath, String extn, String filePathThumbnail, String orientation);
 
-    void showAlertDialog(EventModel eventModel);
+//    void showAlertDialog(EventModel eventModel);
 
     void hideAlertDialog();
 

@@ -4,8 +4,7 @@
     <color name="bgBlueSignup">#3F51B5</color>
     <color name="bgLightBlue">#9fa8da</color>
     <color name="green">#00ff00</color>
-    <color name="default_user_bubble_green">#02618D</color>
-    <color name="startup_loading_color">#02618D</color>
+    <color name="default_user_bubble_green">#1B8A5A</color>
     <color name="grey">#808080</color>
     <color name="ac">#124680</color>
     <color name="red">#FF0000</color>
