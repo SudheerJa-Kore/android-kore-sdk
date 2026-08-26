@@ -19,7 +19,9 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
-    <application tools:targetApi="tiramisu">
+    <application android:allowBackup="true"
+        tools:replace="android:allowBackup"
+        tools:targetApi="tiramisu">
 
         <activity android:name=".activity.GenericWebViewActivity" android:label="Kora" android:screenOrientation="portrait" android:theme="@style/Theme.AppCompat.NoActionBar" android:windowSoftInputMode="adjustResize" />
 
