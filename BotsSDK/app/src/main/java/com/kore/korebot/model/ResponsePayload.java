@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 
 @SuppressLint("UnknownNullness")
 public class ResponsePayload {
-
     private boolean download;
     private String fileName;
     private String url;

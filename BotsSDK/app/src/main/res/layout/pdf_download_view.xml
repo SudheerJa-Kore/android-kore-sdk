@@ -3,8 +3,8 @@
     android:layout_width="150dp"
     android:layout_height="wrap_content"
     android:background="@drawable/theme1_left_bubble_bg"
-    android:orientation="vertical"
-    android:padding="@dimen/dimen_15dp">
+    android:padding="@dimen/dimen_15dp"
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/llPdfCell"
@@ -18,12 +18,13 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:clickable="false"
-            android:contentDescription="@string/icon_to_display_attachment_type"
+            android:contentDescription="@string/about"
             android:minWidth="60dp"
             android:minHeight="60dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/download"
+            android:src="@mipmap/download"
             android:visibility="visible" />
+
 
         <kore.botssdk.view.CustomTextView
             android:id="@+id/tv_pdf_item_title"
@@ -39,6 +40,7 @@
             android:textSize="@dimen/text_size_normal" />
     </LinearLayout>
 
+
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -52,7 +54,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/ic_icons24download"
-            android:contentDescription="@string/icon_to_display_the_attachment_type_based_on_extension"
+            android:contentDescription="@string/about"
             android:ellipsize="end"
             android:maxLines="1"
             android:visibility="visible" />
@@ -64,5 +66,8 @@
             android:layout_height="@dimen/dimen_25dp"
             android:indeterminateTint="@color/colorPrimary"
             android:visibility="gone" />
+
     </RelativeLayout>
+
+
 </RelativeLayout>

@@ -23,7 +23,6 @@ import java.io.IOException;
 import kore.botssdk.fileupload.utils.StringUtils;
 import kore.botssdk.models.BaseBotMessage;
 import kore.botssdk.models.PayloadInner;
-import kore.botssdk.utils.DownloadUtils;
 import kore.botssdk.viewholders.BaseViewHolder;
 
 public class LinkTemplateHolder extends BaseViewHolder {
@@ -37,6 +36,7 @@ public class LinkTemplateHolder extends BaseViewHolder {
 
     private LinkTemplateHolder(@NonNull View view) {
         super(view, view.getContext());
+
         tvPdfName = view.findViewById(kore.botssdk.R.id.tv_pdf_item_title);
         ivPdfDownload = view.findViewById(kore.botssdk.R.id.ivPdfDownload);
         pbDownload = view.findViewById(kore.botssdk.R.id.pbDownload);
@@ -49,28 +49,27 @@ public class LinkTemplateHolder extends BaseViewHolder {
 
         tvPdfName.setText(payloadInner.getFileName());
         ivPdfDownload.setOnClickListener(v -> {
+            File fileLocation = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + File.separator + payloadInner.getFileName());
             if (!StringUtils.isNullOrEmpty(payloadInner.getUrl())) {
-                if (payloadInner.getUrl().contains("base64,")) {
-                    ivPdfDownload.setVisibility(GONE);
-                    pbDownload.setVisibility(VISIBLE);
-                    writeBase64ToDisk(payloadInner.getUrl(), payloadInner.getFileName());
+                ivPdfDownload.setVisibility(GONE);
+                pbDownload.setVisibility(VISIBLE);
+
+                if (writeBase64ToDisk(payloadInner.getUrl(), fileLocation)) {
                     ivPdfDownload.setVisibility(VISIBLE);
                     pbDownload.setVisibility(GONE);
-                    Toast.makeText(itemView.getContext(), "File downloaded successfully under downloads", Toast.LENGTH_SHORT).show();
-                } else {
-                    DownloadUtils.downloadFile(v.getContext(), payloadInner.getUrl(), null);
+
+                    Toast.makeText(itemView.getContext(), "Statement downloaded successfully under downloads", Toast.LENGTH_SHORT).show();
                 }
             } else {
                 ivPdfDownload.setVisibility(VISIBLE);
                 pbDownload.setVisibility(GONE);
-                Toast.makeText(itemView.getContext(), "File can not be downloaded!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(itemView.getContext(), "Statement can not be downloaded", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void writeBase64ToDisk(String fileData, String fileName) {
+    private boolean writeBase64ToDisk(String fileData, File fileLocation) {
         try {
-            File fileLocation = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + File.separator + fileName);
             fileData = fileData.substring(fileData.indexOf(",") + 1);
             byte[] pdfAsBytes = Base64.decode(fileData, 0);
             FileOutputStream os;
@@ -78,10 +77,12 @@ public class LinkTemplateHolder extends BaseViewHolder {
             os.write(pdfAsBytes);
             os.flush();
             os.close();
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
             ivPdfDownload.setVisibility(VISIBLE);
             pbDownload.setVisibility(GONE);
+            return false;
         }
     }
 }
