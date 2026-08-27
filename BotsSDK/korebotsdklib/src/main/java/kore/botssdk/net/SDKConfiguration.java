@@ -58,14 +58,6 @@ public class SDKConfiguration {
             return useMoeJwt;
         }
 
-        public static void setMoeJwtServerUrl(String moeJwtServerUrl) {
-            MOE_JWT_SERVER_URL = moeJwtServerUrl;
-        }
-
-        public static String getMoeJwtServerUrl() {
-            return MOE_JWT_SERVER_URL;
-        }
-
         public static void setCustomHeaders(HashMap<String, String> customHeaders) {
             JWTServer.customHeaders = customHeaders != null
                     ? new HashMap<>(customHeaders)

@@ -58,10 +58,6 @@ public class SDKConfig {
         SDKConfiguration.JWTServer.setUseMoeJwt(useMoeJwt);
     }
 
-    public static void setMoeJwtServerUrl(String moeJwtServerUrl) {
-        SDKConfiguration.JWTServer.setMoeJwtServerUrl(moeJwtServerUrl);
-    }
-
     public static void setCustomHeaders(HashMap<String, String> customHeaders) {
         SDKConfiguration.JWTServer.setCustomHeaders(customHeaders);
     }

@@ -236,7 +236,7 @@ public class BotSocketConnectionManager extends BaseSocketConnectionManager {
     private void moeJwtTokenCall(final boolean isRefresh) {
         Call<JWTTokenResponse> call = BotJWTRestBuilder.getBotJWTRestAPI()
                 .getMoeJWTTokenFromEndpoint(
-                        SDKConfiguration.JWTServer.getMoeJwtServerUrl(),
+                        SDKConfiguration.JWTServer.getJwtServerUrl(),
                         SDKConfiguration.JWTServer.getCustomHeaders(),
                         getMoeJwtRequestObject());
 
