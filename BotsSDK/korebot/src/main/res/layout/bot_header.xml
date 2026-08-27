@@ -53,22 +53,36 @@
             android:textSize="@dimen/text_size_sub_header"
             android:textStyle="bold" />
 
-        <kore.botssdk.view.CustomTextView
-            android:id="@+id/tvBotDesc"
+        <LinearLayout
+            android:id="@+id/llBotDesc"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
             android:layout_below="@+id/tvBotTitle"
             android:layout_marginTop="9dp"
             android:background="@drawable/online_status_bg"
-            android:drawableStart="@drawable/online_status_dot"
-            android:drawablePadding="4dp"
-            android:gravity="center"
-            android:includeFontPadding="false"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
             android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:text="@string/online"
-            android:textColor="#176B4A"
-            android:textSize="11sp" />
+            android:paddingEnd="8dp">
+
+            <ImageView
+                android:layout_width="6dp"
+                android:layout_height="6dp"
+                android:src="@drawable/online_status_dot"
+                android:importantForAccessibility="no" />
+
+            <kore.botssdk.view.CustomTextView
+                android:id="@+id/tvBotDesc"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:layout_marginStart="4dp"
+                android:includeFontPadding="false"
+                android:text="@string/online"
+                android:gravity="center"
+                android:textColor="#176B4A"
+                android:textSize="10sp" />
+
+        </LinearLayout>
 
     </RelativeLayout>
 

@@ -53,6 +53,9 @@ import java.util.Objects;
 
 import kore.botssdk.R;
 import kore.botssdk.activity.GenericWebViewActivity;
+import kore.botssdk.audiocodes.webrtcclient.General.ACManager;
+import kore.botssdk.audiocodes.webrtcclient.General.AppUtils;
+import kore.botssdk.audiocodes.webrtcclient.General.Prefs;
 import kore.botssdk.bot.BotClient;
 import kore.botssdk.dialogs.TemplateBottomSheetFragment;
 import kore.botssdk.event.KoreEventCenter;
@@ -79,6 +82,7 @@ import kore.botssdk.models.BotBrandingModel;
 import kore.botssdk.models.BotRequest;
 import kore.botssdk.models.BotResponse;
 import kore.botssdk.models.BrandingHeaderModel;
+import kore.botssdk.models.EventModel;
 import kore.botssdk.models.KoreComponentModel;
 import kore.botssdk.models.KoreMedia;
 import kore.botssdk.net.SDKConfig;
@@ -403,7 +407,7 @@ public class BotChatFragment extends Fragment implements BotChatViewListener, Co
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @androidx.annotation.NonNull String[] permissions, @androidx.annotation.NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == CHOOSE_IMAGE_BUNDLED_PERMISSION_REQUEST) {
             if (KaPermissionsHelper.hasPermission(requireActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)) {
@@ -704,7 +708,64 @@ public class BotChatFragment extends Fragment implements BotChatViewListener, Co
     }
 
     @Override
+    public void showAlertDialog(EventModel eventModel) {
+        alertDialog = new Dialog(requireContext());
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.incoming_call_layout, null);
+        alertDialog.setContentView(dialogView);
+        alertDialog.setCancelable(false);
+
+        TextView tvAgentName = dialogView.findViewById(R.id.tvAgentName);
+        TextView tvCallType = dialogView.findViewById(R.id.tvTypeOfCall);
+        TextView tvCallAccept = dialogView.findViewById(R.id.tvCallAccept);
+        TextView tvCallReject = dialogView.findViewById(R.id.tvCallReject);
+
+        tvAgentName.setText(eventModel.getMessage().getFirstName());
+        tvCallType.setText(getString(R.string.incoming_audio_call));
+
+        if (eventModel.getMessage().isVideoCall())
+            tvCallType.setText(getString(R.string.incoming_video_call));
+
+        tvCallAccept.setOnClickListener(v -> {
+            if (eventModel.getMessage() != null) {
+                eventModel.getMessage().setType("call_agent_webrtc_accepted");
+                botClient.sendMessage(gson.toJson(eventModel.getMessage()));
+
+                AppUtils.setEventModel(eventModel);
+                AppUtils.setBotClient(botClient);
+
+                openNextScreen(eventModel.getMessage().getSipUser(), eventModel.getMessage().isVideoCall());
+                alertDialog.dismiss();
+            }
+        });
+
+        tvCallReject.setOnClickListener(v -> alertDialog.dismiss());
+
+        alertDialog.show();
+    }
+
+    @Override
     public void hideAlertDialog() {
+        if (alertDialog != null && alertDialog.isShowing()) alertDialog.dismiss();
+    }
+
+    void openNextScreen(String sipUser, boolean isVideoCall) {
+        Prefs.setFirstLogin(requireContext(), false);
+        //start login and open app main screen
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (!ACManager.getInstance().isRegisterState()) {
+                    ACManager.getInstance().startLogin(requireContext(), false, true);
+                }
+
+                if (!ACManager.getInstance().isRegisterState() && Prefs.getAutoLogin(requireContext())) {
+                    Toast.makeText(requireContext(), R.string.no_registration, Toast.LENGTH_SHORT).show();
+                } else {
+                    ACManager.getInstance().callNumber(sipUser, isVideoCall);
+                }
+            }
+        }).start();
     }
 
     @Override

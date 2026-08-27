@@ -22,9 +22,10 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
 
-    <!-- <uses-permission android:name="android.permission.READ_CONTACTS" /> -->
-
-    <application tools:targetApi="tiramisu">
+    <!-- Keep the host app's backup policy when merging WebRtcSdk's manifest. -->
+    <application android:allowBackup="true"
+                 tools:replace="android:allowBackup"
+                 tools:targetApi="tiramisu">
 
         <activity android:name=".activity.GenericWebViewActivity" android:label="Kora" android:screenOrientation="portrait" android:theme="@style/Theme.AppCompat.NoActionBar" android:windowSoftInputMode="adjustResize" />
 
@@ -36,12 +37,21 @@
 
         <activity android:name=".activity.VideoFullScreenActivity" android:configChanges="orientation|screenSize" android:theme="@style/AppTheme" />
 
+        <activity android:name=".audiocodes.webrtcclient.Activities.PermissionDeniedActivity" android:configChanges="orientation|screenSize" android:theme="@style/AppTheme" />
+
+        <activity android:name=".audiocodes.webrtcclient.Activities.CallActivity" android:configChanges="keyboard|keyboardHidden" android:screenOrientation="locked" android:theme="@style/AppTheme" android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity android:name=".audiocodes.webrtcclient.Activities.IncomingCallActivity" android:configChanges="keyboard|keyboardHidden" android:screenOrientation="locked" android:theme="@style/AppTheme" android:windowSoftInputMode="stateAlwaysHidden" />
+
         <provider android:name="kore.botssdk.fileupload.KoreBotFileProvider" android:authorities="${applicationId}.korebotsdk.provider" android:exported="false" android:grantUriPermissions="true">
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/image_path" />
         </provider>
 
         <uses-library android:name="org.apache.http.legacy" android:required="false" />
 
-        <service android:name=".utils.ClosingService" android:enabled="true" android:exported="false" android:stopWithTask="false" />
+        <service
+            android:name=".utils.ClosingService"
+            android:enabled="true"
+            android:exported="false"
+            android:stopWithTask="false" />
     </application>
 </manifest>

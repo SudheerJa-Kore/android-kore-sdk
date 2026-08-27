@@ -140,7 +140,7 @@ public class WelcomeScreenFragment extends DialogFragment {
                         } else if (!StringUtils.isNullOrEmpty(welcomeModel.getBackground().getImg())) {
                             Glide.with(requireContext()).load(welcomeModel.getBackground().getImg()).into(new CustomTarget<Drawable>() {
                                 @Override
-                                public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                public void onResourceReady(@androidx.annotation.NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
                                     llInnerHeader.setBackground(null);
                                     rlHeader.setBackground(resource);
                                 }

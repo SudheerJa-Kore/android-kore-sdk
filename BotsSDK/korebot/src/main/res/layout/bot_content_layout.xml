@@ -23,15 +23,13 @@
             android:id="@+id/swipeContainerChat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/quick_reply_view"
-            android:layout_marginBottom="7dp">
+            android:layout_above="@+id/quick_reply_view">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/chatContentListView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="start"
-                android:layout_marginBottom="2dp"
                 android:divider="@android:color/transparent"
                 android:listSelector="@color/white"
                 android:accessibilityLiveRegion="polite"
@@ -45,8 +43,7 @@
             android:id="@+id/quick_reply_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="3dp" />
+            android:layout_alignParentBottom="true" />
 
 
         <LinearLayout xmlns:cpv="http://schemas.android.com/apk/res-auto"
@@ -76,8 +73,8 @@
                 android:id="@+id/ldDots"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginBottom="@dimen/dimen_3dp"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="@dimen/dimen_2dp"
                 android:layout_marginStart="@dimen/dimen_5dp"
                 app:LoadingDots_auto_play="true"
                 app:LoadingDots_dots_color="@color/bgBlueSignup"

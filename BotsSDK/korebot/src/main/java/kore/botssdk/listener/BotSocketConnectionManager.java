@@ -139,7 +139,7 @@ public class BotSocketConnectionManager extends BaseSocketConnectionManager {
         } else if (!StringUtils.isNullOrEmpty(SDKConfiguration.JWTServer.getJwt_token())) {
             makeJwtGrantCall(SDKConfiguration.JWTServer.getJwt_token(), true);
         } else {
-            makeStsJwtCallWithConfig(true);
+            makeConfiguredJwtCall(true);
         }
     }
 
@@ -156,7 +156,7 @@ public class BotSocketConnectionManager extends BaseSocketConnectionManager {
     private void makeStsJwtCallWithConfig(final boolean isRefresh) {
         Call<JWTTokenResponse> getBankingConfigService = BotJWTRestBuilder.getBotJWTRestAPI()
                 .getJWTTokenFromEndpoint(SDKConfiguration.JWTServer.getJwtServerUrl(), getRequestObject());
-        getBankingConfigService.enqueue(new Callback<JWTTokenResponse>() {
+        getBankingConfigService.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<JWTTokenResponse> call, Response<JWTTokenResponse> response) {
 
@@ -233,6 +233,49 @@ public class BotSocketConnectionManager extends BaseSocketConnectionManager {
         });
     }
 
+    private void moeJwtTokenCall(final boolean isRefresh) {
+        Call<JWTTokenResponse> call = BotJWTRestBuilder.getBotJWTRestAPI()
+                .getMoeJWTTokenFromEndpoint(
+                        SDKConfiguration.JWTServer.getMoeJwtServerUrl(),
+                        SDKConfiguration.JWTServer.getCustomHeaders(),
+                        getMoeJwtRequestObject());
+
+        call.enqueue(new Callback<JWTTokenResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<JWTTokenResponse> call,
+                                   @NonNull Response<JWTTokenResponse> response) {
+                JWTTokenResponse responseBody = response.body();
+                if (response.isSuccessful()
+                        && responseBody != null
+                        && !StringUtils.isNullOrEmpty(responseBody.getJwt())) {
+                    makeJwtGrantCall(responseBody.getJwt(), isRefresh);
+                } else {
+                    LogUtils.e("MOE_JWT_ERROR", "Response not successful: " + response.code());
+                    connection_state = isRefresh
+                            ? CONNECTION_STATE.CONNECTED_BUT_DISCONNECTED
+                            : DISCONNECTED;
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JWTTokenResponse> call,
+                                  @NonNull Throwable t) {
+                LogUtils.e("MOE_JWT_ERROR", t.getMessage());
+                connection_state = isRefresh
+                        ? CONNECTION_STATE.CONNECTED_BUT_DISCONNECTED
+                        : DISCONNECTED;
+            }
+        });
+    }
+
+    private void makeConfiguredJwtCall(final boolean isRefresh) {
+        if (SDKConfiguration.JWTServer.isUseMoeJwt()) {
+            moeJwtTokenCall(isRefresh);
+        } else {
+            makeStsJwtCallWithConfig(isRefresh);
+        }
+    }
+
     private void makeJwtGrantCall(String jwtToken, boolean isRefresh) {
         try {
             botName = SDKConfiguration.Client.bot_name;
@@ -264,6 +307,14 @@ public class BotSocketConnectionManager extends BaseSocketConnectionManager {
         hsh.put("isAnonymous", false);
 
         return hsh;
+    }
+
+    private HashMap<String, Object> getMoeJwtRequestObject() {
+        HashMap<String, Object> request = new HashMap<>();
+        request.put("identity", SDKConfiguration.Client.identity);
+        request.put("clientId", SDKConfiguration.Client.client_id);
+        request.put("clientSecret", SDKConfiguration.Client.client_secret);
+        return request;
     }
 
     public void persistBotMessage(String payload, boolean isSentMessage, BotRequest sentMsg) {
@@ -406,7 +457,7 @@ public class BotSocketConnectionManager extends BaseSocketConnectionManager {
         } else if (!StringUtils.isNullOrEmpty(SDKConfiguration.JWTServer.getJwt_token())) {
             makeJwtGrantCall(SDKConfiguration.JWTServer.getJwt_token(), SDKConfiguration.Client.isWebHook);
         } else {
-            makeStsJwtCallWithConfig(SDKConfiguration.Client.isWebHook);
+            makeConfiguredJwtCall(SDKConfiguration.Client.isWebHook);
         }
     }
 

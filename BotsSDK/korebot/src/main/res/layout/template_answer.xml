@@ -31,8 +31,10 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/answered_by_ai_row"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="start"
             android:layout_marginTop="10dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">

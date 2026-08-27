@@ -73,11 +73,11 @@ public class Utils {
     }
 
     public static boolean isWebURL(String url) {
-        return !isNullOrEmpty(url) && Patterns.WEB_URL.matcher(url).matches();
+        return !isNullOrEmpty(url) && android.util.Patterns.WEB_URL.matcher(url).matches();
     }
 
     public static boolean isWebURL(CharSequence url) {
-        return !isNullOrEmpty(url) && Patterns.WEB_URL.matcher(url).matches();
+        return !isNullOrEmpty(url) && android.util.Patterns.WEB_URL.matcher(url).matches();
     }
 
     public static boolean isPhoneNo(String text) {

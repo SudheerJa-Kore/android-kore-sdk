@@ -6,6 +6,7 @@ import kore.botssdk.models.JWTTokenResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Header;
+import retrofit2.http.HeaderMap;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Url;
@@ -16,6 +17,12 @@ public interface BotJWTRestAPI {
     @Headers({"alg:RS256", "typ:JWT"})
     @POST
     Call<JWTTokenResponse> getJWTTokenFromEndpoint(@Url String url, @Body HashMap<String, Object> jsonObject);
+
+    @POST
+    Call<JWTTokenResponse> getMoeJWTTokenFromEndpoint(
+            @Url String url,
+            @HeaderMap HashMap<String, String> headers,
+            @Body HashMap<String, Object> jsonObject);
 
     // Get JWT Token
     @POST("/api" + URL_VERSION + "/users/jwttoken")

@@ -1,5 +1,6 @@
 package kore.botssdk.activity;
 
+import static android.app.Activity.RESULT_OK;
 import static android.view.View.VISIBLE;
 import static kore.botssdk.activity.GenericWebViewActivity.EXTRA_HEADER;
 import static kore.botssdk.activity.GenericWebViewActivity.EXTRA_URL;
@@ -24,6 +25,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -37,6 +39,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -44,6 +47,7 @@ import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -57,6 +61,9 @@ import java.util.Locale;
 import java.util.Objects;
 
 import kore.botssdk.R;
+import kore.botssdk.audiocodes.webrtcclient.General.ACManager;
+import kore.botssdk.audiocodes.webrtcclient.General.AppUtils;
+import kore.botssdk.audiocodes.webrtcclient.General.Prefs;
 import kore.botssdk.bot.BotClient;
 import kore.botssdk.dialogs.TemplateBottomSheetFragment;
 import kore.botssdk.event.KoreEventCenter;
@@ -83,6 +90,7 @@ import kore.botssdk.models.BotBrandingModel;
 import kore.botssdk.models.BotRequest;
 import kore.botssdk.models.BotResponse;
 import kore.botssdk.models.BrandingHeaderModel;
+import kore.botssdk.models.EventModel;
 import kore.botssdk.models.KoreComponentModel;
 import kore.botssdk.models.KoreMedia;
 import kore.botssdk.net.SDKConfig;
@@ -735,7 +743,10 @@ public class BotChatActivity extends BotAppCompactActivity implements BotChatVie
                     if (sharedPreferences != null) {
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         SDKConfig.setIsMinimized(true);
-                        editor.putInt(BotResponse.HISTORY_COUNT, botContentFragment.getAdapterCount());
+                        editor.putInt(
+                                BotResponse.HISTORY_COUNT,
+                                botContentFragment.getAdapterCount()
+                        );
                         editor.apply();
                         BotSocketConnectionManager.killInstance();
 
@@ -747,33 +758,49 @@ public class BotChatActivity extends BotAppCompactActivity implements BotChatVie
                         }
 
                         Intent intent = new Intent();
-                        intent.putExtra(BundleUtils.CHAT_BOT_CLOSE_OR_MINIMIZED, BundleUtils.CHAT_BOT_MINIMIZED);
+                        intent.putExtra(
+                                BundleUtils.CHAT_BOT_CLOSE_OR_MINIMIZED,
+                                BundleUtils.CHAT_BOT_MINIMIZED
+                        );
                         setResult(RESULT_OK, intent);
                         finish();
                     }
                     break;
+
                 case DialogInterface.BUTTON_NEGATIVE:
                     if (sharedPreferences != null) {
-                        if (botClient != null)
-                            botClient.sendAgentCloseMessage("", SDKConfiguration.Client.bot_name, SDKConfiguration.Client.bot_id);
+                        if (botClient != null) {
+                            botClient.sendAgentCloseMessage(
+                                    "",
+                                    SDKConfiguration.Client.bot_name,
+                                    SDKConfiguration.Client.bot_id
+                            );
+                        }
 
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         SDKConfig.setIsMinimized(false);
                         editor.putInt(BotResponse.HISTORY_COUNT, 0);
                         editor.apply();
+
                         BotSocketConnectionManager.killInstance();
+
                         if (SDKConfiguration.Server.getBotStatusListener() != null) {
                             SDKConfiguration.Server.getBotStatusListener().onBotDisconnected(
                                     "BotMinimized",
                                     "Bot Minimized by the user"
                             );
                         }
+
                         Intent intent = new Intent();
-                        intent.putExtra(BundleUtils.CHAT_BOT_CLOSE_OR_MINIMIZED, BundleUtils.CHAT_BOT_CLOSE);
+                        intent.putExtra(
+                                BundleUtils.CHAT_BOT_CLOSE_OR_MINIMIZED,
+                                BundleUtils.CHAT_BOT_CLOSE
+                        );
                         setResult(RESULT_OK, intent);
                         finish();
                     }
                     break;
+
                 case DialogInterface.BUTTON_NEUTRAL:
                     dialog.dismiss();
                     break;
@@ -783,61 +810,132 @@ public class BotChatActivity extends BotAppCompactActivity implements BotChatVie
         AlertDialog dialog = new AlertDialog.Builder(BotChatActivity.this)
                 .setMessage(getPreferredString(R.string.close_or_minimize))
                 .setCancelable(false)
-                .setPositiveButton(getPreferredString(R.string.minimize), dialogClickListener)
-                .setNegativeButton(getPreferredString(R.string.close), dialogClickListener)
-                .setNeutralButton(getPreferredString(R.string.cancel), dialogClickListener)
+                .setPositiveButton(
+                        getPreferredString(R.string.minimize),
+                        dialogClickListener
+                )
+                .setNegativeButton(
+                        getPreferredString(R.string.close),
+                        dialogClickListener
+                )
+                .setNeutralButton(
+                        getPreferredString(R.string.cancel),
+                        dialogClickListener
+                )
                 .create();
 
         dialog.show();
 
         if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawableResource(R.drawable.bg_close_options_dialog);
+            dialog.getWindow().setBackgroundDrawableResource(
+                    R.drawable.bg_close_options_dialog
+            );
         }
 
+        // ---------------------------------------------------------
+        // Button color
+        // ---------------------------------------------------------
         int actionColor = Color.parseColor(
                 sharedPreferences != null
                         ? sharedPreferences.getString(
-                                BotResponse.BUBBLE_RIGHT_BG_COLOR,
-                                SDKConfiguration.BubbleColors.rightBubbleSelected
-                        )
+                        BotResponse.BUBBLE_RIGHT_BG_COLOR,
+                        SDKConfiguration.BubbleColors.rightBubbleSelected
+                )
                         : SDKConfiguration.BubbleColors.rightBubbleSelected
         );
+
         Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
         Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
         Button neutralButton = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
-        for (Button button : new Button[]{positiveButton, negativeButton, neutralButton}) {
+
+        for (Button button : new Button[]{
+                positiveButton,
+                negativeButton,
+                neutralButton
+        }) {
             if (button != null) {
                 button.setAllCaps(false);
                 button.setTextColor(actionColor);
             }
         }
 
+        // ---------------------------------------------------------
+        // RTL / LTR
+        // ---------------------------------------------------------
         Locale preferredLocale = SDKConfiguration.getDeviceLocale();
+
         if (preferredLocale != null && dialog.getWindow() != null) {
-            int layoutDirection = TextUtils.getLayoutDirectionFromLocale(preferredLocale);
-            dialog.getWindow().getDecorView().setLayoutDirection(layoutDirection);
-            TextView messageView = dialog.findViewById(android.R.id.message);
+
+            int layoutDirection =
+                    TextUtils.getLayoutDirectionFromLocale(preferredLocale);
+
+            dialog.getWindow()
+                    .getDecorView()
+                    .setLayoutDirection(layoutDirection);
+
+            TextView messageView =
+                    dialog.findViewById(android.R.id.message);
+
             if (messageView != null) {
+
                 messageView.setTextDirection(
                         layoutDirection == View.LAYOUT_DIRECTION_RTL
                                 ? View.TEXT_DIRECTION_RTL
                                 : View.TEXT_DIRECTION_LTR
                 );
-                messageView.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
+
+                messageView.setTextAlignment(
+                        View.TEXT_ALIGNMENT_VIEW_START
+                );
             }
         }
 
-        if (SDKConfiguration.getRegular() != null) {
-            // 1️⃣ Set message font
-            TextView messageView = dialog.findViewById(android.R.id.message);
-            if (messageView != null) {
-                messageView.setTypeface(SDKConfiguration.getRegular());
-            }
+        // ---------------------------------------------------------
+        // Font handling
+        // ---------------------------------------------------------
 
-            // 2️⃣ Set button fonts
-            if (positiveButton != null) positiveButton.setTypeface(SDKConfiguration.getRegular());
-            if (negativeButton != null) negativeButton.setTypeface(SDKConfiguration.getRegular());
-            if (neutralButton != null) neutralButton.setTypeface(SDKConfiguration.getRegular());
+        /*
+         * Get the configured font only once.
+         *
+         * If getRegular() returns null, use the default system font.
+         */
+        Typeface regularTypeface = SDKConfiguration.getRegular();
+
+        if (regularTypeface == null) {
+            regularTypeface = ResourcesCompat.getFont(
+                    BotChatActivity.this,
+                    R.font.latoregular
+            );
+        }
+
+        // Message font
+        TextView messageView = dialog.findViewById(android.R.id.message);
+
+        if (messageView != null) {
+
+            messageView.setTypeface(regularTypeface);
+
+            // Helps reduce extra vertical space, especially with
+            // Noto Kufi Arabic.
+            messageView.setIncludeFontPadding(false);
+
+            messageView.setLineSpacing(0f, 1.0f);
+        }
+
+        // Button fonts
+        if (positiveButton != null) {
+            positiveButton.setTypeface(regularTypeface);
+            positiveButton.setIncludeFontPadding(false);
+        }
+
+        if (negativeButton != null) {
+            negativeButton.setTypeface(regularTypeface);
+            negativeButton.setIncludeFontPadding(false);
+        }
+
+        if (neutralButton != null) {
+            neutralButton.setTypeface(regularTypeface);
+            neutralButton.setIncludeFontPadding(false);
         }
     }
 
@@ -914,6 +1012,67 @@ public class BotChatActivity extends BotAppCompactActivity implements BotChatVie
     }
 
     @Override
+    public void showAlertDialog(EventModel eventModel) {
+        alertDialog = new Dialog(BotChatActivity.this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.incoming_call_layout, null);
+        alertDialog.setContentView(dialogView);
+        alertDialog.setCancelable(false);
+
+        TextView tvAgentName = dialogView.findViewById(R.id.tvAgentName);
+        TextView tvCallType = dialogView.findViewById(R.id.tvTypeOfCall);
+        TextView tvCallAccept = dialogView.findViewById(R.id.tvCallAccept);
+        TextView tvCallReject = dialogView.findViewById(R.id.tvCallReject);
+
+        tvAgentName.setText(eventModel.getMessage().getFirstName());
+        tvCallType.setText(getString(R.string.incoming_audio_call));
+
+        if (eventModel.getMessage().isVideoCall())
+            tvCallType.setText(getString(R.string.incoming_video_call));
+
+        tvCallAccept.setOnClickListener(v -> {
+            if (eventModel.getMessage() != null) {
+                eventModel.getMessage().setType("call_agent_webrtc_accepted");
+                botClient.sendMessage(gson.toJson(eventModel.getMessage()));
+
+                AppUtils.setEventModel(eventModel);
+                AppUtils.setBotClient(botClient);
+
+                openNextScreen(eventModel.getMessage().getSipUser(), eventModel.getMessage().isVideoCall());
+                alertDialog.dismiss();
+            }
+        });
+
+        tvCallReject.setOnClickListener(v -> alertDialog.dismiss());
+
+        alertDialog.show();
+    }
+
+    @Override
+    public void hideAlertDialog() {
+        if (alertDialog != null && alertDialog.isShowing()) alertDialog.dismiss();
+    }
+
+    void openNextScreen(String sipUser, boolean isVideoCall) {
+        Prefs.setFirstLogin(this, false);
+        //start login and open app main screen
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (!ACManager.getInstance().isRegisterState()) {
+                    ACManager.getInstance().startLogin(BotChatActivity.this, false, true);
+                }
+
+                if (!ACManager.getInstance().isRegisterState() && Prefs.getAutoLogin(BotChatActivity.this)) {
+                    BotChatActivity.this.runOnUiThread(() -> Toast.makeText(BotChatActivity.this, R.string.no_registration, Toast.LENGTH_SHORT).show());
+                } else {
+                    ACManager.getInstance().callNumber(sipUser, isVideoCall);
+                }
+            }
+        }).start();
+    }
+
+    @Override
     public void showReconnectionStopped() {
         if (!SDKConfiguration.OverrideKoreConfig.disable_alert_on_max_reconnection) {
             DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
@@ -944,11 +1103,6 @@ public class BotChatActivity extends BotAppCompactActivity implements BotChatVie
         } else {
             KoreWorker.getInstance().addTask(new UploadBulkFile(fileName, filePath, "bearer " + jwt, SocketWrapper.getInstance(BotChatActivity.this).getBotUserId(), "workflows", extn, KoreMedia.BUFFER_SIZE_IMAGE, new Messenger(messagesMediaUploadAcknowledgeHandler), filePathThumbnail, "AT_" + System.currentTimeMillis(), BotChatActivity.this, BitmapUtils.obtainMediaTypeOfExtn(extn), (SDKConfiguration.Server.SERVER_URL), orientation, true, SDKConfiguration.Client.isWebHook, SDKConfiguration.Client.bot_id));
         }
-    }
-
-    @Override
-    public void hideAlertDialog() {
-
     }
 
     @Override

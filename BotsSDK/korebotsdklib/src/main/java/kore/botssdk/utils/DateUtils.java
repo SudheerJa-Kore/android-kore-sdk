@@ -184,7 +184,7 @@ public class DateUtils {
     }
 
     public static String getCorrectedTimeZone(String timeZone) {
-        if (StringUtils.isNullOrEmptyWithTrim(timeZone)) return "";
+        if (kore.botssdk.utils.StringUtils.isNullOrEmptyWithTrim(timeZone)) return "";
         timeZone = timeZone.toLowerCase();
         if (timeZone.contains("calcutta")) {
             timeZone = timeZone.replace("calcutta", "kolkata");

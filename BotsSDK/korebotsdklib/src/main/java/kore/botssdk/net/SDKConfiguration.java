@@ -48,11 +48,51 @@ public class SDKConfiguration {
 
     //JWTServer related configurations
     public static class JWTServer {
+        private static boolean useMoeJwt = true;
+
+        public static void setUseMoeJwt(boolean useMoeJwt) {
+            JWTServer.useMoeJwt = useMoeJwt;
+        }
+
+        public static boolean isUseMoeJwt() {
+            return useMoeJwt;
+        }
+
+        public static void setMoeJwtServerUrl(String moeJwtServerUrl) {
+            MOE_JWT_SERVER_URL = moeJwtServerUrl;
+        }
+
+        public static String getMoeJwtServerUrl() {
+            return MOE_JWT_SERVER_URL;
+        }
+
+        public static void setCustomHeaders(HashMap<String, String> customHeaders) {
+            JWTServer.customHeaders = customHeaders != null
+                    ? new HashMap<>(customHeaders)
+                    : new HashMap<>();
+        }
+
+        public static HashMap<String, String> getCustomHeaders() {
+            if (customHeaders == null || customHeaders.isEmpty()) {
+                HashMap<String, String> defaults = new HashMap<>();
+                defaults.put("Content-Type", "application/json");
+                return defaults;
+            }
+            HashMap<String, String> headers = new HashMap<>(customHeaders);
+            if (!headers.containsKey("Content-Type") && !headers.containsKey("content-type")) {
+                headers.put("Content-Type", "application/json");
+            }
+            return headers;
+        }
+
+        static String MOE_JWT_SERVER_URL = "PLEASE_ENTER_MOE_JWT_SERVER_URL";
+        private static HashMap<String, String> customHeaders = new HashMap<>();
+
         public static void setJwtServerUrl(String jwtServerUrl) {
             JWT_SERVER_URL = jwtServerUrl;
         }
 
-        static String JWT_SERVER_URL = "PLEASE_ENTER_JWT_SERVER_URL";
+        static String JWT_SERVER_URL = "PLEASE_ENTER_MOE_JWT_SERVER_URL";
 
         public static String getJwtServerUrl() {
             return JWT_SERVER_URL;
