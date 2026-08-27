@@ -339,5 +339,6 @@
     <string name="sub_title_or_description_of_the_table_content">Sub title or description of the table content</string>
     <string name="image_icon_of_the_table_content">Image icon of the table content</string>
     <string name="kore_login_icon">kore login icon</string>
+    <string name="textview">TextView</string>
 
 </resources>

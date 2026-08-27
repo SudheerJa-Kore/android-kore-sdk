@@ -48,7 +48,7 @@ public class SDKConfiguration {
 
     //JWTServer related configurations
     public static class JWTServer {
-        private static boolean useMoeJwt = true;
+        private static boolean useMoeJwt = false;
 
         public static void setUseMoeJwt(boolean useMoeJwt) {
             JWTServer.useMoeJwt = useMoeJwt;
