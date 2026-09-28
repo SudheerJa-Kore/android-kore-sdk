@@ -339,8 +339,8 @@ public class ChatAdapter extends RecyclerView.Adapter<BaseViewHolder> implements
         }
     }
 
-    @NonNull
     @Override
+    @NonNull
     public BaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (customTemplates.containsKey(viewType)) {
             return getCustomTemplate(parent, SDKConfiguration.getCustomTemplateViewHolder(customTemplates.get(viewType)));
