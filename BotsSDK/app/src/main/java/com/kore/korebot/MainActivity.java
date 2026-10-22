@@ -104,9 +104,6 @@ public class MainActivity extends AppCompatActivity {
         //Flag to show timestamp of each bot and user messages
         SDKConfig.setIsTimeStampsRequired(true);
 
-        //Flag to show widget panel
-        SDKConfig.enableWidgetPanel(false);
-
         SDKConfig.setIsUpdateStatusBarColor(false);
 
         Button launchBotBtn = findViewById(R.id.launchBotBtn);
