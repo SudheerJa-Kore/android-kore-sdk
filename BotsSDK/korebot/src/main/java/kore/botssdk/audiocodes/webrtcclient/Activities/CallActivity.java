@@ -10,6 +10,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.SystemClock;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -35,6 +37,7 @@ import com.audiocodes.mv.webrtcsdk.useragent.WebRTCException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import kore.botssdk.R;
 import kore.botssdk.audiocodes.webrtcclient.Callbacks.CallBackHandler;
@@ -70,12 +73,17 @@ public class CallActivity extends BaseAppCompatActivity implements AudioCodesSes
     View addVideoButton;
     boolean dtmfEnabled = false;
     boolean guiInitialized;
-    int count = 0;
+    private volatile boolean callTimerStarted;
+    private volatile boolean callActivityDestroyed;
+    private long callConnectedAtElapsedRealtime;
     WebRTCAudioManager ac;
     WebRTCAudioManager.AudioRoute route = WebRTCAudioManager.AudioRoute.EARPIECE;
-    final Handler timerHandler = new Handler();
+    private final Object callTimerLock = new Object();
+    private HandlerThread callTimerThread;
+    private Handler callTimerHandler;
+    private Runnable callTimerRunnable;
+    private final AtomicBoolean timerUiUpdatePending = new AtomicBoolean();
     final ArrayList<Integer> sessionList = new ArrayList<>();
-    Runnable runnable;
     final MyAudioCodesSessionEventListener myAudioCodesSessionEventListener = new MyAudioCodesSessionEventListener();
     int lastSessionIndex;
 
@@ -140,6 +148,7 @@ public class CallActivity extends BaseAppCompatActivity implements AudioCodesSes
             return;
         }
         lastSessionIndex = sessionIndex;
+        startCallTimerIfConnected(session);
         updateUI();
         CallForegroundService.startService(this);
         IntentFilter filter = new IntentFilter(ACTION_CALL_TERMINATED);
@@ -169,6 +178,7 @@ public class CallActivity extends BaseAppCompatActivity implements AudioCodesSes
             session.stopVideo();
         }
         session = AudioCodesUA.getInstance().getSession(sessionIndex);
+        startCallTimerIfConnected(session);
         switchCallButton.setEnabled(true);
         updateUI();
     }
@@ -446,20 +456,75 @@ public class CallActivity extends BaseAppCompatActivity implements AudioCodesSes
         initDtmf();
         updateVideoButton();
         guiInitialized = true;
+    }
 
-        runnable = new Runnable() {
-            @Override
-            public void run() {
-                count++;
-                int hours = count / 3600;
-                int minutes = (count % 3600) / 60;
-                int secs = count % 60;
-                String time = String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, secs);
-                contactNameTextView.setText(time);
+    private void startCallTimerIfConnected(AudioCodesSession audioCodesSession) {
+        if (audioCodesSession != null && audioCodesSession.getCallState() == CallState.CONNECTED) {
+            startCallTimer();
+        }
+    }
 
-                timerHandler.postDelayed(this, 1000);
+    private void startCallTimer() {
+        synchronized (callTimerLock) {
+            if (callTimerStarted || callActivityDestroyed) {
+                return;
             }
-        };
+
+            callConnectedAtElapsedRealtime = SystemClock.elapsedRealtime();
+            callTimerStarted = true;
+
+            callTimerThread = new HandlerThread("CallActivityTimer");
+            callTimerThread.start();
+            Handler timerHandler = new Handler(callTimerThread.getLooper());
+            callTimerHandler = timerHandler;
+
+            callTimerRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    if (!callTimerStarted) {
+                        return;
+                    }
+
+                    long elapsedMillis = SystemClock.elapsedRealtime() - callConnectedAtElapsedRealtime;
+                    if (timerUiUpdatePending.compareAndSet(false, true)) {
+                        handler.post(() -> {
+                            timerUiUpdatePending.set(false);
+                            if (callTimerStarted && contactNameTextView != null) {
+                                long elapsedSeconds = (SystemClock.elapsedRealtime() - callConnectedAtElapsedRealtime) / 1000L;
+                                long hours = elapsedSeconds / 3600L;
+                                long minutes = (elapsedSeconds % 3600L) / 60L;
+                                long seconds = elapsedSeconds % 60L;
+                                String time = String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds);
+                                contactNameTextView.setText(time);
+                            }
+                        });
+                    }
+
+                    long delayUntilNextSecond = 1000L - (elapsedMillis % 1000L);
+                    if (callTimerStarted) {
+                        timerHandler.postDelayed(this, delayUntilNextSecond);
+                    }
+                }
+            };
+            timerHandler.postDelayed(callTimerRunnable, 1000L);
+        }
+    }
+
+    private void stopCallTimer() {
+        HandlerThread timerThread;
+        synchronized (callTimerLock) {
+            callTimerStarted = false;
+            if (callTimerHandler != null && callTimerRunnable != null) {
+                callTimerHandler.removeCallbacks(callTimerRunnable);
+            }
+            timerThread = callTimerThread;
+            callTimerThread = null;
+            callTimerHandler = null;
+            callTimerRunnable = null;
+        }
+        if (timerThread != null) {
+            timerThread.quitSafely();
+        }
     }
 
     void setHold(boolean hold) {
@@ -529,11 +594,6 @@ public class CallActivity extends BaseAppCompatActivity implements AudioCodesSes
                 if (remote != null) {
                     String callState = getString(R.string.call_textview_call_state) + " " + session.getCallState();
                     callStateTextView.setText(callState);
-
-                    if (session.getCallState().toString().equalsIgnoreCase(BundleConstants.CONNECTED)) {
-                        if (count == 0)
-                            timerHandler.postDelayed(runnable, 1000);
-                    }
 
                     //List<NativeContactObject> nativeContactObjectList = NativeContactUtils.getContactListByPhoneNumber(session.getRemoteNumber().getUserName());
                     List<NativeDBObject> nativeDBObjectList = NativeDBManager.getContactList(CallActivity.this, NativeDBManager.QueryType.BY_PHONE_AND_SIP, remote.getUserName());//  .getContactListByPhoneNumber(session.getRemoteNumber().getUserName());
@@ -631,12 +691,12 @@ public class CallActivity extends BaseAppCompatActivity implements AudioCodesSes
 
     @Override
     protected void onDestroy() {
+        callActivityDestroyed = true;
+        stopCallTimer();
         super.onDestroy();
         unregisterReceiver(callTerminateReceiver);
         //CallBackHandler.unregisterCallStateChanged(callStateChanged);
         CallBackHandler.unregisterLoginStateChange(loginStateChanged);
-        timerHandler.removeCallbacks(runnable);
-        count = 0;
     }
 
     @Override
@@ -655,6 +715,7 @@ public class CallActivity extends BaseAppCompatActivity implements AudioCodesSes
     @Override
     public void callProgress(AudioCodesSession session) {
         Log.d(TAG, "callProgress CallState: " + session.getCallState());
+        startCallTimerIfConnected(session);
         if (session.getCallState() == CallState.CONNECTED || session.getCallState() == CallState.HOLD) {
             handler.post(new Runnable() {
                 @Override
